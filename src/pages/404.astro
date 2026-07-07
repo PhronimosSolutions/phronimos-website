@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BOOKING_URL } from '../config';
+---
+
+<BaseLayout
+  title="Page Not Found | Phronimos"
+  description="This page does not exist."
+>
+  <section class="section notfound">
+    <div class="container">
+      <hr class="rule" />
+      <h1 class="display">This page does not exist.</h1>
+      <p class="lede">The audit, however, does. And the homepage is right where you left it.</p>
+      <div class="cta-actions">
+        <a href="/" class="btn btn-secondary">Back to the homepage</a>
+        <a href={BOOKING_URL} class="btn btn-primary">Book the AI Workflow Audit</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .notfound {
+    min-height: 55vh;
+  }
+
+  .notfound .display {
+    margin-top: var(--space-6);
+    max-width: 16ch;
+  }
+
+  .notfound .lede {
+    margin-top: var(--space-4);
+  }
+
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-7);
+  }
+</style>

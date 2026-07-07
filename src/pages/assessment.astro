@@ -1,0 +1,1134 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
+---
+
+<BaseLayout
+  title="AI Maturity Assessment | Phronimos"
+  description="A free 7-minute AI maturity diagnostic: 30 questions across six dimensions of AI readiness, with a scored custom report delivered within two business days."
+>
+  <!-- INTRO -->
+  <section id="hero" class="section assess-hero" data-stage="hero">
+    <div class="container">
+      <hr class="rule" data-reveal />
+      <h1 data-reveal style="--reveal-i: 1">
+        Find out where your business is on the AI Maturity Model.
+      </h1>
+      <p class="lede" data-reveal style="--reveal-i: 2">
+        A free, 7-minute diagnostic. Custom report delivered to your inbox within two business
+        days.
+      </p>
+      <ul class="assess-points" data-reveal style="--reveal-i: 3">
+        <li>30 questions across six dimensions of AI readiness.</li>
+        <li>A scored report with a 90-day path to your next level.</li>
+        <li>No sales call required to get the report.</li>
+      </ul>
+      <button class="btn btn-primary" onclick="startAssessment()" id="start-btn" data-reveal style="--reveal-i: 4">
+        Start the assessment
+      </button>
+    </div>
+  </section>
+
+  <!-- FORM -->
+  <section id="form-stage" class="section-tight form-stage" data-stage="form" hidden>
+    <form id="assessment-form" class="container assess-wrap" novalidate>
+      <header class="stepper">
+        <div class="stepper-top">
+          <span class="step-num"><span id="cur-step">1</span> / <span id="tot-step">9</span></span>
+          <span class="step-label" id="step-label">CONTACT</span>
+        </div>
+        <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="9" aria-valuenow="1">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </header>
+
+      <div id="step-container"></div>
+
+      <nav class="step-nav">
+        <button type="button" class="btn-plain" onclick="prevStep()" id="back-btn" aria-label="Previous step">&larr; Back</button>
+        <div class="step-nav-right">
+          <span class="progress-text" id="progress-text">Step 1 of 9</span>
+          <button type="button" class="btn btn-primary" onclick="nextStep()" id="next-btn">Continue</button>
+          <button type="submit" class="btn btn-primary" id="submit-btn" hidden>Email my report request</button>
+        </div>
+      </nav>
+      <p class="form-status" id="submit-status" hidden></p>
+    </form>
+  </section>
+
+  <!-- THANK YOU -->
+  <section id="thanks" class="section thanks" data-stage="thanks">
+    <div class="container">
+      <hr class="rule" />
+      <p class="eyebrow">Your assessment is in</p>
+      <h1>Thank you. We will be in touch.</h1>
+      <p class="lede">
+        Your responses have been received. We are scoring your dimensions and drafting your custom
+        AI Maturity report now.
+      </p>
+      <ul class="assess-points">
+        <li>Your full report (PDF and slide deck) will arrive within two business days.</li>
+        <li>The report includes a 90-day path tailored to where you scored.</li>
+        <li>No sales call is required. You can read the report and decide what you want next.</li>
+      </ul>
+      <p class="muted signoff">Phronimos &middot; <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></p>
+    </div>
+  </section>
+</BaseLayout>
+
+<script is:inline define:vars={{ WEB3FORMS_KEY, CONTACT_EMAIL }}>
+// ===== DATA: questions, options =====
+const SECTIONS = [
+  {
+    id: "contact",
+    label: "CONTACT",
+    title: "Let's get the basics.",
+    intro: "We use these only to deliver your report. We won't add you to a list.",
+    kind: "contact"
+  },
+  {
+    id: "strategy", label: "STRATEGY & LEADERSHIP",
+    title: "Strategy & Leadership", num: "02",
+    intro: "How AI is decided on, owned, and budgeted at the leadership level.",
+    qs: [
+      ["q1", "Our leadership has a documented view of how AI should support the business over the next 12 months."],
+      ["q2", "Someone on our team is clearly responsible for evaluating and adopting AI tools."],
+      ["q3", "When we consider an AI tool or workflow, the decision is tied to a specific business outcome (for example, hours saved, revenue, response time), not curiosity."],
+      ["q4", "We have set aside budget for AI tools, training, or projects in the current or upcoming fiscal year."],
+      ["q5", "Our team has a shared, clear view of which of our workflows would benefit most from AI."]
+    ]
+  },
+  {
+    id: "data", label: "DATA FOUNDATION",
+    title: "Data Foundation", num: "03",
+    intro: "Quality, consistency, and accessibility of your own business data.",
+    qs: [
+      ["q6", "Our core business data (clients, projects, finances, files) lives in a small number of organized systems we can name."],
+      ["q7", "Our team can find information from past projects, calls, or documents within a few minutes when they need it."],
+      ["q8", "Our records are consistent: client records have the same fields filled in, regardless of who added them."],
+      ["q9", "We could export our key business data from our tools into a spreadsheet or another system if we needed to."],
+      ["q10", "We have clear, documented rules about who can access which data inside the business."]
+    ]
+  },
+  {
+    id: "process", label: "PROCESS & AUTOMATION",
+    title: "Process & Automation", num: "04",
+    intro: "How documented, repeatable, and partially automated your workflows are today.",
+    qs: [
+      ["q11", "Our core workflows (intake, onboarding, delivery, follow-up) are documented somewhere a new hire could read them."],
+      ["q12", "We have automated at least one repetitive task in the past twelve months (for example, a scheduling link, an email sequence, a notification)."],
+      ["q13", "Most of our team's manual work is judgment-driven, the kind that requires human thinking, rather than data entry, routing, or chasing."],
+      ["q14", "We use a tool (Zapier, Make, Power Automate, or similar) to connect two or more of our software systems."],
+      ["q15", "We have measured, even informally, how much time our top three workflows actually consume in a typical week."]
+    ]
+  },
+  {
+    id: "tools", label: "TOOLS & TECHNOLOGY",
+    title: "Tools & Technology", num: "05",
+    intro: "Breadth and integration of AI and automation tools actually in use.",
+    qs: [
+      ["q16", "Our team uses AI tools (ChatGPT, Claude, Copilot, etc.) as part of daily or weekly work."],
+      ["q17", "Our software systems (CRM, email, calendar, project tools) talk to each other: data flows between them without manual copying."],
+      ["q18", "We have evaluated more than three AI or automation tools in the past twelve months, meaning we tried them, not just read about them."]
+    ],
+    multi: [
+      {id: "q19_tools", text: "Which AI tools does your team currently use, even occasionally? Select all that apply.",
+       options: ["ChatGPT", "Claude", "Microsoft Copilot", "Google Gemini", "Perplexity", "Notion AI", "Fathom / Otter / Read.ai (meeting recorder)", "An industry-specific AI tool", "Other general-purpose AI tool", "None"]},
+      {id: "q20_platforms", text: "Which automation platforms does your team use? Select all that apply.",
+       options: ["Zapier", "Make (formerly Integromat)", "n8n", "Microsoft Power Automate", "A custom-built integration or script", "Native integrations between our SaaS tools (e.g., Calendly + Gmail)", "None"]}
+    ]
+  },
+  {
+    id: "people", label: "PEOPLE & SKILLS",
+    title: "People & Skills", num: "06",
+    intro: "Whether the team has the skills, comfort, and shared language for AI.",
+    qs: [
+      ["q21", "Our team has had formal training, internal or external, on using AI tools effectively."],
+      ["q22", "At least one person on our team can write a useful AI prompt or build a simple automation without outside help."],
+      ["q23", "We share AI tips, prompts, or workflow improvements with each other regularly, in writing or in meetings."],
+      ["q24", "When we hire or develop talent, AI literacy is a factor we explicitly consider."],
+      ["q25", "Our team adopts new tools quickly when they are introduced; we don't have a backlog of tools nobody uses."]
+    ]
+  },
+  {
+    id: "governance", label: "GOVERNANCE & RISK",
+    title: "Governance & Risk", num: "07",
+    intro: "Whether the business has a written stance on AI use, review, and risk.",
+    qs: [
+      ["q26", "We have a written policy describing how staff can and cannot use AI tools (for example, what data is allowed, what is forbidden)."],
+      ["q27", "We have clear rules about which AI outputs require human review before they reach a client."],
+      ["q28", "We understand the data privacy implications of the AI tools we use: what is stored, where, and by whom."],
+      ["q29", "We have considered the regulatory and compliance implications of AI for our specific industry."],
+      ["q30", "We review the outputs of AI tools when they touch client work, at a defined frequency, not just \"when we remember.\""]
+    ]
+  },
+  {
+    id: "open", label: "OPEN QUESTIONS",
+    title: "Two questions in your own words.", num: "08",
+    intro: "These aren't scored. They feed the discovery call that follows your report.",
+    kind: "open"
+  },
+  {
+    id: "review", label: "REVIEW & SUBMIT",
+    title: "Ready to send.", num: "09",
+    intro: "Here's a quick read on what you'll receive.",
+    kind: "review"
+  }
+];
+
+const LIKERT_LABELS = ["Strongly\ndisagree", "Disagree", "Neutral", "Agree", "Strongly\nagree"];
+const TOTAL_STEPS = SECTIONS.length;
+const DIM_KEYS = ["strategy", "data", "process", "tools", "people", "governance"];
+const DIM_NAMES = {strategy:"Strategy & Leadership", data:"Data Foundation", process:"Process & Automation", tools:"Tools & Technology", people:"People & Skills", governance:"Governance & Risk"};
+const LEVEL_LABELS = ["Aware", "Adopting", "Integrated", "Optimizing", "Transformative"];
+
+// ===== STATE =====
+let currentStep = 0;
+const state = {};
+
+// ===== RENDER STEPS =====
+function renderStep(idx) {
+  const section = SECTIONS[idx];
+  const c = document.getElementById("step-container");
+  if (section.kind === "contact") {
+    c.innerHTML = `
+      <section class="step active" data-step="${idx}">
+        <span class="eyebrow step-eyebrow">CONTACT</span>
+        <h2>${section.title}</h2>
+        <p class="step-intro">${section.intro}</p>
+        <div class="field-row">
+          <div class="field"><label for="full_name">Your name</label><input type="text" id="full_name" name="full_name" required autocomplete="name"></div>
+          <div class="field"><label for="email">Work email</label><input type="email" id="email" name="email" required autocomplete="email"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label for="company">Company</label><input type="text" id="company" name="company" required autocomplete="organization"></div>
+          <div class="field"><label for="role">Your role</label><input type="text" id="role" name="role" required placeholder="e.g., Owner, Office Manager" autocomplete="organization-title"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label for="industry">Industry</label><input type="text" id="industry" name="industry" required placeholder="e.g., Family law, Med spa, Agency"></div>
+          <div class="field"><label for="team_size">Team size</label><input type="number" id="team_size" name="team_size" required min="1" max="500" placeholder="Headcount including you"></div>
+        </div>
+      </section>`;
+  } else if (section.kind === "open") {
+    c.innerHTML = `
+      <section class="step active" data-step="${idx}">
+        <span class="eyebrow step-eyebrow">OPEN QUESTIONS</span>
+        <h2>${section.title}</h2>
+        <p class="step-intro">${section.intro}</p>
+        <div class="field"><label for="blocker">Biggest blocker</label>
+          <p class="muted q-hint">What is the single biggest thing keeping you from getting more out of AI in your business right now?</p>
+          <textarea id="blocker" name="blocker" required placeholder="Two or three sentences. We'll pull this thread on the call."></textarea>
+        </div>
+        <div class="field"><label for="hope">90-day hope</label>
+          <p class="muted q-hint">If AI could change one thing for your business in the next 90 days, what would have the biggest impact?</p>
+          <textarea id="hope" name="hope" required placeholder="Be concrete. &quot;Take meeting notes&quot; beats &quot;transform our marketing.&quot;"></textarea>
+        </div>
+      </section>`;
+  } else if (section.kind === "review") {
+    c.innerHTML = renderReview(idx);
+  } else {
+    let html = `
+      <section class="step active" data-step="${idx}">
+        <span class="eyebrow step-eyebrow">${section.label}</span>
+        <h2>${section.title}</h2>
+        <p class="step-intro">${section.intro}</p>`;
+    section.qs.forEach(([qid, qtext], i) => {
+      html += renderLikert(qid, qtext, idx, i + 1);
+    });
+    if (section.multi) {
+      section.multi.forEach((m, i) => {
+        html += renderMulti(m.id, m.text, m.options, idx, section.qs.length + i + 1);
+      });
+    }
+    html += `</section>`;
+    c.innerHTML = html;
+  }
+  bindInputs();
+}
+
+function renderLikert(qid, qtext, sectionIdx, qNum) {
+  const sel = state[qid];
+  return `
+    <div class="q-card${sel ? " answered" : ""}" data-q="${qid}">
+      <div class="q-num">Question ${qid.replace("q","").padStart(2,"0")}</div>
+      <div class="q-text">${qtext}</div>
+      <div class="likert" role="radiogroup" aria-label="${qtext}">
+        ${[1,2,3,4,5].map(v => `
+          <label>
+            <input type="radio" name="${qid}" value="${v}"${sel == v ? " checked" : ""}>
+            <span class="dot"></span>
+            <span class="scale-num">${v}</span>
+            <span class="scale-label">${LIKERT_LABELS[v-1].replace("\n","<br>")}</span>
+          </label>`).join("")}
+      </div>
+    </div>`;
+}
+
+function renderMulti(qid, qtext, options, sectionIdx, qNum) {
+  const sel = state[qid] || [];
+  return `
+    <div class="q-card${sel.length ? " answered" : ""}" data-q="${qid}">
+      <div class="q-num">Question ${qid.replace("q","").split("_")[0].padStart(2,"0")}</div>
+      <div class="q-text">${qtext}</div>
+      <div class="multi" role="group">
+        ${options.map((opt) => `
+          <label>
+            <input type="checkbox" name="${qid}" value="${opt}"${sel.includes(opt) ? " checked" : ""}>
+            <span class="check"></span>
+            <span>${opt}</span>
+          </label>`).join("")}
+      </div>
+    </div>`;
+}
+
+function renderReview(idx) {
+  const scores = computeScores();
+  return `
+    <section class="step active" data-step="${idx}">
+      <span class="eyebrow step-eyebrow">REVIEW & SUBMIT</span>
+      <h2>Ready to send.</h2>
+      <p class="step-intro">Here's a quick read on what you'll receive. Hit submit and the full report will land in your inbox within two business days.</p>
+      <div class="review-grid">
+        <div class="review-stat">
+          <div class="label">Projected level</div>
+          <div class="value">L${scores.overall_level}</div>
+          <div class="sub">${scores.overall_label}</div>
+        </div>
+        <div class="review-stat">
+          <div class="label">Overall score</div>
+          <div class="value">${scores.overall_score.toFixed(1)}</div>
+          <div class="sub">out of 5.0</div>
+        </div>
+        <div class="review-stat">
+          <div class="label">Strongest</div>
+          <div class="value value-small">${DIM_NAMES[scores.strongest].split(" & ")[0]}</div>
+          <div class="sub">${scores.dim_scores[scores.strongest].toFixed(1)} / 5.0</div>
+        </div>
+      </div>
+      <div class="review-block">
+        <div class="review-label">Submitting as</div>
+        <div class="review-value"><strong>${esc(state.full_name)}</strong> &middot; ${esc(state.role)} at <strong>${esc(state.company)}</strong></div>
+        <div class="review-value muted review-meta">${esc(state.email)} &middot; ${esc(state.industry)} &middot; Team of ${esc(state.team_size)}</div>
+      </div>
+      <div class="review-block">
+        <div class="review-label">What happens next</div>
+        <div class="review-value">Your responses are scored against the Phronimos AI Maturity Model. A custom 6 to 8 page PDF and matching slide deck land in your inbox within two business days. No call required to receive the report.</div>
+      </div>
+    </section>`;
+}
+
+function esc(s) { return String(s || "").replace(/[<>&"']/g, c => ({"<":"&lt;",">":"&gt;","&":"&amp;","\"":"&quot;","'":"&#39;"}[c])); }
+
+// ===== INPUT BINDING =====
+function bindInputs() {
+  document.querySelectorAll('#step-container input, #step-container textarea').forEach(el => {
+    el.addEventListener("change", onInputChange);
+    el.addEventListener("input", onInputChange);
+  });
+}
+
+function onInputChange(e) {
+  const el = e.target;
+  if (el.type === "checkbox") {
+    const name = el.name;
+    state[name] = state[name] || [];
+    if (el.checked) {
+      if (!state[name].includes(el.value)) state[name].push(el.value);
+    } else {
+      state[name] = state[name].filter(v => v !== el.value);
+    }
+  } else {
+    state[el.name || el.id] = el.value;
+  }
+  const card = el.closest(".q-card");
+  if (card) {
+    const name = card.getAttribute("data-q");
+    const hasValue = state[name] && (Array.isArray(state[name]) ? state[name].length > 0 : true);
+    card.classList.toggle("answered", !!hasValue);
+  }
+  updateButtons();
+}
+
+// ===== SCORING =====
+function scoreMulti(arr, kind) {
+  if (!arr || arr.length === 0) return 1;
+  const isNone = arr.includes("None");
+  if (isNone) return 1;
+  if (kind === "tools") {
+    const c = arr.length;
+    return c >= 4 ? 5 : c === 3 ? 4 : c === 2 ? 3 : c === 1 ? 2 : 1;
+  }
+  const onlyNative = arr.length === 1 && arr[0].startsWith("Native");
+  if (onlyNative) return 2;
+  const hasCustom = arr.some(v => v.startsWith("A custom"));
+  const effective = arr.filter(v => !v.startsWith("Native")).length;
+  if (hasCustom || effective >= 3) return 5;
+  if (effective === 2) return 4;
+  if (effective === 1) return 3;
+  return 1;
+}
+
+function computeScores() {
+  const dim = {
+    strategy: avg([state.q1, state.q2, state.q3, state.q4, state.q5]),
+    data:     avg([state.q6, state.q7, state.q8, state.q9, state.q10]),
+    process:  avg([state.q11, state.q12, state.q13, state.q14, state.q15]),
+    tools:    avg([state.q16, state.q17, state.q18,
+                   scoreMulti(state.q19_tools, "tools"),
+                   scoreMulti(state.q20_platforms, "platforms")]),
+    people:   avg([state.q21, state.q22, state.q23, state.q24, state.q25]),
+    governance: avg([state.q26, state.q27, state.q28, state.q29, state.q30])
+  };
+  Object.keys(dim).forEach(k => dim[k] = round1(dim[k]));
+  const overall = round2(Object.values(dim).reduce((a,b)=>a+b,0) / 6);
+  const level = Math.max(1, Math.min(5, Math.round(overall)));
+  const strongest = Object.entries(dim).sort((a,b) => b[1]-a[1] || a[0].localeCompare(b[0]))[0][0];
+  const weakest = Object.entries(dim).sort((a,b) => a[1]-b[1] || a[0].localeCompare(b[0]))[0][0];
+  return {
+    dim_scores: dim,
+    overall_score: overall,
+    overall_level: level,
+    overall_label: LEVEL_LABELS[level - 1],
+    strongest, weakest
+  };
+}
+
+function avg(arr) {
+  const nums = arr.map(Number).filter(n => !isNaN(n) && n > 0);
+  if (nums.length === 0) return 0;
+  return nums.reduce((a,b)=>a+b, 0) / nums.length;
+}
+function round1(n) { return Math.round(n * 10) / 10; }
+function round2(n) { return Math.round(n * 100) / 100; }
+
+// ===== NAVIGATION =====
+function startAssessment() {
+  document.getElementById("hero").hidden = true;
+  document.getElementById("form-stage").hidden = false;
+  currentStep = 0;
+  renderStep(0);
+  updateStepper();
+  updateButtons();
+  focusFirstInput();
+}
+
+function nextStep() {
+  if (!isStepValid(currentStep)) return;
+  if (currentStep < TOTAL_STEPS - 1) {
+    currentStep++;
+    renderStep(currentStep);
+    updateStepper();
+    updateButtons();
+    focusFirstInput();
+  }
+}
+
+function prevStep() {
+  if (currentStep > 0) {
+    currentStep--;
+    renderStep(currentStep);
+    updateStepper();
+    updateButtons();
+    focusFirstInput();
+  } else {
+    document.getElementById("form-stage").hidden = true;
+    document.getElementById("hero").hidden = false;
+  }
+}
+
+function focusFirstInput() {
+  const container = document.getElementById("step-container");
+  if (!container) return;
+  let target =
+    container.querySelector('input[type="text"], input[type="email"], input[type="number"], textarea') ||
+    container.querySelector('input[type="radio"]') ||
+    container.querySelector('input, select, button, textarea');
+  if (!target) {
+    target = container.querySelector("h2");
+    if (target) target.setAttribute("tabindex", "-1");
+  }
+  if (!target) return;
+  target.scrollIntoView({ behavior: "smooth", block: "start" });
+  requestAnimationFrame(() => {
+    try { target.focus({ preventScroll: true }); } catch (_) { target.focus(); }
+  });
+}
+
+function updateStepper() {
+  document.getElementById("cur-step").textContent = currentStep + 1;
+  document.getElementById("tot-step").textContent = TOTAL_STEPS;
+  document.getElementById("step-label").textContent = SECTIONS[currentStep].label;
+  document.getElementById("progress-fill").style.width = (((currentStep + 1) / TOTAL_STEPS) * 100) + "%";
+  document.querySelector(".progress-track").setAttribute("aria-valuenow", currentStep + 1);
+  document.getElementById("progress-text").textContent = `Step ${currentStep + 1} of ${TOTAL_STEPS}`;
+}
+
+function updateButtons() {
+  const back = document.getElementById("back-btn");
+  const next = document.getElementById("next-btn");
+  const submit = document.getElementById("submit-btn");
+  back.innerHTML = currentStep === 0 ? "&larr; Back to start" : "&larr; Back";
+  const valid = isStepValid(currentStep);
+  if (currentStep === TOTAL_STEPS - 1) {
+    next.hidden = true;
+    submit.hidden = false;
+    submit.disabled = !valid;
+  } else {
+    next.hidden = false;
+    submit.hidden = true;
+    next.disabled = !valid;
+  }
+}
+
+function isStepValid(idx) {
+  const s = SECTIONS[idx];
+  if (s.kind === "contact") {
+    return ["full_name","email","company","role","industry","team_size"].every(k => state[k] && String(state[k]).trim());
+  }
+  if (s.kind === "open") {
+    return state.blocker && state.blocker.trim().length >= 5 &&
+           state.hope && state.hope.trim().length >= 5;
+  }
+  if (s.kind === "review") return true;
+  for (const [qid] of (s.qs || [])) {
+    if (!state[qid]) return false;
+  }
+  for (const m of (s.multi || [])) {
+    if (!state[m.id] || state[m.id].length === 0) return false;
+  }
+  return true;
+}
+
+// ===== SUBMISSION =====
+document.getElementById("assessment-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById("submit-btn");
+  const statusEl = document.getElementById("submit-status");
+  if (!WEB3FORMS_KEY || WEB3FORMS_KEY === "WEB3FORMS_ACCESS_KEY_HERE") {
+    statusEl.hidden = false;
+    statusEl.textContent = "The form is not connected yet. Please email " + CONTACT_EMAIL + " and we will run the assessment with you directly.";
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = "Sending";
+  statusEl.hidden = true;
+  const payload = buildPayload();
+  try {
+    const res = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: {"Content-Type": "application/json", "Accept": "application/json"},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.success) {
+      showThanks();
+    } else {
+      throw new Error(data.message || "Submission failed");
+    }
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = "Email my report request";
+    statusEl.hidden = false;
+    statusEl.textContent = "Something went wrong. Please try again, or email " + CONTACT_EMAIL + " directly.";
+  }
+});
+
+function buildPayload() {
+  const scores = computeScores();
+  const now = new Date();
+  const isoDate = now.toISOString().split("T")[0];
+  const displayDate = now.toLocaleDateString("en-US", {year:"numeric",month:"long",day:"numeric"});
+
+  const structured = {
+    client_name: state.company,
+    client_industry: state.industry,
+    team_size: parseInt(state.team_size, 10) || null,
+    respondent_name: state.full_name,
+    respondent_email: state.email,
+    respondent_role: state.role,
+    assessment_date_iso: isoDate,
+    assessment_date_display: displayDate,
+    responses: collectResponses(),
+    dim_scores: scores.dim_scores,
+    overall_score: scores.overall_score,
+    overall_level: scores.overall_level,
+    overall_label: scores.overall_label,
+    blocker_quote: state.blocker,
+    hope_quote: state.hope
+  };
+
+  const summary = buildHumanSummary(structured, scores);
+  const message = summary + "\n\n" +
+    "---------------------------------------------\n" +
+    "Structured payload for the rendering pipeline.\n" +
+    "Parse the JSON block between the markers below.\n" +
+    "---------------------------------------------\n\n" +
+    "<<<DATA>>>\n" + JSON.stringify(structured, null, 2) + "\n<<<END_DATA>>>";
+
+  return {
+    access_key: WEB3FORMS_KEY,
+    subject: "[Phronimos] AI Maturity Assessment from " + state.company,
+    from_name: "Phronimos Assessment",
+    replyto: state.email,
+    botcheck: "",
+    message: message
+  };
+}
+
+function collectResponses() {
+  const r = {};
+  for (let i = 1; i <= 30; i++) {
+    if (i === 19) {
+      r.q19_tools_selected = state.q19_tools || [];
+      r.q19_score = scoreMulti(state.q19_tools, "tools");
+    } else if (i === 20) {
+      r.q20_platforms_selected = state.q20_platforms || [];
+      r.q20_score = scoreMulti(state.q20_platforms, "platforms");
+    } else {
+      r["q" + i] = parseInt(state["q" + i], 10) || null;
+    }
+  }
+  return r;
+}
+
+function buildHumanSummary(payload, scores) {
+  const lines = [];
+  lines.push("AI MATURITY ASSESSMENT - NEW SUBMISSION");
+  lines.push("=".repeat(48));
+  lines.push("");
+  lines.push("From:        " + payload.respondent_name + " (" + payload.respondent_role + ")");
+  lines.push("Company:     " + payload.client_name);
+  lines.push("Industry:    " + payload.client_industry + " / Team of " + payload.team_size);
+  lines.push("Email:       " + payload.respondent_email);
+  lines.push("Submitted:   " + payload.assessment_date_display);
+  lines.push("");
+  lines.push("PROJECTED LEVEL");
+  lines.push("  Overall:   " + scores.overall_score.toFixed(2) + "  ->  Level " + scores.overall_level + " (" + scores.overall_label + ")");
+  lines.push("");
+  lines.push("DIMENSION SCORES");
+  DIM_KEYS.forEach(k => {
+    const sc = scores.dim_scores[k];
+    const bar = "#".repeat(Math.round(sc * 2)) + ".".repeat(10 - Math.round(sc * 2));
+    lines.push("  " + DIM_NAMES[k].padEnd(24) + " " + sc.toFixed(1) + "  " + bar);
+  });
+  lines.push("");
+  lines.push("STRONGEST: " + DIM_NAMES[scores.strongest] + " (" + scores.dim_scores[scores.strongest].toFixed(1) + ")");
+  lines.push("WEAKEST:   " + DIM_NAMES[scores.weakest] + " (" + scores.dim_scores[scores.weakest].toFixed(1) + ")");
+  lines.push("");
+  lines.push("BIGGEST BLOCKER (Q-OT1)");
+  lines.push("  " + (payload.blocker_quote || "").replace(/\n/g, "\n  "));
+  lines.push("");
+  lines.push("90-DAY HOPE (Q-OT2)");
+  lines.push("  " + (payload.hope_quote || "").replace(/\n/g, "\n  "));
+  return lines.join("\n");
+}
+
+function showThanks() {
+  document.getElementById("form-stage").hidden = true;
+  document.getElementById("thanks").classList.add("active");
+  window.scrollTo({top: 0, behavior: "smooth"});
+}
+
+// define:vars wraps this script in an IIFE, so expose the handlers the
+// onclick attributes need (plus test hooks) on window.
+window.startAssessment = startAssessment;
+window.nextStep = nextStep;
+window.prevStep = prevStep;
+window.__assess = { state, computeScores, renderStep, isStepValid };
+</script>
+
+<style>
+  .assess-hero h1 {
+    margin-top: var(--space-6);
+    max-width: 20ch;
+  }
+
+  .assess-hero .lede {
+    margin-top: var(--space-4);
+    max-width: 40ch;
+  }
+
+  .assess-points {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-6) 0;
+    max-width: 44ch;
+  }
+
+  .assess-points li {
+    padding: var(--space-3) 0 var(--space-3) 26px;
+    position: relative;
+    border-bottom: 1px solid var(--line);
+    font-size: 15.5px;
+  }
+
+  .assess-points li:last-child {
+    border-bottom: none;
+  }
+
+  .assess-points li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 22px;
+    width: 12px;
+    height: 3px;
+    background: var(--accent-solid);
+  }
+
+  .assess-wrap {
+    max-width: 880px;
+  }
+
+  /* Stepper */
+  .stepper {
+    padding: var(--space-4) 0 var(--space-5);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: var(--space-7);
+  }
+
+  .stepper-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: var(--space-3);
+    font-size: 12px;
+  }
+
+  .stepper-top .step-num {
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.04em;
+  }
+
+  .stepper-top .step-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 10px;
+  }
+
+  .progress-track {
+    height: 3px;
+    background: var(--line);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent-solid);
+    width: 0%;
+    transition: width var(--dur-transition) var(--ease-precise);
+    border-radius: 2px;
+  }
+
+  /* Steps (rendered by JS: global selectors required) */
+  :global(.step) {
+    animation: fade 200ms ease;
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  :global(.step-eyebrow) {
+    display: block;
+    margin-bottom: var(--space-2);
+  }
+
+  :global(#step-container h2) {
+    margin-bottom: var(--space-3);
+  }
+
+  :global(.step-intro) {
+    color: var(--text-secondary);
+    max-width: 56ch;
+    margin-bottom: var(--space-6);
+  }
+
+  :global(.field-row) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+
+  :global(#step-container .field) {
+    margin-bottom: var(--space-5);
+  }
+
+  :global(.q-hint) {
+    font-size: 14.5px;
+    margin-bottom: var(--space-2);
+  }
+
+  /* Question card */
+  :global(.q-card) {
+    background: var(--surface-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: var(--space-5) var(--space-5);
+    margin-bottom: var(--space-4);
+    box-shadow: var(--shadow-card);
+    transition: border-color var(--dur-transition) var(--ease-precise);
+  }
+
+  :global(.q-card.answered) {
+    border-color: #f0c4b3;
+  }
+
+  :global(.q-card .q-num) {
+    font-family: var(--font-tight);
+    font-weight: 600;
+    font-size: 11px;
+    color: var(--accent-strong);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  :global(.q-card .q-text) {
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 17px;
+    line-height: 1.45;
+    letter-spacing: -0.01em;
+    margin: 8px 0 16px;
+  }
+
+  /* Likert */
+  :global(.likert) {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+
+  :global(.likert label) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 6px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface-canvas);
+    cursor: pointer;
+    transition: border-color var(--dur-instant) var(--ease-precise), background-color var(--dur-instant) var(--ease-precise);
+    text-align: center;
+    position: relative;
+  }
+
+  :global(.likert label input) {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  :global(.likert .dot) {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid #b9c1c7;
+    border-radius: 50%;
+    background: var(--surface-raised);
+    transition: all var(--dur-instant) var(--ease-precise);
+    flex-shrink: 0;
+  }
+
+  :global(.likert .scale-num) {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+  }
+
+  :global(.likert .scale-label) {
+    font-size: 10px;
+    color: var(--text-secondary);
+    line-height: 1.2;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+  }
+
+  :global(.likert label:hover) {
+    border-color: var(--text-secondary);
+    background: var(--surface-raised);
+  }
+
+  :global(.likert label:has(input:checked)) {
+    border-color: var(--accent-strong);
+    background: var(--surface-raised);
+    box-shadow: 0 0 0 2px rgba(231, 111, 81, 0.18);
+  }
+
+  :global(.likert label:has(input:checked) .dot) {
+    background: var(--accent-solid);
+    border-color: var(--accent-strong);
+    box-shadow: inset 0 0 0 2px var(--surface-raised);
+  }
+
+  :global(.likert label:has(input:checked) .scale-num) {
+    color: var(--accent-strong);
+  }
+
+  :global(.likert label:has(input:checked) .scale-label) {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* Multi-select */
+  :global(.multi) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  :global(.multi label) {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface-canvas);
+    cursor: pointer;
+    transition: border-color var(--dur-instant) var(--ease-precise);
+    font-size: 14px;
+    position: relative;
+  }
+
+  :global(.multi label input) {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  :global(.multi .check) {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid #b9c1c7;
+    border-radius: 4px;
+    background: var(--surface-raised);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  :global(.multi .check::after) {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--accent-solid);
+    border-radius: 1px;
+    transform: scale(0);
+    transition: transform var(--dur-instant) var(--ease-precise);
+  }
+
+  :global(.multi label:hover) {
+    border-color: var(--text-secondary);
+  }
+
+  :global(.multi label:has(input:checked)) {
+    border-color: var(--accent-strong);
+    background: var(--surface-raised);
+  }
+
+  :global(.multi label:has(input:checked) .check) {
+    border-color: var(--accent-strong);
+  }
+
+  :global(.multi label:has(input:checked) .check::after) {
+    transform: scale(1);
+  }
+
+  /* Step nav */
+  .step-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-7);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--line);
+  }
+
+  .step-nav-right {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+  }
+
+  .progress-text {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+  }
+
+  .btn-plain {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 15px;
+    padding: 12px 14px;
+    cursor: pointer;
+    border-radius: var(--radius-pill);
+    transition: color var(--dur-transition) var(--ease-precise);
+  }
+
+  .btn-plain:hover {
+    color: var(--text-primary);
+  }
+
+  :global(#next-btn:disabled),
+  :global(#submit-btn:disabled) {
+    background: #aab3ba;
+    color: #f5f7f8;
+    cursor: not-allowed;
+  }
+
+  .form-status {
+    margin-top: var(--space-4);
+    font-size: 15px;
+    color: var(--accent-strong);
+  }
+
+  /* Review step */
+  :global(.review-grid) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+    margin: var(--space-5) 0 var(--space-4);
+  }
+
+  :global(.review-stat) {
+    background: var(--surface-raised);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--accent-solid);
+    border-radius: 0 12px 12px 0;
+    padding: var(--space-4);
+  }
+
+  :global(.review-stat .label) {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+  }
+
+  :global(.review-stat .value) {
+    font-family: var(--font-tight);
+    font-weight: 600;
+    font-size: 28px;
+    color: var(--text-primary);
+    line-height: 1.05;
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  :global(.review-stat .value-small) {
+    font-size: 18px;
+    line-height: 1.15;
+  }
+
+  :global(.review-stat .sub) {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  :global(.review-block) {
+    background: var(--accent-subtle);
+    border-left: 4px solid var(--accent-solid);
+    border-radius: 0 12px 12px 0;
+    padding: var(--space-5);
+    margin-bottom: var(--space-4);
+  }
+
+  :global(.review-block .review-label) {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    color: var(--accent-strong);
+    text-transform: uppercase;
+    margin-bottom: var(--space-2);
+  }
+
+  :global(.review-block .review-value) {
+    font-size: 15px;
+  }
+
+  :global(.review-meta) {
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  /* Thanks */
+  .thanks {
+    display: none;
+  }
+
+  .thanks:global(.active) {
+    display: block;
+  }
+
+  .thanks .eyebrow {
+    margin-top: var(--space-6);
+  }
+
+  .thanks h1 {
+    margin-top: var(--space-3);
+    max-width: 20ch;
+  }
+
+  .thanks .lede {
+    margin-top: var(--space-4);
+    max-width: 48ch;
+  }
+
+  .signoff {
+    font-size: 14px;
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--line);
+    max-width: 44ch;
+  }
+
+  @media (max-width: 600px) {
+    :global(.field-row),
+    :global(.multi),
+    :global(.review-grid) {
+      grid-template-columns: 1fr;
+    }
+
+    :global(.likert) {
+      gap: 4px;
+    }
+
+    :global(.likert label) {
+      padding: 8px 2px;
+    }
+
+    :global(.likert .scale-label) {
+      font-size: 9px;
+      min-height: 28px;
+    }
+
+    .step-nav {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-3);
+    }
+
+    .step-nav-right {
+      justify-content: space-between;
+    }
+  }
+</style>

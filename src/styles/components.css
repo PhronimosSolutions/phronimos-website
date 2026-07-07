@@ -1,0 +1,264 @@
+/* Shared component styles. Buttons, cards, rows, accordions, callouts. */
+
+/* Buttons: primary = charcoal pill, secondary = persimmon-tinted pill.
+   In the dark scope, primary inverts to off-white on charcoal surfaces. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  font-family: var(--font-tight);
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    transform var(--dur-instant) var(--ease-precise),
+    background-color var(--dur-transition) var(--ease-precise),
+    color var(--dur-transition) var(--ease-precise),
+    box-shadow var(--dur-transition) var(--ease-precise);
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.btn-primary {
+  background: #232b32;
+  color: #f5f7f8;
+}
+
+.btn-primary:hover {
+  background: #10151a;
+}
+
+.theme-dark .btn-primary {
+  background: #f5f7f8;
+  color: #232b32;
+}
+
+.theme-dark .btn-primary:hover {
+  background: #ffffff;
+}
+
+.btn-secondary {
+  background: var(--accent-subtle);
+  color: var(--accent-strong);
+}
+
+.btn-secondary:hover {
+  background: #f7d8cd;
+}
+
+.theme-dark .btn-secondary:hover {
+  background: #3a2620;
+}
+
+/* Eyebrow: rationed. Maximum one per three sections. */
+.eyebrow {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+}
+
+/* Card */
+.card {
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+/* Callout: the brand's specified insight surface.
+   Persimmon tint with a 4px solid persimmon left rule. */
+.callout {
+  background: var(--accent-subtle);
+  border-left: 4px solid var(--accent-solid);
+  border-radius: 0 var(--radius-card) var(--radius-card) 0;
+  padding: var(--space-5) var(--space-6);
+}
+
+/* Hairline rule under section headings: persimmon, used sparingly */
+.rule {
+  width: 56px;
+  height: 3px;
+  border: 0;
+  background: var(--accent-solid);
+  margin: 0;
+}
+
+/* Offer row: price column + body, divided rows */
+.offer-row {
+  display: grid;
+  grid-template-columns: 150px 1fr auto;
+  gap: var(--space-6);
+  align-items: baseline;
+  padding-block: var(--space-6);
+  border-top: 1px solid var(--line);
+}
+
+.offer-row:last-of-type {
+  border-bottom: 1px solid var(--line);
+}
+
+.offer-price {
+  font-family: var(--font-tight);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  color: var(--accent-strong);
+  text-transform: uppercase;
+}
+
+@media (max-width: 767px) {
+  .offer-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+}
+
+/* FAQ accordion: native details/summary, zero JS */
+.faq-item {
+  border-top: 1px solid var(--line);
+}
+
+.faq-item:last-of-type {
+  border-bottom: 1px solid var(--line);
+}
+
+.faq-item summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-5);
+  padding-block: var(--space-5);
+  font-family: var(--font-tight);
+  font-weight: 500;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: '+';
+  flex-shrink: 0;
+  font-weight: 400;
+  font-size: 22px;
+  color: var(--accent-strong);
+  transition: transform var(--dur-transition) var(--ease-precise);
+}
+
+.faq-item[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.faq-item .faq-body {
+  padding-bottom: var(--space-5);
+  color: var(--text-secondary);
+  max-width: 62ch;
+}
+
+/* Prose: long-form pages and notes */
+.prose {
+  max-width: 70ch;
+}
+
+.prose > * + * {
+  margin-top: var(--space-5);
+}
+
+.prose h2 {
+  margin-top: var(--space-8);
+}
+
+.prose h3 {
+  margin-top: var(--space-7);
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.2em;
+}
+
+.prose li + li {
+  margin-top: var(--space-2);
+}
+
+.prose blockquote {
+  background: var(--accent-subtle);
+  border-left: 4px solid var(--accent-solid);
+  border-radius: 0 12px 12px 0;
+  padding: var(--space-4) var(--space-5);
+  color: var(--accent-strong);
+  font-family: var(--font-tight);
+  font-size: 19px;
+}
+
+.prose code {
+  font-size: 0.92em;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+
+/* Forms */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field label {
+  font-family: var(--font-tight);
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1px solid #c9d0d5;
+  border-radius: 12px;
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  transition: border-color var(--dur-transition) var(--ease-precise);
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: #77828b;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--accent-strong);
+  outline: none;
+}
+
+.field .hint {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.field .error {
+  font-size: 14px;
+  color: var(--accent-strong);
+}

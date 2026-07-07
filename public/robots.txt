@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://phronimos.io/sitemap-index.xml

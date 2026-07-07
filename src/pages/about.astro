@@ -1,0 +1,212 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PhiMark from '../components/PhiMark.astro';
+import { BOOKING_URL, CONTACT_EMAIL } from '../config';
+---
+
+<BaseLayout
+  title="About | Phronimos"
+  description="Phronimos comes from the Greek word for practical wisdom. We build managed AI workforces that help businesses operate more intelligently, founded by Matthew Kirby in San Diego."
+>
+  <section class="section-tight page-head">
+    <div class="container">
+      <hr class="rule" data-reveal />
+      <h1 data-reveal style="--reveal-i: 1">Practical wisdom, applied to operations.</h1>
+    </div>
+  </section>
+
+  <section class="section name-story">
+    <div class="container name-grid">
+      <div class="mark-block" data-reveal>
+        <PhiMark size={120} />
+      </div>
+      <div class="name-copy" data-reveal style="--reveal-i: 1">
+        <h2>The name</h2>
+        <p>
+          Phronimos comes from the Ancient Greek <em>φρόνιμος</em>: prudent, practically wise,
+          exercising sound judgment. It is the adjectival form of <em>phronesis</em>, Aristotle's
+          word for practical wisdom. Knowing not just what is true, but what to do.
+        </p>
+        <p>
+          The letter that opens the name, phi, is also the symbol of the golden ratio: the
+          classical proportion associated with balance and sound structure. That is the brand's
+          argument in a single glyph. Intelligence in the right proportion, applied with judgment.
+        </p>
+        <p class="muted pronounce">Pronounced FRAH-nih-mos.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section why">
+    <div class="container why-inner">
+      <h2 data-reveal>Why Phronimos exists</h2>
+      <div class="prose" data-reveal style="--reveal-i: 1">
+        <p>
+          Phronimos was founded on a simple conviction: most businesses are full of valuable people
+          spending their time on work that is repetitive, mechanical, or inefficient. The
+          opportunity is not to replace them with flashy AI. It is to design creative, scalable
+          solutions to real operational problems, so owners and their teams are freed to do more
+          interesting, creative, and valuable work.
+        </p>
+        <p>
+          That motivation sets the center of gravity. Phronimos is not fascinated by the technology
+          for its own sake. It is fascinated by the problem: the bottleneck, the inefficiency, the
+          thing that should not take a person eight hours. And by the elegance of a solution that
+          quietly makes it disappear.
+        </p>
+        <p>
+          This is why the work values judgment over novelty and reliability over hype. The measure
+          is whether the business runs better, not whether the demo impressed anyone.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section principles">
+    <div class="container">
+      <h2 data-reveal>Operating principles</h2>
+      <ul class="principles-grid">
+        <li data-reveal>
+          <h3>Practical wisdom first.</h3>
+          <p class="muted">
+            Every system is judged by the quality of its decisions. If a simpler approach produces
+            a sounder result, that is the more intelligent approach.
+          </p>
+        </li>
+        <li data-reveal style="--reveal-i: 1">
+          <h3>Reliability is the product.</h3>
+          <p class="muted">
+            A digital teammate that works most of the time is a liability. We optimize for
+            consistent, supervisable execution over peak-case brilliance.
+          </p>
+        </li>
+        <li data-reveal style="--reveal-i: 2">
+          <h3>Solve the business problem.</h3>
+          <p class="muted">
+            Start from the bottleneck and work backward. The technology is a means; the operational
+            outcome is the point.
+          </p>
+        </li>
+        <li data-reveal style="--reveal-i: 3">
+          <h3>Leverage, not replacement.</h3>
+          <p class="muted">
+            Success looks like a team doing more of what matters, not a smaller org chart.
+          </p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section founder">
+    <div class="container founder-inner">
+      <h2 data-reveal>The founder</h2>
+      <div class="prose" data-reveal style="--reveal-i: 1">
+        <p>
+          Phronimos is founded and led by <strong>Matthew Kirby</strong>, based in San Diego,
+          California. Matthew works hands-on with every client: running the audits, building the
+          operators, and managing the systems that stay live. The delivery infrastructure behind
+          Phronimos is the same discipline sold to clients, with monitoring, failure alerts, and
+          documented playbooks for everything that runs.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section final-cta">
+    <div class="container">
+      <h2 class="display" data-reveal>See it applied to your operations.</h2>
+      <div class="cta-actions" data-reveal style="--reveal-i: 1">
+        <a href={BOOKING_URL} class="btn btn-primary">Book the AI Workflow Audit</a>
+        <span class="muted">or write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head h1 {
+    margin-top: var(--space-6);
+    max-width: 24ch;
+  }
+
+  .name-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+    gap: clamp(32px, 5vw, 72px);
+    align-items: start;
+  }
+
+  .mark-block {
+    display: flex;
+    justify-content: center;
+    padding-top: var(--space-3);
+  }
+
+  .name-copy p {
+    margin-top: var(--space-4);
+    max-width: 62ch;
+  }
+
+  .pronounce {
+    font-size: 15px;
+  }
+
+  .why {
+    border-top: 1px solid var(--line);
+    background: var(--surface-raised);
+  }
+
+  .why-inner .prose {
+    margin-top: var(--space-5);
+  }
+
+  .principles-grid {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-7) 0 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-7) var(--space-8);
+  }
+
+  .principles-grid h3 {
+    font-size: 19px;
+  }
+
+  .principles-grid .muted {
+    margin-top: var(--space-2);
+    font-size: 15.5px;
+    max-width: 46ch;
+  }
+
+  .founder {
+    border-top: 1px solid var(--line);
+  }
+
+  .founder-inner .prose {
+    margin-top: var(--space-5);
+  }
+
+  .final-cta .display {
+    max-width: 18ch;
+  }
+
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5);
+    margin-top: var(--space-7);
+  }
+
+  @media (max-width: 860px) {
+    .name-grid,
+    .principles-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .mark-block {
+      justify-content: flex-start;
+    }
+  }
+</style>

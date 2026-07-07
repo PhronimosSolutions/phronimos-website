@@ -1,0 +1,235 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
+---
+
+<BaseLayout
+  title="Book the Audit | Phronimos"
+  description="Book the Phronimos AI Workflow Audit. Tell us what keeps piling up and we reply within one business day."
+>
+  <section class="section contact">
+    <div class="container contact-grid">
+      <div class="contact-lead">
+        <hr class="rule" data-reveal />
+        <h1 data-reveal style="--reveal-i: 1">Book the AI Workflow Audit.</h1>
+        <p class="lede" data-reveal style="--reveal-i: 2">
+          Tell us what keeps piling up. We reply within one business day.
+        </p>
+
+        <ol class="next-steps" data-reveal style="--reveal-i: 3">
+          <li>
+            <h3>We schedule the discovery call</h3>
+            <p class="muted">A 45-minute recorded conversation about how work actually moves through your business.</p>
+          </li>
+          <li>
+            <h3>We do the diagnosis</h3>
+            <p class="muted">Workflow review, tool-stack review, and bottleneck analysis against your real operations.</p>
+          </li>
+          <li>
+            <h3>You get the report</h3>
+            <p class="muted">Three to five concrete recommendations, an ROI baseline, and a recommended first sprint, walked through on a review call.</p>
+          </li>
+        </ol>
+
+        <p class="muted email-alt" data-reveal style="--reveal-i: 4">
+          Prefer email? Write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+        </p>
+      </div>
+
+      <form id="contact-form" class="card contact-form" data-reveal style="--reveal-i: 2" novalidate>
+        <input type="hidden" name="access_key" value={WEB3FORMS_KEY} />
+        <input type="hidden" name="subject" value="Audit inquiry via phronimos.io" />
+        <input type="hidden" name="from_name" value="Phronimos Website" />
+        <input type="checkbox" name="botcheck" class="hidden-field" tabindex="-1" autocomplete="off" />
+
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" autocomplete="name" required />
+          <p class="error" data-error-for="name" hidden>Please add your name.</p>
+        </div>
+
+        <div class="field">
+          <label for="email">Work email</label>
+          <input id="email" name="email" type="email" autocomplete="email" required />
+          <p class="error" data-error-for="email" hidden>Please add a valid email.</p>
+        </div>
+
+        <div class="field">
+          <label for="company">Company</label>
+          <input id="company" name="company" type="text" autocomplete="organization" />
+          <p class="hint">Optional</p>
+        </div>
+
+        <div class="field">
+          <label for="message">What keeps piling up?</label>
+          <textarea id="message" name="message" rows="5" required></textarea>
+          <p class="hint">A few sentences is plenty. Inboxes, follow-ups, intake, reporting, anything.</p>
+          <p class="error" data-error-for="message" hidden>Tell us a little about the work.</p>
+        </div>
+
+        <button type="submit" class="btn btn-primary form-submit">Send the inquiry</button>
+
+        <p class="form-status" data-status hidden></p>
+      </form>
+    </div>
+  </section>
+</BaseLayout>
+
+<script define:vars={{ CONTACT_EMAIL }}>
+  const form = document.getElementById('contact-form');
+  const statusEl = form.querySelector('[data-status]');
+  const submitBtn = form.querySelector('.form-submit');
+
+  const showError = (name, show) => {
+    const el = form.querySelector(`[data-error-for="${name}"]`);
+    if (el) el.hidden = !show;
+  };
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    let valid = true;
+    for (const name of ['name', 'email', 'message']) {
+      const field = form.elements[name];
+      const ok = name === 'email' ? field.checkValidity() : field.value.trim().length > 0;
+      showError(name, !ok);
+      if (!ok) valid = false;
+    }
+    if (!valid) return;
+
+    const key = form.elements['access_key'].value;
+    if (!key || key === 'WEB3FORMS_ACCESS_KEY_HERE') {
+      statusEl.hidden = false;
+      statusEl.textContent = `The form is not connected yet. Please email ${CONTACT_EMAIL} instead.`;
+      statusEl.dataset.state = 'error';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending';
+    statusEl.hidden = true;
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+      });
+      const result = await response.json();
+      statusEl.hidden = false;
+      if (result.success) {
+        statusEl.textContent = 'Received. We will reply within one business day.';
+        statusEl.dataset.state = 'success';
+        form.reset();
+      } else {
+        statusEl.textContent = `Something went wrong. Please email ${CONTACT_EMAIL} instead.`;
+        statusEl.dataset.state = 'error';
+      }
+    } catch {
+      statusEl.hidden = false;
+      statusEl.textContent = `Something went wrong. Please email ${CONTACT_EMAIL} instead.`;
+      statusEl.dataset.state = 'error';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send the inquiry';
+    }
+  });
+</script>
+
+<style>
+  .contact-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+    gap: clamp(40px, 6vw, 96px);
+    align-items: start;
+  }
+
+  .contact-lead h1 {
+    margin-top: var(--space-6);
+    max-width: 16ch;
+  }
+
+  .contact-lead .lede {
+    margin-top: var(--space-4);
+    max-width: 38ch;
+  }
+
+  .next-steps {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-7) 0 0;
+    counter-reset: step;
+  }
+
+  .next-steps li {
+    counter-increment: step;
+    position: relative;
+    padding: var(--space-5) 0 var(--space-5) 56px;
+    border-top: 1px solid var(--line);
+  }
+
+  .next-steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: var(--space-5);
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--accent-subtle);
+    color: var(--accent-strong);
+    font-family: var(--font-tight);
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .next-steps h3 {
+    font-size: 18px;
+  }
+
+  .next-steps .muted {
+    margin-top: var(--space-2);
+    font-size: 15px;
+    max-width: 44ch;
+  }
+
+  .email-alt {
+    margin-top: var(--space-5);
+    font-size: 15px;
+  }
+
+  .contact-form {
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .hidden-field {
+    display: none;
+  }
+
+  .form-submit {
+    align-self: flex-start;
+  }
+
+  .form-status {
+    font-size: 15px;
+  }
+
+  .form-status[data-state='success'] {
+    color: #1d6b46;
+  }
+
+  .form-status[data-state='error'] {
+    color: var(--accent-strong);
+  }
+
+  @media (max-width: 860px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,107 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BOOKING_URL, SITE_URL } from '../config';
+
+const faqs = [
+  {
+    q: 'Is this just an audit?',
+    a: 'No. The audit is the paid diagnosis. The engagement is audit, then sprint, then managed service. The audit exists so the first build is aimed at the right workflow instead of a guess.',
+  },
+  {
+    q: 'Is this AI consulting?',
+    a: 'Not in the usual sense. This is operational diagnosis plus managed implementation. You do not get a slide deck of ideas; you get a live operator and someone accountable for it working.',
+  },
+  {
+    q: 'Do I need to know anything about AI models or tooling?',
+    a: 'No. That is the point. You get outcomes and a visible queue. Models, tokens, infrastructure, and setup drama sit with us.',
+  },
+  {
+    q: 'What kinds of workflows work best first?',
+    a: 'Inbox triage, follow-ups, meeting outputs, lead intake and routing, document chase-ups, and repeated internal questions. Universal executive pain first, vertical-specific workflows once the fit is obvious.',
+  },
+  {
+    q: 'Why start with a paid audit instead of a free call?',
+    a: 'Because most businesses do not need ten ideas. They need the right first move, backed by a real review of how work moves through the company. A paid diagnosis keeps that work serious and bounded.',
+  },
+  {
+    q: 'Do you build giant custom systems?',
+    a: 'Only when the business case is real. The default bias is tight scope, fast deployment, and proven tools.',
+  },
+  {
+    q: 'Do you specialize by industry?',
+    a: 'Eventually, yes. Early on the smarter move is working across a few operator-heavy markets, like agencies, law firms, insurance, real estate, and recruiting, then narrowing where the pull is strongest.',
+  },
+  {
+    q: 'What happens when an operator breaks?',
+    a: 'Monitoring and failure alerts reach us first, recovery paths run where possible, and there is a clear escalation route. Your team should never be the one discovering a failure.',
+  },
+  {
+    q: 'Who owns what gets built?',
+    a: 'The workflows, SOPs, and configurations built for your business are documented and handed off so you are never locked in. Ownership terms are set out plainly in each statement of work.',
+  },
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(({ q, a }) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+  url: `${SITE_URL}/faq/`,
+};
+---
+
+<BaseLayout
+  title="FAQ | Phronimos"
+  description="Answers to the questions owners ask about the Phronimos AI Workflow Audit, implementation sprints, and the managed AI operator retainer."
+  jsonLd={jsonLd}
+>
+  <section class="section faq-page">
+    <div class="container faq-layout">
+      <div class="faq-head">
+        <hr class="rule" data-reveal />
+        <h1 data-reveal style="--reveal-i: 1">Questions owners ask.</h1>
+        <p class="lede" data-reveal style="--reveal-i: 2">
+          Straight answers, no theater. Anything missing, <a href={BOOKING_URL}>ask us directly</a>.
+        </p>
+      </div>
+      <div class="faq-list">
+        {
+          faqs.map(({ q, a }, i) => (
+            <details class="faq-item" data-reveal style={`--reveal-i: ${Math.min(i, 4)}`}>
+              <summary>{q}</summary>
+              <p class="faq-body">{a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .faq-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: clamp(40px, 6vw, 96px);
+    align-items: start;
+  }
+
+  .faq-head h1 {
+    margin-top: var(--space-6);
+    max-width: 12ch;
+  }
+
+  .faq-head .lede {
+    margin-top: var(--space-4);
+    max-width: 30ch;
+  }
+
+  @media (max-width: 860px) {
+    .faq-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

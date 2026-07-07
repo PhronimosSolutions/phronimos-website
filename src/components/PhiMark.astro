@@ -1,0 +1,27 @@
+---
+// The phi mark, inline for crisp rendering and CSS-drivable color.
+// variant "light" = for light surfaces (persimmon-deep ring, charcoal stroke)
+// variant "dark"  = for dark surfaces (persimmon ring, off-white stroke)
+interface Props {
+  variant?: 'light' | 'dark';
+  size?: number;
+  class?: string;
+}
+const { variant = 'light', size = 34, class: className } = Astro.props;
+const ring = variant === 'dark' ? '#E76F51' : '#8A3A22';
+const stroke = variant === 'dark' ? '#F5F7F8' : '#232B32';
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 100 120"
+  width={size}
+  height={size * 1.2}
+  role="img"
+  aria-label="Phronimos"
+  class={className}
+>
+  <ellipse cx="50" cy="60" rx="28" ry="24" fill="none" stroke={ring} stroke-width="6"></ellipse>
+  <line x1="50" y1="18" x2="50" y2="102" stroke={stroke} stroke-width="6" stroke-linecap="round"
+  ></line>
+</svg>

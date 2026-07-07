@@ -1,0 +1,238 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BOOKING_URL, CONTACT_EMAIL } from '../config';
+
+const offers = [
+  {
+    price: '$1,500 to $2,000',
+    name: 'AI Workflow Audit',
+    bestFor:
+      'Business owners who know operations feel heavier than they should, but do not know what to automate first.',
+    includes: [
+      '45-minute recorded discovery call',
+      'Workflow and tool-stack review',
+      'Bottleneck analysis',
+      'Custom report with 3 to 5 recommendations',
+      'ROI baseline estimate',
+      '30-minute review call',
+      'First-sprint recommendation',
+    ],
+    outcome:
+      'Clear diagnosis of where time is leaking and which one or two workflows should move first.',
+  },
+  {
+    price: '$3,500 to $7,500',
+    name: 'Agent Implementation Sprint',
+    bestFor:
+      'Businesses that want one painful workflow fixed properly instead of collecting another PDF.',
+    includes: [
+      'First-operator design',
+      'Agent and runtime configuration',
+      'Auth and integration setup',
+      'Testing with live examples',
+      'Guardrails and escalation paths',
+      'SOP and handoff notes',
+      'Training session',
+    ],
+    outcome: 'One workflow becomes materially faster, cleaner, and less owner-dependent.',
+  },
+  {
+    price: 'From $5,000 / month',
+    name: 'Managed AI Operator Retainer',
+    bestFor: 'Teams that want an ongoing AI operator layer without hiring internal specialists.',
+    includes: [
+      'One to two active requests at a time',
+      'Under-48-hour turnaround target',
+      'Monitoring and failure alerts',
+      'Maintenance and tuning',
+      'New workflow rollout',
+      'Customer-facing request queue',
+      'Async video updates',
+      'Continuous optimization',
+    ],
+    outcome:
+      'AI adoption becomes a managed operating function instead of a random side project.',
+  },
+];
+---
+
+<BaseLayout
+  title="Services and Pricing | Phronimos"
+  description="Phronimos offers a clean progression: an AI Workflow Audit from $1,500, an Agent Implementation Sprint from $3,500, and a Managed AI Operator Retainer from $5,000 per month."
+>
+  <section class="section-tight page-head">
+    <div class="container">
+      <hr class="rule" data-reveal />
+      <h1 data-reveal style="--reveal-i: 1">Three engagements. One controlled path.</h1>
+      <p class="lede" data-reveal style="--reveal-i: 2">
+        The audit finds the bottleneck. The sprint builds the first operator. The retainer manages
+        and expands the operator layer. Clear pricing, tight scope, no surprises.
+      </p>
+    </div>
+  </section>
+
+  {
+    offers.map((offer, i) => (
+      <section class={`section offer-section ${i % 2 ? 'offer-alt' : ''}`}>
+        <div class="container offer-grid">
+          <div class="offer-lead" data-reveal>
+            <p class="offer-price-tag">{offer.price}</p>
+            <h2>{offer.name}</h2>
+            <p class="best-for muted">
+              <strong>Best for:</strong> {offer.bestFor}
+            </p>
+          </div>
+          <div class="offer-detail" data-reveal style="--reveal-i: 1">
+            <h3 class="list-head">Included</h3>
+            <ul class="include-list">
+              {offer.includes.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+            <div class="callout">
+              <p class="outcome-head">Outcome</p>
+              <p>{offer.outcome}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    ))
+  }
+
+  <section class="section-tight roi">
+    <div class="container">
+      <h2 data-reveal>Every engagement carries its own ROI case.</h2>
+      <p class="lede" data-reveal style="--reveal-i: 1">
+        The audit estimates hours lost per week and what they cost. Sprints and retainer work track
+        hours saved, turnaround improvement, and dropped-work reduction, so the value created is
+        measured, not asserted.
+      </p>
+    </div>
+  </section>
+
+  <section class="section final-cta">
+    <div class="container">
+      <h2 class="display" data-reveal>The audit is the front door.</h2>
+      <p class="lede" data-reveal style="--reveal-i: 1">
+        Serious enough to attract real operators, small enough to be a low-friction first step.
+      </p>
+      <div class="cta-actions" data-reveal style="--reveal-i: 2">
+        <a href={BOOKING_URL} class="btn btn-primary">Book the AI Workflow Audit</a>
+        <span class="muted">or write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head h1 {
+    margin-top: var(--space-6);
+    max-width: 22ch;
+  }
+
+  .page-head .lede {
+    margin-top: var(--space-5);
+    max-width: 56ch;
+  }
+
+  .offer-section {
+    border-top: 1px solid var(--line);
+  }
+
+  .offer-alt {
+    background: var(--surface-raised);
+  }
+
+  .offer-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(40px, 6vw, 96px);
+    align-items: start;
+  }
+
+  .offer-price-tag {
+    font-family: var(--font-tight);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-strong);
+  }
+
+  .offer-lead h2 {
+    margin-top: var(--space-3);
+  }
+
+  .best-for {
+    margin-top: var(--space-4);
+    font-size: 16px;
+  }
+
+  .list-head {
+    font-size: 16px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .include-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-4) 0 0;
+    columns: 2;
+    column-gap: var(--space-6);
+  }
+
+  .include-list li {
+    break-inside: avoid;
+    padding-block: var(--space-2);
+    font-size: 16px;
+  }
+
+  .offer-detail .callout {
+    margin-top: var(--space-6);
+  }
+
+  .outcome-head {
+    font-family: var(--font-tight);
+    font-weight: 500;
+    color: var(--accent-strong);
+    font-size: 15px;
+  }
+
+  .callout p + p {
+    margin-top: var(--space-2);
+    font-size: 15.5px;
+  }
+
+  .roi .lede {
+    margin-top: var(--space-4);
+    max-width: 62ch;
+  }
+
+  .final-cta .display {
+    max-width: 16ch;
+  }
+
+  .final-cta .lede {
+    margin-top: var(--space-5);
+    max-width: 52ch;
+  }
+
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5);
+    margin-top: var(--space-7);
+  }
+
+  @media (max-width: 860px) {
+    .offer-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .include-list {
+      columns: 1;
+    }
+  }
+</style>

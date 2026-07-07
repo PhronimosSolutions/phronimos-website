@@ -1,0 +1,238 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BOOKING_URL, CONTACT_EMAIL } from '../config';
+
+const steps = [
+  {
+    name: 'Audit',
+    head: 'Find the operational leak.',
+    intro:
+      'A focused, paid diagnosis of where work is leaking and which workflows should be handled first. Bounded, useful, and concrete.',
+    includes: [
+      '45-minute recorded discovery call',
+      'Workflow and tool-stack review',
+      'Bottleneck analysis',
+      'Custom findings report with 3 to 5 recommendations',
+      'ROI baseline estimate',
+      '30-minute review call',
+      'Recommended first-sprint scope',
+    ],
+    outcome:
+      'A clear diagnosis of where time is leaking and which one or two workflows should move first. You will know what should stay human, what should become a workflow, and what should become a managed AI operator.',
+  },
+  {
+    name: 'Sprint',
+    head: 'Build the first useful operator.',
+    intro:
+      'One painful workflow gets built, tested, and handed off properly, instead of another PDF of recommendations.',
+    includes: [
+      'First-operator design',
+      'Agent and runtime configuration',
+      'Authentication and integration setup',
+      'Testing with live examples',
+      'Guardrails and escalation paths',
+      'SOP and handoff notes',
+      'Team training session',
+    ],
+    outcome:
+      'One workflow becomes materially faster, cleaner, and less owner-dependent. Instead of "here is what to do," the result is: it is live, it works, and we know how it will be maintained.',
+  },
+  {
+    name: 'Manage',
+    head: 'Keep the system running.',
+    intro:
+      'The retainer turns AI adoption into a managed operating function instead of a side project. This is the ongoing partnership.',
+    includes: [
+      'One to two active requests at a time',
+      'Under-48-hour turnaround target',
+      'Monitoring and failure alerts',
+      'Maintenance and tuning',
+      'New workflow rollout',
+      'A customer-facing request queue',
+      'Async video updates on work delivered',
+      'Continuous optimization',
+    ],
+    outcome:
+      'An operator layer that keeps expanding without your attention, run by a partner who is accountable for it working.',
+  },
+];
+---
+
+<BaseLayout
+  title="Method | Phronimos"
+  description="How Phronimos works: a paid audit finds the operational leak, an implementation sprint builds the first AI operator, and a managed retainer keeps the system running."
+>
+  <section class="section-tight page-head">
+    <div class="container">
+      <hr class="rule" data-reveal />
+      <h1 data-reveal style="--reveal-i: 1">Audit first. Build second. Manage ongoing.</h1>
+      <p class="lede" data-reveal style="--reveal-i: 2">
+        Most AI consulting stops at advice. Phronimos sells a controlled path from diagnosis to
+        owned execution, so the work actually changes.
+      </p>
+    </div>
+  </section>
+
+  {
+    steps.map((step, i) => (
+      <section class={`section step-section ${i % 2 ? 'step-alt' : ''}`}>
+        <div class="container step-grid">
+          <div class="step-lead" data-reveal>
+            <p class="step-name">{step.name}</p>
+            <h2>{step.head}</h2>
+            <p class="lede">{step.intro}</p>
+          </div>
+          <div class="step-detail" data-reveal style="--reveal-i: 1">
+            <h3 class="list-head">What happens</h3>
+            <ul class="include-list">
+              {step.includes.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+            <div class="callout outcome">
+              <p class="outcome-head">The outcome</p>
+              <p>{step.outcome}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    ))
+  }
+
+  <section class="section-tight reliability">
+    <div class="container">
+      <h2 data-reveal>Reliability is the product.</h2>
+      <p class="lede" data-reveal style="--reveal-i: 1">
+        A digital teammate that works most of the time is not most of the way valuable. It is a
+        liability. So every operator ships with monitoring, failure alerts, recovery paths, and
+        clear escalation. Your team should never be the one discovering the system failed.
+      </p>
+    </div>
+  </section>
+
+  <section class="section final-cta">
+    <div class="container">
+      <h2 class="display" data-reveal>Start where the risk is lowest.</h2>
+      <p class="lede" data-reveal style="--reveal-i: 1">
+        The audit is a bounded first step with a concrete deliverable. If the findings are not
+        worth acting on, you keep the report and walk away smarter.
+      </p>
+      <div class="cta-actions" data-reveal style="--reveal-i: 2">
+        <a href={BOOKING_URL} class="btn btn-primary">Book the AI Workflow Audit</a>
+        <span class="muted">or write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head h1 {
+    margin-top: var(--space-6);
+    max-width: 22ch;
+  }
+
+  .page-head .lede {
+    margin-top: var(--space-5);
+    max-width: 52ch;
+  }
+
+  .step-section {
+    border-top: 1px solid var(--line);
+  }
+
+  .step-alt {
+    background: var(--surface-raised);
+  }
+
+  .step-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(40px, 6vw, 96px);
+    align-items: start;
+  }
+
+  .step-name {
+    font-family: var(--font-tight);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-strong);
+  }
+
+  .step-lead h2 {
+    margin-top: var(--space-3);
+  }
+
+  .step-lead .lede {
+    margin-top: var(--space-4);
+  }
+
+  .list-head {
+    font-size: 16px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .include-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-4) 0 0;
+    columns: 2;
+    column-gap: var(--space-6);
+  }
+
+  .include-list li {
+    break-inside: avoid;
+    padding-block: var(--space-2);
+    font-size: 16px;
+  }
+
+  .outcome {
+    margin-top: var(--space-6);
+  }
+
+  .outcome-head {
+    font-family: var(--font-tight);
+    font-weight: 500;
+    color: var(--accent-strong);
+    font-size: 15px;
+  }
+
+  .outcome p + p {
+    margin-top: var(--space-2);
+    font-size: 15.5px;
+  }
+
+  .reliability .lede {
+    margin-top: var(--space-4);
+    max-width: 62ch;
+  }
+
+  .final-cta .display {
+    max-width: 16ch;
+  }
+
+  .final-cta .lede {
+    margin-top: var(--space-5);
+    max-width: 52ch;
+  }
+
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5);
+    margin-top: var(--space-7);
+  }
+
+  @media (max-width: 860px) {
+    .step-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .include-list {
+      columns: 1;
+    }
+  }
+</style>

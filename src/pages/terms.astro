@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { CONTACT_EMAIL, LEGAL_NAME } from '../config';
+---
+
+<BaseLayout
+  title="Terms of Use | Phronimos"
+  description="Terms of use for the phronimos.io website."
+>
+  <section class="section">
+    <div class="container">
+      <div class="prose">
+        <h1>Terms of Use</h1>
+        <p class="muted">Effective July 7, 2026</p>
+
+        <p>
+          This website is operated by {LEGAL_NAME} ("Phronimos", "we"). By using phronimos.io you
+          accept these terms.
+        </p>
+
+        <h2>Informational content</h2>
+        <p>
+          Content on this site, including the AI maturity assessment and any notes or articles, is
+          provided for general information. It is not professional advice for your specific
+          situation, and outcomes described are not guarantees.
+        </p>
+
+        <h2>Engagements</h2>
+        <p>
+          Paid services are governed by a separate written agreement, including a master services
+          agreement and statements of work. If anything on this site conflicts with a signed
+          agreement, the signed agreement controls.
+        </p>
+
+        <h2>Intellectual property</h2>
+        <p>
+          The Phronimos name, phi mark, and site content belong to {LEGAL_NAME}. You may not reuse
+          them commercially without written permission.
+        </p>
+
+        <h2>Acceptable use</h2>
+        <p>
+          Do not misuse the site: no attempts to disrupt it, probe it for vulnerabilities without
+          authorization, or submit forms with false identity.
+        </p>
+
+        <h2>Liability</h2>
+        <p>
+          The site is provided as is. To the extent permitted by law, we are not liable for damages
+          arising from use of the site or reliance on its content.
+        </p>
+
+        <h2>Governing law</h2>
+        <p>These terms are governed by the laws of the State of California.</p>
+
+        <p>
+          Questions: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

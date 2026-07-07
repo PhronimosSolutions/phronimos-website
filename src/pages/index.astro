@@ -1,0 +1,797 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BOOKING_URL, CONTACT_EMAIL, LEGAL_NAME, SITE_URL } from '../config';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: 'Phronimos',
+  legalName: LEGAL_NAME,
+  url: SITE_URL,
+  email: CONTACT_EMAIL,
+  logo: `${SITE_URL}/apple-touch-icon.png`,
+  description:
+    'Phronimos designs, deploys, and manages AI operators that automate repetitive business workflows for owner-led companies.',
+  priceRange: '$1,500 - $5,000+/mo',
+  founder: { '@type': 'Person', name: 'Matthew Kirby' },
+  areaServed: 'United States',
+};
+
+const operators = [
+  ['Inbox triage', 'Priority surfaced, noise filed, drafts ready for review.'],
+  ['Meeting follow-up', 'Summaries, next steps, and owners captured every time.'],
+  ['Lead intake and routing', 'Every inquiry qualified and put in front of the right person.'],
+  ['Document chase-ups', 'The polite persistence nobody on your team has time for.'],
+  ['Repeated internal questions', 'Answers pulled from your own knowledge, on demand.'],
+  ['Open-loop tracking', 'Commitments tracked until they actually close.'],
+];
+
+const fits = [
+  'You lead a team of 5 to 50 and operations still route through you.',
+  'Repeated admin and follow-up work eats real hours every week.',
+  'The SaaS stack is full, yet the work is still manual.',
+  'You want execution and ownership, not another strategy deck.',
+];
+---
+
+<BaseLayout
+  title="Phronimos | Managed AI Operators for Owner-Led Businesses"
+  description="Phronimos builds and manages the AI operators that take repetitive work off your desk: inbox triage, follow-ups, intake, and more. Audit first, build second, manage ongoing."
+  jsonLd={jsonLd}
+>
+  <!-- 1. Hero: asymmetric split -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow" data-reveal>Managed AI Operators</p>
+        <h1 class="display" data-reveal style="--reveal-i: 1">
+          The inbox, the follow-ups,<br class="hero-br" /> the chasing. Handled.
+        </h1>
+        <p class="lede" data-reveal style="--reveal-i: 2">
+          We find the workflows piling up around you, then build and manage the AI operators that
+          take them over.
+        </p>
+        <div class="hero-ctas" data-reveal style="--reveal-i: 3">
+          <a href={BOOKING_URL} class="btn btn-primary">Book the AI Workflow Audit</a>
+          <a href="/method/" class="btn btn-secondary">See how it works</a>
+        </div>
+      </div>
+
+      <aside class="hero-panel card" data-reveal style="--reveal-i: 2" aria-label="What clients buy">
+        <p class="panel-label">What clients actually buy</p>
+        <p class="panel-statement">
+          Fewer dropped follow-ups. Cleaner handoffs. Faster execution without another hire.
+        </p>
+        <ul class="panel-list">
+          <li>
+            <span>Inbox triage</span>
+            <span class="muted">first operator for most teams</span>
+          </li>
+          <li>
+            <span>Meeting follow-up</span>
+            <span class="muted">summaries and next steps</span>
+          </li>
+          <li>
+            <span>Lead intake and routing</span>
+            <span class="muted">no inquiry left waiting</span>
+          </li>
+        </ul>
+      </aside>
+    </div>
+    <div class="hero-geometry" aria-hidden="true"></div>
+  </section>
+
+  <!-- 2. Problem: editorial manifesto band -->
+  <section class="section problem">
+    <div class="container problem-inner">
+      <hr class="rule" data-reveal />
+      <h2 class="h1" data-reveal style="--reveal-i: 1">
+        Most businesses do not need more AI tools.
+      </h2>
+      <p class="lede" data-reveal style="--reveal-i: 2">
+        They need relief. Fewer emails to hand-sort, fewer meetings that end in untracked
+        follow-ups, fewer open loops that only close when the owner pushes them.
+      </p>
+      <p class="muted trust-line" data-reveal style="--reveal-i: 3">
+        Phronimos is not AI hype and not a prompt pack. It is a practical
+        audit-to-implementation service for real business operations.
+      </p>
+    </div>
+  </section>
+
+  <!-- 3. Method: staggered progression -->
+  <section class="section method">
+    <div class="container">
+      <h2 data-reveal>Audit first. Build second. Manage ongoing.</h2>
+      <div class="method-steps">
+        <article class="card method-card" data-reveal>
+          <p class="step-name">Audit</p>
+          <h3>Find the operational leak.</h3>
+          <p class="muted">
+            A paid diagnosis. We review your workflows and tool stack, find where time leaks, and
+            report what should move first.
+          </p>
+        </article>
+        <article class="card method-card offset-1" data-reveal style="--reveal-i: 1">
+          <p class="step-name">Sprint</p>
+          <h3>Build the first operator.</h3>
+          <p class="muted">
+            One painful workflow built, tested with live examples, and handed off with guardrails
+            and a clear SOP.
+          </p>
+        </article>
+        <article class="card method-card offset-2" data-reveal style="--reveal-i: 2">
+          <p class="step-name">Manage</p>
+          <h3>Keep the system running.</h3>
+          <p class="muted">
+            Monitoring, maintenance, escalation, and new rollouts under one retainer. The layer
+            keeps earning its keep.
+          </p>
+        </article>
+      </div>
+      <p class="method-link" data-reveal><a href="/method/">Read the full method</a></p>
+    </div>
+  </section>
+
+  <!-- 4. Signal room: the one deliberate dark moment -->
+  <section class="section theme-dark signal-room">
+    <div class="container">
+      <p class="eyebrow" data-reveal>The managed layer</p>
+      <h2 data-reveal style="--reveal-i: 1">Run like a system, not a science project.</h2>
+      <div class="signal-grid">
+        <article class="signal-card signal-live" data-reveal>
+          <div class="phi-signal" aria-hidden="true">
+            <svg viewBox="0 0 100 120" width="72" height="86">
+              <ellipse
+                class="signal-ring"
+                cx="50"
+                cy="60"
+                rx="28"
+                ry="24"
+                fill="none"
+                stroke="#E76F51"
+                stroke-width="6"
+                stroke-linecap="round"></ellipse>
+              <line
+                x1="50"
+                y1="18"
+                x2="50"
+                y2="102"
+                stroke="#F5F7F8"
+                stroke-width="6"
+                stroke-linecap="round"></line>
+            </svg>
+          </div>
+          <h3>You are not the alarm system.</h3>
+          <p class="muted">
+            Every operator is monitored, with failure alerts that reach us first. Your team should
+            never be the one discovering something broke.
+          </p>
+        </article>
+
+        <article class="signal-card" data-reveal style="--reveal-i: 1">
+          <p class="metric">Under 48h</p>
+          <p class="muted">Turnaround target on active retainer requests.</p>
+        </article>
+
+        <article class="signal-card" data-reveal style="--reveal-i: 2">
+          <p class="metric">1 to 2</p>
+          <p class="muted">Active requests at a time. A tight queue with visible progress.</p>
+        </article>
+
+        <article class="signal-card signal-wide" data-reveal style="--reveal-i: 3">
+          <h3>One controlled path.</h3>
+          <p class="muted">
+            The audit finds the leak. The sprint proves the fix. The retainer keeps the operator
+            layer running, and growing, without your attention.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Operators: split list with aside -->
+  <section class="section operators">
+    <div class="container operators-grid">
+      <div class="operators-intro">
+        <h2 data-reveal>What gets turned into operators</h2>
+        <p class="lede" data-reveal style="--reveal-i: 1">
+          The first wins are the universal ones: the workflows every owner-led team drowns in.
+        </p>
+        <div class="callout" data-reveal style="--reveal-i: 2">
+          <p class="callout-head">Serious operators do not buy prompt packs.</p>
+          <p>
+            They buy a system that removes executive drag and protects throughput. You never think
+            about models, tokens, or setup drama. That part sits with us.
+          </p>
+        </div>
+      </div>
+      <ul class="operators-list">
+        {
+          operators.map(([name, desc], i) => (
+            <li data-reveal style={`--reveal-i: ${i % 2}`}>
+              <h3>{name}</h3>
+              <p class="muted">{desc}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- 6. Who it's for: typographic grid -->
+  <section class="section-tight who">
+    <div class="container">
+      <h2 data-reveal>Built for owner-led teams.</h2>
+      <ul class="who-grid">
+        {
+          fits.map((fit, i) => (
+            <li data-reveal style={`--reveal-i: ${i}`}>
+              <p>{fit}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="muted markets" data-reveal>
+        Common fits: agencies, law firms, insurance teams, real estate teams, recruiting firms, and
+        service businesses with real admin load.
+      </p>
+    </div>
+  </section>
+
+  <!-- 7. Engagement model: divided rows -->
+  <section class="section engagement">
+    <div class="container">
+      <h2 data-reveal>Three engagements. One controlled path.</h2>
+      <div class="offer-rows">
+        <a class="offer-row" href="/services/" data-reveal>
+          <span class="offer-price">$1,500 to $2,000</span>
+          <span>
+            <span class="offer-name">AI Workflow Audit</span>
+            <span class="muted offer-desc"
+              >Recorded discovery, workflow and tool-stack review, findings report, and a
+              recommended first sprint.</span
+            >
+          </span>
+          <span class="offer-arrow" aria-hidden="true">&rarr;</span>
+        </a>
+        <a class="offer-row" href="/services/" data-reveal style="--reveal-i: 1">
+          <span class="offer-price">$3,500 to $7,500</span>
+          <span>
+            <span class="offer-name">Implementation Sprint</span>
+            <span class="muted offer-desc"
+              >One painful workflow improved quickly, with testing, guardrails, and a proper
+              handoff.</span
+            >
+          </span>
+          <span class="offer-arrow" aria-hidden="true">&rarr;</span>
+        </a>
+        <a class="offer-row" href="/services/" data-reveal style="--reveal-i: 2">
+          <span class="offer-price">From $5,000 / mo</span>
+          <span>
+            <span class="offer-name">Managed Operator Retainer</span>
+            <span class="muted offer-desc"
+              >Maintenance, rollout, queue management, and reliability coverage.</span
+            >
+          </span>
+          <span class="offer-arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. FAQ teaser -->
+  <section class="section-tight faq-teaser">
+    <div class="container faq-grid">
+      <h2 data-reveal>Questions owners ask.</h2>
+      <div>
+        <details class="faq-item" data-reveal>
+          <summary>Is this just an audit?</summary>
+          <p class="faq-body">
+            No. The audit is the paid diagnosis. The engagement is audit, then sprint, then managed
+            service.
+          </p>
+        </details>
+        <details class="faq-item" data-reveal style="--reveal-i: 1">
+          <summary>Do I need to know anything about AI tooling?</summary>
+          <p class="faq-body">
+            No. That is the point. You get outcomes and a visible queue; the machinery sits with
+            us.
+          </p>
+        </details>
+        <details class="faq-item" data-reveal style="--reveal-i: 2">
+          <summary>What workflows move first?</summary>
+          <p class="faq-body">
+            Inboxes, follow-ups, meeting outputs, intake and routing, and repeated internal
+            questions. Universal pain first, vertical-specific work second.
+          </p>
+        </details>
+        <p class="faq-more" data-reveal><a href="/faq/">Read the full FAQ</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. Final CTA: editorial -->
+  <section class="section final-cta">
+    <div class="container">
+      <hr class="rule" data-reveal />
+      <h2 class="display" data-reveal style="--reveal-i: 1">Start with the audit.</h2>
+      <p class="lede" data-reveal style="--reveal-i: 2">
+        If work keeps piling up around you, the move is not another tool. It is finding what should
+        become a managed operator, and getting the first one live.
+      </p>
+      <div class="cta-actions" data-reveal style="--reveal-i: 3">
+        <a href={BOOKING_URL} class="btn btn-primary">Book the AI Workflow Audit</a>
+        <span class="muted">or write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Hero */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(64px, 9vw, 112px);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(32px, 5vw, 72px);
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-copy .display {
+    margin-top: var(--space-5);
+  }
+
+  @media (max-width: 860px) {
+    .hero-br {
+      display: none;
+    }
+  }
+
+  .hero-copy .lede {
+    margin-top: var(--space-5);
+    max-width: 46ch;
+  }
+
+  .hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-7);
+  }
+
+  .hero-geometry {
+    position: absolute;
+    right: -180px;
+    top: -140px;
+    width: 560px;
+    height: 480px;
+    border: 1.5px solid #e6ebee;
+    border-radius: 50%;
+    transform: rotate(-14deg);
+    pointer-events: none;
+  }
+
+  .hero-panel {
+    padding: var(--space-6);
+    border-left: 4px solid var(--accent-solid);
+    border-radius: 6px var(--radius-card) var(--radius-card) 6px;
+  }
+
+  .panel-label {
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .panel-statement {
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: clamp(20px, 1.9vw, 24px);
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+    margin-top: var(--space-3);
+  }
+
+  .panel-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-5) 0 0;
+  }
+
+  .panel-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-4);
+    padding-block: var(--space-3);
+    border-top: 1px solid var(--line);
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 16px;
+  }
+
+  .panel-list .muted {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 14px;
+    text-align: right;
+  }
+
+  /* Problem band: offset editorial */
+  .problem-inner {
+    max-width: 880px;
+    padding-left: clamp(0px, 6vw, 96px);
+  }
+
+  .problem .rule {
+    margin-bottom: var(--space-6);
+  }
+
+  .problem .h1 {
+    max-width: 20ch;
+  }
+
+  .problem .lede {
+    margin-top: var(--space-5);
+    max-width: 56ch;
+  }
+
+  .trust-line {
+    margin-top: var(--space-5);
+    font-size: 15.5px;
+    max-width: 56ch;
+  }
+
+  /* Method: staggered cards over a connecting hairline */
+  .method-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+    margin-top: var(--space-8);
+    position: relative;
+  }
+
+  .method-steps::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 44px;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .method-card {
+    padding: var(--space-6);
+    position: relative;
+    transition:
+      transform var(--dur-transition) var(--ease-precise),
+      box-shadow var(--dur-transition) var(--ease-precise);
+  }
+
+  .method-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .offset-1 {
+    margin-top: var(--space-7);
+  }
+
+  .offset-2 {
+    margin-top: calc(var(--space-7) * 2);
+  }
+
+  .step-name {
+    font-family: var(--font-tight);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-strong);
+  }
+
+  .method-card h3 {
+    margin-top: var(--space-3);
+  }
+
+  .method-card .muted {
+    margin-top: var(--space-3);
+    font-size: 15.5px;
+  }
+
+  .method-link {
+    margin-top: var(--space-7);
+  }
+
+  /* Signal room */
+  .signal-room h2 {
+    margin-top: var(--space-4);
+    max-width: 22ch;
+  }
+
+  .signal-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: var(--space-5);
+    margin-top: var(--space-8);
+  }
+
+  .signal-card {
+    background: var(--surface-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: var(--space-6);
+  }
+
+  .signal-live {
+    grid-row: 1 / 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: var(--space-4);
+    min-height: 320px;
+  }
+
+  .signal-wide {
+    grid-column: 2 / 4;
+  }
+
+  .signal-card .muted {
+    margin-top: var(--space-3);
+    font-size: 15.5px;
+  }
+
+  .signal-card h3 {
+    letter-spacing: -0.015em;
+  }
+
+  /* The living ring: a quiet sweep travelling the ellipse. Reduced motion stops it. */
+  .phi-signal {
+    margin-bottom: auto;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .signal-ring {
+      stroke-dasharray: 132 33;
+      animation: ring-sweep 7s linear infinite;
+    }
+  }
+
+  @keyframes ring-sweep {
+    to {
+      stroke-dashoffset: -165;
+    }
+  }
+
+  /* Operators */
+  .operators-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(40px, 6vw, 88px);
+    align-items: start;
+  }
+
+  .operators-intro .lede {
+    margin-top: var(--space-4);
+  }
+
+  .operators-intro .callout {
+    margin-top: var(--space-6);
+  }
+
+  .callout-head {
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 18px;
+    color: var(--accent-strong);
+  }
+
+  .callout p + p {
+    margin-top: var(--space-3);
+    font-size: 15.5px;
+  }
+
+  .operators-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-7) var(--space-6);
+  }
+
+  .operators-list h3 {
+    font-size: 18px;
+  }
+
+  .operators-list .muted {
+    margin-top: var(--space-2);
+    font-size: 15px;
+  }
+
+  /* Who it's for */
+  .who h2 {
+    max-width: 16ch;
+  }
+
+  .who-grid {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-7) 0 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .who-grid li {
+    padding: var(--space-5) var(--space-6) var(--space-5) 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .who-grid li:nth-child(odd) {
+    border-right: 1px solid var(--line);
+  }
+
+  .who-grid li:nth-child(even) {
+    padding-left: var(--space-6);
+  }
+
+  .who-grid p {
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 18px;
+    letter-spacing: -0.01em;
+    max-width: 34ch;
+  }
+
+  .markets {
+    margin-top: var(--space-5);
+    font-size: 15px;
+  }
+
+  /* Engagement rows */
+  .offer-rows {
+    margin-top: var(--space-7);
+  }
+
+  a.offer-row {
+    text-decoration: none;
+    transition: background-color var(--dur-transition) var(--ease-precise);
+  }
+
+  a.offer-row:hover {
+    background: var(--surface-raised);
+  }
+
+  .offer-name {
+    display: block;
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 20px;
+    letter-spacing: -0.01em;
+  }
+
+  .offer-desc {
+    display: block;
+    margin-top: var(--space-2);
+    font-size: 15.5px;
+    max-width: 56ch;
+  }
+
+  .offer-arrow {
+    font-size: 20px;
+    color: var(--accent-strong);
+    transition: transform var(--dur-transition) var(--ease-precise);
+  }
+
+  a.offer-row:hover .offer-arrow {
+    transform: translateX(6px);
+  }
+
+  /* FAQ teaser */
+  .faq-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: clamp(32px, 5vw, 72px);
+    align-items: start;
+  }
+
+  .faq-more {
+    margin-top: var(--space-5);
+  }
+
+  /* Final CTA */
+  .final-cta .rule {
+    margin-bottom: var(--space-6);
+  }
+
+  .final-cta .display {
+    max-width: 12ch;
+  }
+
+  .final-cta .lede {
+    margin-top: var(--space-5);
+    max-width: 52ch;
+  }
+
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5);
+    margin-top: var(--space-7);
+  }
+
+  /* Mobile collapse */
+  @media (max-width: 860px) {
+    .hero-grid,
+    .operators-grid,
+    .faq-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-geometry {
+      display: none;
+    }
+
+    .method-steps {
+      grid-template-columns: 1fr;
+    }
+
+    .method-steps::before {
+      display: none;
+    }
+
+    .offset-1,
+    .offset-2 {
+      margin-top: 0;
+    }
+
+    .signal-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .signal-live {
+      grid-row: auto;
+      min-height: 0;
+    }
+
+    .signal-wide {
+      grid-column: auto;
+    }
+
+    .operators-list {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+
+    .who-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .who-grid li:nth-child(odd) {
+      border-right: 0;
+    }
+
+    .who-grid li:nth-child(even) {
+      padding-left: 0;
+    }
+
+    .problem-inner {
+      padding-left: 0;
+    }
+  }
+</style>

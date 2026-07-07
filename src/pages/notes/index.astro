@@ -1,0 +1,119 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const notes = (await getCollection('notes', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<BaseLayout
+  title="Notes | Phronimos"
+  description="Practical writing on operations, AI operators, and getting repetitive work off the owner's desk."
+>
+  <section class="section notes-index">
+    <div class="container">
+      <hr class="rule" data-reveal />
+      <h1 data-reveal style="--reveal-i: 1">Notes</h1>
+      <p class="lede" data-reveal style="--reveal-i: 2">
+        Practical writing on operations, AI operators, and getting repetitive work off the owner's
+        desk. No hype, by policy.
+      </p>
+
+      <ul class="notes-list">
+        {
+          notes.map((note, i) => (
+            <li data-reveal style={`--reveal-i: ${Math.min(i, 3)}`}>
+              <a href={`/notes/${note.id}/`} class="note-row">
+                <time class="muted" datetime={note.data.pubDate.toISOString()}>
+                  {note.data.pubDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    timeZone: 'UTC',
+                  })}
+                </time>
+                <span>
+                  <span class="note-title">{note.data.title}</span>
+                  <span class="muted note-desc">{note.data.description}</span>
+                </span>
+                <span class="note-arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .notes-index h1 {
+    margin-top: var(--space-6);
+  }
+
+  .notes-index .lede {
+    margin-top: var(--space-4);
+    max-width: 52ch;
+  }
+
+  .notes-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-8) 0 0;
+  }
+
+  .note-row {
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    gap: var(--space-6);
+    align-items: baseline;
+    padding-block: var(--space-5);
+    border-top: 1px solid var(--line);
+    text-decoration: none;
+    transition: background-color var(--dur-transition) var(--ease-precise);
+  }
+
+  .notes-list li:last-child .note-row {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .note-row:hover {
+    background: var(--surface-raised);
+  }
+
+  .note-row time {
+    font-size: 14px;
+  }
+
+  .note-title {
+    display: block;
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 20px;
+    letter-spacing: -0.01em;
+  }
+
+  .note-desc {
+    display: block;
+    margin-top: var(--space-2);
+    font-size: 15.5px;
+    max-width: 60ch;
+  }
+
+  .note-arrow {
+    color: var(--accent-strong);
+    transition: transform var(--dur-transition) var(--ease-precise);
+  }
+
+  .note-row:hover .note-arrow {
+    transform: translateX(6px);
+  }
+
+  @media (max-width: 767px) {
+    .note-row {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+  }
+</style>
