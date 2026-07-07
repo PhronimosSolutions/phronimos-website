@@ -62,7 +62,9 @@ const { title, description, jsonLd, ogType } = Astro.props;
         );
         for (const el of targets) {
           if (el.getBoundingClientRect().top < window.innerHeight) {
-            requestAnimationFrame(() => el.classList.add('revealed'));
+            // Synchronous: above-fold content must never depend on observer
+            // or rAF timing to become visible.
+            el.classList.add('revealed');
           } else {
             io.observe(el);
           }
