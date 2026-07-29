@@ -4,7 +4,6 @@ export const LEGAL_NAME = 'Phronimos Solutions LLC';
 export const SITE_URL = 'https://phronimos.io';
 export const CONTACT_EMAIL = 'hello@phronimos.io';
 export const BOOKING_URL = 'https://calendly.com/phronimos';
-export const TAGLINE = 'Practical Wisdom at Scale';
 
 // --- Pricing ----------------------------------------------------------------
 // Every price on the site reads from here. Change a number once and it updates

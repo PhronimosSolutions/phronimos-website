@@ -1,6 +1,6 @@
 ---
 import Wordmark from './Wordmark.astro';
-import { CONTACT_EMAIL, LEGAL_NAME, TAGLINE } from '../config';
+import { CONTACT_EMAIL, LEGAL_NAME } from '../config';
 
 const year = new Date().getFullYear();
 ---
@@ -12,7 +12,6 @@ const year = new Date().getFullYear();
         <a href="/" class="brand" aria-label="Phronimos home">
           <Wordmark class="brand-logo" />
         </a>
-        <p class="muted tagline">{TAGLINE}.</p>
       </div>
 
       <nav class="footer-col" aria-label="Site">
@@ -69,11 +68,6 @@ const year = new Date().getFullYear();
     height: 40px;
     width: auto;
     display: block;
-  }
-
-  .tagline {
-    margin-top: var(--space-3);
-    font-size: 15px;
   }
 
   .footer-col {

@@ -25,14 +25,13 @@ const appIcon = (size, radius) => `
   ${mark('#F5F7F8', 'translate(26.6 21.5) scale(0.56)')}
 </svg>`;
 
-// OG image: charcoal field, off-white mark, wordmark + tagline.
+// OG image: charcoal field, off-white mark, wordmark + descriptor.
 const og = `
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <rect width="1200" height="630" fill="#232B32"/>
   <rect x="0" y="0" width="1200" height="4" fill="#E76F51"/>
   ${mark('#F5F7F8', 'translate(120 188) scale(0.945)')}
   <text x="280" y="268" font-family="Helvetica, Arial, sans-serif" font-size="64" font-weight="500" letter-spacing="2" fill="#F5F7F8">Phronimos</text>
-  <text x="282" y="312" font-family="Helvetica, Arial, sans-serif" font-size="21" font-weight="500" letter-spacing="6" fill="#A3ACB4">PRACTICAL WISDOM AT SCALE</text>
   <text x="120" y="520" font-family="Helvetica, Arial, sans-serif" font-size="26" font-weight="400" fill="#A3ACB4">Managed AI operators for owner-led businesses</text>
 </svg>`;
 
