@@ -7,6 +7,7 @@
   --surface-canvas: #0e1417; /* near-black, faintly cool */
   --surface-raised: #151d22; /* cards, inset panels */
   --surface-band: #10181c; /* alternating band, a hair off canvas */
+  --surface-callout: #141c22; /* neutral info-box fill; persimmon stays the accent rule */
   --text-primary: #eef2f4;
   --text-secondary: #97a3ab;
   --text-tertiary: #6a767e; /* mono labels, captions, meta */
@@ -64,6 +65,7 @@
   --surface-canvas: #f5f7f8;
   --surface-raised: #ffffff;
   --surface-band: #eef1f3;
+  --surface-callout: #eef1f3;
   --text-primary: #232b32;
   --text-secondary: #5b6670;
   --text-tertiary: #7b8790;

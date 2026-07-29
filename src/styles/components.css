@@ -97,7 +97,7 @@
 
 /* Callout: warm insight surface with a persimmon left rule. */
 .callout {
-  background: var(--accent-subtle);
+  background: var(--surface-callout);
   border-left: 3px solid var(--accent-solid);
   border-radius: 0 var(--radius-inset) var(--radius-inset) 0;
   padding: var(--space-5) var(--space-6);
@@ -217,7 +217,7 @@
 }
 
 .prose blockquote {
-  background: var(--accent-subtle);
+  background: var(--surface-callout);
   border-left: 3px solid var(--accent-solid);
   border-radius: 0 var(--radius-inset) var(--radius-inset) 0;
   padding: var(--space-4) var(--space-5);
