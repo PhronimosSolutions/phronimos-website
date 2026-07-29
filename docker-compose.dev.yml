@@ -4,12 +4,15 @@ services:
     working_dir: /app
     command: sh -c "npm ci && npm run dev -- --host 0.0.0.0"
     ports:
-      - "4321:4321"
+      # Bind to loopback only so the dev site is not reachable from the LAN.
+      - "127.0.0.1:4321:4321"
     volumes:
       - .:/app
       - node_modules:/app/node_modules
     environment:
-      - PUBLIC_WEB3FORMS_KEY=${PUBLIC_WEB3FORMS_KEY:-}
+      # PUBLIC_WEB3FORMS_KEY is read from the bind-mounted .env file by Astro/Vite.
+      # It is intentionally NOT passed here: an empty compose value would take
+      # precedence over the .env file (dotenv never overrides an existing var).
       # Astro's file watcher inside the Linux VM needs polling to see
       # changes made from the macOS host, otherwise hot-reload misses them.
       - CHOKIDAR_USEPOLLING=true

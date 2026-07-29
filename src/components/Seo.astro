@@ -13,6 +13,10 @@ const { title, description, jsonLd, ogType = 'website' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, SITE_URL).href;
 const ogImage = new URL('/og/og-default.png', SITE_URL).href;
 const blocks = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+
+// Escape "<" as "\u003c" so a string value containing "</script>" can never
+// terminate the JSON-LD block early; the escaped form parses identically.
+const toJsonLd = (block: object) => JSON.stringify(block).replace(/</g, '\\u003c');
 ---
 
 <title>{title}</title>
@@ -32,4 +36,4 @@ const blocks = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage} />
 
-{blocks.map((block) => <script type="application/ld+json" set:html={JSON.stringify(block)} />)}
+{blocks.map((block) => <script type="application/ld+json" set:html={toJsonLd(block)} />)}
