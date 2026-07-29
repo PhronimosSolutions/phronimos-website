@@ -1,10 +1,15 @@
 ---
-import PhiMark from './PhiMark.astro';
+import Wordmark from './Wordmark.astro';
 import { BOOKING_URL } from '../config';
 
+// Security sits in the primary nav on purpose. Law firms and insurance agencies
+// are two of the five target verticals, and for those buyers "can I see how you
+// handle access?" is a top-three question. Burying the answer in the footer
+// makes it look like an afterthought.
 const links = [
   { href: '/method/', label: 'Method' },
   { href: '/services/', label: 'Services' },
+  { href: '/security/', label: 'Security' },
   { href: '/assessment/', label: 'Assessment' },
   { href: '/notes/', label: 'Notes' },
   { href: '/about/', label: 'About' },
@@ -15,8 +20,7 @@ const current = Astro.url.pathname;
 <header class="site-header">
   <div class="container header-inner">
     <a href="/" class="brand" aria-label="Phronimos home">
-      <PhiMark size={26} />
-      <span class="wordmark">Phronimos</span>
+      <Wordmark class="brand-logo" />
     </a>
 
     <nav class="desktop-nav" aria-label="Primary">
@@ -29,7 +33,7 @@ const current = Astro.url.pathname;
       }
     </nav>
 
-    <a href={BOOKING_URL} class="btn btn-primary header-cta">Book the Audit</a>
+    <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary header-cta">Book the Audit</a>
 
     <details class="mobile-nav">
       <summary aria-label="Menu">
@@ -38,7 +42,7 @@ const current = Astro.url.pathname;
       </summary>
       <nav aria-label="Primary mobile">
         {links.map(({ href, label }) => <a href={href}>{label}</a>)}
-        <a href={BOOKING_URL} class="btn btn-primary">Book the Audit</a>
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the Audit</a>
       </nav>
     </details>
   </div>
@@ -65,21 +69,27 @@ const current = Astro.url.pathname;
   .brand {
     display: inline-flex;
     align-items: center;
-    gap: 11px;
     text-decoration: none;
+    color: var(--text-primary);
   }
 
-  .wordmark {
-    font-family: var(--font-tight);
-    font-weight: 500;
-    font-size: 20px;
-    letter-spacing: 0.04em;
+  /* The svg lives in the Wordmark component's scope, so reach it with :global. */
+  .brand :global(.brand-logo) {
+    height: 40px;
+    width: auto;
+    display: block;
   }
 
   .desktop-nav {
     display: flex;
-    gap: var(--space-6);
+    gap: var(--space-5);
     margin-left: auto;
+  }
+
+  @media (min-width: 1100px) {
+    .desktop-nav {
+      gap: var(--space-6);
+    }
   }
 
   .desktop-nav a {

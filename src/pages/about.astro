@@ -1,24 +1,29 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PhiMark from '../components/PhiMark.astro';
-import { BOOKING_URL, CONTACT_EMAIL } from '../config';
+import Brandmark from '../components/Brandmark.astro';
+import { BOOKING_URL, CONTACT_EMAIL, TAGLINE } from '../config';
 ---
 
 <BaseLayout
-  title="About | Phronimos"
-  description="Phronimos comes from the Greek word for practical wisdom. We build managed AI workforces that help businesses operate more intelligently, founded by Matthew Kirby in San Diego."
+  title="About Phronimos | Custom Managed AI Agents"
+  description="Phronimos designs, builds, and runs custom AI agents for owner-led businesses. The name is Ancient Greek for practical wisdom, and it sets the standard the work is judged by."
 >
   <section class="section-tight page-head">
     <div class="container">
       <hr class="rule" data-reveal />
-      <h1 data-reveal style="--reveal-i: 1">Practical wisdom, applied to operations.</h1>
+      <h1 data-reveal style="--reveal-i: 1">About Phronimos</h1>
+      <p class="lede" data-reveal style="--reveal-i: 2">
+        <strong>{TAGLINE}.</strong> Phronimos designs, builds, and runs custom AI agents for owner-led
+        businesses. The bet behind the name is that judgment about which work to automate matters
+        more than the technology used to automate it.
+      </p>
     </div>
   </section>
 
   <section class="section name-story">
     <div class="container name-grid">
       <div class="mark-block" data-reveal>
-        <PhiMark size={120} />
+        <Brandmark size={120} variant="dark" />
       </div>
       <div class="name-copy" data-reveal style="--reveal-i: 1">
         <h2>The name</h2>
@@ -42,21 +47,19 @@ import { BOOKING_URL, CONTACT_EMAIL } from '../config';
       <h2 data-reveal>Why Phronimos exists</h2>
       <div class="prose" data-reveal style="--reveal-i: 1">
         <p>
-          Phronimos was founded on a simple conviction: most businesses are full of valuable people
-          spending their time on work that is repetitive, mechanical, or inefficient. The
-          opportunity is not to replace them with flashy AI. It is to design creative, scalable
-          solutions to real operational problems, so owners and their teams are freed to do more
-          interesting, creative, and valuable work.
+          Phronimos was founded on a simple conviction: most businesses are full of capable people
+          spending their days on work that is repetitive, mechanical, or purely mechanical
+          coordination. The opportunity is to design durable solutions to those operational
+          problems, so owners and their teams get their attention back for work that needs a person.
         </p>
         <p>
-          That motivation sets the center of gravity. Phronimos is not fascinated by the technology
-          for its own sake. It is fascinated by the problem: the bottleneck, the inefficiency, the
-          thing that should not take a person eight hours. And by the elegance of a solution that
-          quietly makes it disappear.
+          That motivation sets the center of gravity. The interesting object here is the problem:
+          the bottleneck, the handoff that keeps failing, the task that quietly consumes a day a
+          week. The technology is whatever turns out to solve it, and a simpler answer usually wins.
         </p>
         <p>
           This is why the work values judgment over novelty and reliability over hype. The measure
-          is whether the business runs better, not whether the demo impressed anyone.
+          is whether the business runs better six months later.
         </p>
       </div>
     </div>
@@ -76,39 +79,85 @@ import { BOOKING_URL, CONTACT_EMAIL } from '../config';
         <li data-reveal style="--reveal-i: 1">
           <h3>Reliability is the product.</h3>
           <p class="muted">
-            A digital teammate that works most of the time is a liability. We optimize for
-            consistent, supervisable execution over peak-case brilliance.
+            An agent that works most of the time costs more attention than it saves, because
+            somebody has to check it. We optimize for consistent, supervisable execution over
+            peak-case brilliance.
           </p>
         </li>
         <li data-reveal style="--reveal-i: 2">
           <h3>Solve the business problem.</h3>
           <p class="muted">
-            Start from the bottleneck and work backward. The technology is a means; the operational
-            outcome is the point.
+            Start from the bottleneck and work backward. Whether the answer turns out to be an
+            agent, a rewritten process, or one fewer meeting is a detail of the diagnosis.
           </p>
         </li>
         <li data-reveal style="--reveal-i: 3">
-          <h3>Leverage, not replacement.</h3>
+          <h3>Capacity, not headcount math.</h3>
           <p class="muted">
-            Success looks like a team doing more of what matters, not a smaller org chart.
+            Success looks like a team taking on work it could not previously absorb, with the same
+            people doing the parts that need a person.
           </p>
         </li>
       </ul>
     </div>
   </section>
 
-  <section class="section founder">
-    <div class="container founder-inner">
-      <h2 data-reveal>The founder</h2>
+  <section class="section staffing">
+    <div class="container staffing-inner">
+      <h2 data-reveal>How engagements are staffed</h2>
       <div class="prose" data-reveal style="--reveal-i: 1">
         <p>
-          Phronimos is founded and led by <strong>Matthew Kirby</strong>, based in San Diego,
-          California. Matthew works hands-on with every client: running the audits, building the
-          operators, and managing the systems that stay live. The delivery infrastructure behind
-          Phronimos is the same discipline sold to clients, with monitoring, failure alerts, and
-          documented playbooks for everything that runs.
+          Every Phronimos engagement runs end to end with the same practitioner: the audit call, the
+          build, and the monitoring afterward. There is no handoff between the person who scopes the
+          work and the person who does it.
+        </p>
+        <p>
+          That is why the practice deliberately holds one or two active builds at a time. Capacity is
+          the constraint that protects the quality, and it is the reason the pattern that makes
+          buyers wary of this category, where a senior person sells and a junior person delivers,
+          has nowhere to happen here.
+        </p>
+        <p>
+          The monitoring, failure alerts, and documented playbooks that ship with every client
+          operator also run the Phronimos delivery pipeline. The discipline sold to clients is the
+          discipline the business runs on, which is the only version of that claim worth making.
+        </p>
+        <p class="staffing-links">
+          Questions about how an engagement runs? Write to
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, or read
+          <a href="/security/">how system access is handled</a>.
         </p>
       </div>
+    </div>
+  </section>
+
+  <section class="section-tight honest">
+    <div class="container">
+      <h2 data-reveal>Who Phronimos is a poor fit for</h2>
+      <ul class="honest-list">
+        <li data-reveal>
+          <p>
+            Businesses looking for the cheapest possible automation. A single Zapier consultant will
+            cost less and may be the right call.
+          </p>
+        </li>
+        <li data-reveal style="--reveal-i: 1">
+          <p>
+            Teams whose core records live in systems nobody can export from. Agents need reliable
+            inputs, and the audit will say so plainly if yours are not there yet.
+          </p>
+        </li>
+        <li data-reveal style="--reveal-i: 2">
+          <p>
+            Companies wanting one large system built and then handed over with no ongoing
+            relationship. That model exists elsewhere and is honestly served elsewhere.
+          </p>
+        </li>
+      </ul>
+      <p class="muted honest-note" data-reveal>
+        The audit ends in a verdict, and sometimes the verdict is that the timing is wrong. That
+        answer is worth the fee too.
+      </p>
     </div>
   </section>
 
@@ -116,7 +165,7 @@ import { BOOKING_URL, CONTACT_EMAIL } from '../config';
     <div class="container">
       <h2 class="display" data-reveal>See it applied to your operations.</h2>
       <div class="cta-actions" data-reveal style="--reveal-i: 1">
-        <a href={BOOKING_URL} class="btn btn-primary">Book the AI Workflow Audit</a>
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the AI Workflow Audit</a>
         <span class="muted">or write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
       </div>
     </div>
@@ -179,12 +228,47 @@ import { BOOKING_URL, CONTACT_EMAIL } from '../config';
     max-width: 46ch;
   }
 
-  .founder {
+  .staffing {
     border-top: 1px solid var(--line);
   }
 
-  .founder-inner .prose {
+  .staffing-inner .prose {
     margin-top: var(--space-5);
+  }
+
+  .staffing-links {
+    margin-top: var(--space-5);
+    font-size: 15.5px;
+  }
+
+  /* Naming a poor fit is a premium signal, and the only one available before
+     there are case studies. Kept plain on purpose. */
+  .honest {
+    border-top: 1px solid var(--line);
+    background: var(--surface-raised);
+  }
+
+  .honest-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-6) 0 0;
+    border-top: 1px solid var(--line);
+    max-width: 72ch;
+  }
+
+  .honest-list li {
+    padding-block: var(--space-5);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .honest-list p {
+    max-width: 64ch;
+  }
+
+  .honest-note {
+    margin-top: var(--space-5);
+    max-width: 56ch;
+    font-size: 15.5px;
   }
 
   .final-cta .display {

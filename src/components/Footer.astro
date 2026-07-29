@@ -1,5 +1,5 @@
 ---
-import PhiMark from './PhiMark.astro';
+import Wordmark from './Wordmark.astro';
 import { CONTACT_EMAIL, LEGAL_NAME, TAGLINE } from '../config';
 
 const year = new Date().getFullYear();
@@ -10,8 +10,7 @@ const year = new Date().getFullYear();
     <div class="footer-grid">
       <div class="footer-brand">
         <a href="/" class="brand" aria-label="Phronimos home">
-          <PhiMark size={24} />
-          <span class="wordmark">Phronimos</span>
+          <Wordmark class="brand-logo" />
         </a>
         <p class="muted tagline">{TAGLINE}.</p>
       </div>
@@ -20,6 +19,8 @@ const year = new Date().getFullYear();
         <h2 class="footer-head">Site</h2>
         <a href="/method/">Method</a>
         <a href="/services/">Services</a>
+        <a href="/ai-workflow-audit/">AI Workflow Audit</a>
+        <a href="/security/">Security</a>
         <a href="/assessment/">Assessment</a>
         <a href="/notes/">Notes</a>
         <a href="/about/">About</a>
@@ -34,7 +35,7 @@ const year = new Date().getFullYear();
     </div>
 
     <div class="footer-legal">
-      <span>{year} {LEGAL_NAME}. All rights reserved.</span>
+      <span>&copy; {year} {LEGAL_NAME}. All rights reserved.</span>
       <span class="legal-links">
         <a href="/privacy/">Privacy</a>
         <a href="/terms/">Terms</a>
@@ -59,15 +60,15 @@ const year = new Date().getFullYear();
   .brand {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
     text-decoration: none;
+    color: var(--text-primary);
   }
 
-  .wordmark {
-    font-family: var(--font-tight);
-    font-weight: 500;
-    font-size: 19px;
-    letter-spacing: 0.04em;
+  /* The svg lives in the Wordmark component's scope, so reach it with :global. */
+  .brand :global(.brand-logo) {
+    height: 40px;
+    width: auto;
+    display: block;
   }
 
   .tagline {
@@ -82,12 +83,12 @@ const year = new Date().getFullYear();
   }
 
   .footer-head {
-    font-family: var(--font-sans);
+    font-family: var(--font-mono);
     font-size: 12px;
     font-weight: 500;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
     margin-bottom: var(--space-2);
   }
 

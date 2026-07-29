@@ -1,10 +1,21 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { BOOKING_URL, CONTACT_EMAIL } from '../config';
+import {
+  AUDIT_CREDIT_NOTE,
+  BOOKING_URL,
+  CONTACT_EMAIL,
+  PRICE_AUDIT,
+  PRICE_RETAINER,
+  PRICE_SPRINT,
+  PRICE_AUDIT_VALUE,
+  PRICE_RETAINER_VALUE,
+  PRICE_SPRINT_VALUE,
+  SITE_URL,
+} from '../config';
 
 const offers = [
   {
-    price: '$1,500 to $2,000',
+    price: PRICE_AUDIT,
     name: 'AI Workflow Audit',
     bestFor:
       'Business owners who know operations feel heavier than they should, but do not know what to automate first.',
@@ -21,10 +32,10 @@ const offers = [
       'Clear diagnosis of where time is leaking and which one or two workflows should move first.',
   },
   {
-    price: '$3,500 to $7,500',
+    price: PRICE_SPRINT,
     name: 'Agent Implementation Sprint',
     bestFor:
-      'Businesses that want one painful workflow fixed properly instead of collecting another PDF.',
+      'Businesses ready to put one painful workflow into production, with testing, guardrails, and a documented handover.',
     includes: [
       'First-operator design',
       'Agent and runtime configuration',
@@ -34,10 +45,11 @@ const offers = [
       'SOP and handoff notes',
       'Training session',
     ],
-    outcome: 'One workflow becomes materially faster, cleaner, and less owner-dependent.',
+    outcome:
+      'One workflow becomes measurably faster and less owner-dependent, with a baseline to measure it against.',
   },
   {
-    price: 'From $5,000 / month',
+    price: PRICE_RETAINER,
     name: 'Managed AI Operator Retainer',
     bestFor: 'Teams that want an ongoing AI operator layer without hiring internal specialists.',
     includes: [
@@ -51,22 +63,67 @@ const offers = [
       'Continuous optimization',
     ],
     outcome:
-      'AI adoption becomes a managed operating function instead of a random side project.',
+      'AI adoption becomes a line in the operating budget with an owner attached, and a queue you can see into.',
   },
 ];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'OfferCatalog',
+  name: 'Phronimos services and pricing',
+  url: `${SITE_URL}/services/`,
+  provider: { '@id': `${SITE_URL}/#organization` },
+  itemListElement: offers.map((offer, i) => ({
+    '@type': 'Offer',
+    name: offer.name,
+    description: offer.outcome,
+    priceCurrency: 'USD',
+    category: 'AI agent implementation and managed service',
+    priceSpecification: [
+      { '@type': 'PriceSpecification', price: PRICE_AUDIT_VALUE, priceCurrency: 'USD' },
+      { '@type': 'PriceSpecification', minPrice: PRICE_SPRINT_VALUE, priceCurrency: 'USD' },
+      {
+        '@type': 'UnitPriceSpecification',
+        price: PRICE_RETAINER_VALUE,
+        priceCurrency: 'USD',
+        unitCode: 'MON',
+      },
+    ][i],
+    itemOffered: {
+      '@type': 'Service',
+      name: offer.name,
+      provider: { '@id': `${SITE_URL}/#organization` },
+    },
+  })),
+};
 ---
 
 <BaseLayout
-  title="Services and Pricing | Phronimos"
-  description="Phronimos offers a clean progression: an AI Workflow Audit from $1,500, an Agent Implementation Sprint from $3,500, and a Managed AI Operator Retainer from $5,000 per month."
+  title="AI Agent Services and Pricing: Audit, Build, Managed Retainer | Phronimos"
+  description="What Phronimos charges: a $999 AI Workflow Audit credited toward what follows, an Agent Implementation Sprint from $3,500, and a managed retainer at $5,000 a month."
+  jsonLd={jsonLd}
 >
   <section class="section-tight page-head">
     <div class="container">
       <hr class="rule" data-reveal />
-      <h1 data-reveal style="--reveal-i: 1">Three engagements. One controlled path.</h1>
-      <p class="lede" data-reveal style="--reveal-i: 2">
-        The audit finds the bottleneck. The sprint builds the first operator. The retainer manages
-        and expands the operator layer. Clear pricing, tight scope, no surprises.
+      <h1 data-reveal style="--reveal-i: 1">AI agent services and pricing</h1>
+      <p class="lede answer" data-reveal style="--reveal-i: 2">
+        <strong>Three engagements. One controlled path.</strong> An AI Workflow Audit at {PRICE_AUDIT}
+        finds the bottleneck and scopes the build. An Agent Implementation Sprint from $3,500 puts
+        the first agent into production. The Managed AI Operator Retainer at $5,000 per month keeps
+        it running and adds the next one.
+      </p>
+      <p class="credit-note" data-reveal style="--reveal-i: 3">
+        {AUDIT_CREDIT_NOTE}
+      </p>
+      <p class="muted scope-rule" data-reveal style="--reveal-i: 4">
+        Each engagement is fixed-scope and priced before it starts. If scope changes during the
+        work, it gets re-priced in writing before the work continues.
+      </p>
+      <p class="muted head-links" data-reveal style="--reveal-i: 5">
+        More detail: <a href="/ai-workflow-audit/">what the audit includes</a> &middot;
+        <a href="/security/">how we handle system access</a> &middot;
+        <a href="/faq/">cost and ownership questions</a>
       </p>
     </div>
   </section>
@@ -101,11 +158,16 @@ const offers = [
 
   <section class="section-tight roi">
     <div class="container">
-      <h2 data-reveal>Every engagement carries its own ROI case.</h2>
-      <p class="lede" data-reveal style="--reveal-i: 1">
-        The audit estimates hours lost per week and what they cost. Sprints and retainer work track
-        hours saved, turnaround improvement, and dropped-work reduction, so the value created is
-        measured, not asserted.
+      <h2 data-reveal>How do you measure the return on an AI agent?</h2>
+      <p class="lede answer" data-reveal style="--reveal-i: 1">
+        Every operator ships with a baseline taken before it goes live, then a monthly report:
+        volume handled, escalation rate, first-pass accuracy against sampled review, and cycle time
+        against that starting baseline.
+      </p>
+      <p class="muted" data-reveal style="--reveal-i: 2">
+        The audit sets the first baseline by estimating hours lost per week and what they cost. From
+        the sprint onward, every claim about value traces to a number that existed before we
+        touched anything.
       </p>
     </div>
   </section>
@@ -114,10 +176,11 @@ const offers = [
     <div class="container">
       <h2 class="display" data-reveal>The audit is the front door.</h2>
       <p class="lede" data-reveal style="--reveal-i: 1">
-        Serious enough to attract real operators, small enough to be a low-friction first step.
+        A bounded first step with a concrete deliverable, and the scoping document for everything
+        that follows.
       </p>
       <div class="cta-actions" data-reveal style="--reveal-i: 2">
-        <a href={BOOKING_URL} class="btn btn-primary">Book the AI Workflow Audit</a>
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the AI Workflow Audit</a>
         <span class="muted">or write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
       </div>
     </div>
@@ -132,7 +195,38 @@ const offers = [
 
   .page-head .lede {
     margin-top: var(--space-5);
+    max-width: 62ch;
+  }
+
+  .scope-rule {
+    margin-top: var(--space-5);
     max-width: 56ch;
+    font-size: 15.5px;
+  }
+
+  /* The credit is the whole reason a low front-door fee reads as a qualifying
+     step rather than the ceiling on the practice. Give it its own weight. */
+  .credit-note {
+    margin-top: var(--space-4);
+    max-width: 60ch;
+    font-size: 15.5px;
+    padding-left: var(--space-4);
+    border-left: 2px solid var(--accent-solid);
+  }
+
+  .head-links {
+    margin-top: var(--space-5);
+    font-size: 15.5px;
+  }
+
+  .answer {
+    max-width: 64ch;
+  }
+
+  .roi .muted {
+    margin-top: var(--space-5);
+    max-width: 62ch;
+    font-size: 15.5px;
   }
 
   .offer-section {

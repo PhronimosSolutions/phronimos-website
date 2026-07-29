@@ -1,18 +1,19 @@
-/* Shared component styles. Buttons, cards, rows, accordions, callouts. */
+/* Shared component styles. Buttons, cards, rows, accordions, callouts.
+   Dark editorial register: off-white primary, ghost secondary, hairline surfaces. */
 
-/* Buttons: primary = charcoal pill, secondary = persimmon-tinted pill.
-   In the dark scope, primary inverts to off-white on charcoal surfaces. */
+/* Buttons. primary = off-white pill on the dark canvas.
+   secondary = ghost pill with a hairline border. */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 14px 28px;
+  padding: 13px 26px;
   border-radius: var(--radius-pill);
   border: 1px solid transparent;
   font-family: var(--font-tight);
   font-weight: 500;
-  font-size: 16px;
+  font-size: 15.5px;
   letter-spacing: -0.01em;
   line-height: 1.2;
   text-decoration: none;
@@ -21,6 +22,7 @@
   transition:
     transform var(--dur-instant) var(--ease-precise),
     background-color var(--dur-transition) var(--ease-precise),
+    border-color var(--dur-transition) var(--ease-precise),
     color var(--dur-transition) var(--ease-precise),
     box-shadow var(--dur-transition) var(--ease-precise);
 }
@@ -30,47 +32,62 @@
 }
 
 .btn-primary {
+  background: #f2f5f6;
+  color: #12181c;
+}
+
+.btn-primary:hover {
+  background: #ffffff;
+  box-shadow: 0 0 0 4px var(--accent-line);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--line-strong);
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent-solid);
+  color: var(--accent-strong);
+}
+
+.theme-light .btn-primary {
   background: #232b32;
   color: #f5f7f8;
 }
 
-.btn-primary:hover {
+.theme-light .btn-primary:hover {
   background: #10151a;
 }
 
-.theme-dark .btn-primary {
-  background: #f5f7f8;
-  color: #232b32;
+.theme-light .btn-secondary {
+  color: var(--text-primary);
+  border-color: var(--line-strong);
 }
 
-.theme-dark .btn-primary:hover {
-  background: #ffffff;
-}
-
-.btn-secondary {
-  background: var(--accent-subtle);
-  color: var(--accent-strong);
-}
-
-.btn-secondary:hover {
-  background: #f7d8cd;
-}
-
-.theme-dark .btn-secondary:hover {
-  background: #3a2620;
-}
-
-/* Eyebrow: rationed. Maximum one per three sections. */
+/* Eyebrow: mono label with a short persimmon tick. Rationed — one per section. */
 .eyebrow {
-  font-family: var(--font-sans);
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  font-family: var(--font-mono);
   font-weight: 500;
-  font-size: 12px;
-  letter-spacing: 0.14em;
+  font-size: 12.5px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--accent-strong);
+  color: var(--text-tertiary);
 }
 
-/* Card */
+.eyebrow::before {
+  content: '';
+  width: 16px;
+  height: 1px;
+  background: var(--accent-solid);
+  flex-shrink: 0;
+}
+
+/* Card: quiet raised surface, hairline edge, no heavy chrome. */
 .card {
   background: var(--surface-raised);
   border: 1px solid var(--line);
@@ -78,19 +95,18 @@
   box-shadow: var(--shadow-card);
 }
 
-/* Callout: the brand's specified insight surface.
-   Persimmon tint with a 4px solid persimmon left rule. */
+/* Callout: warm insight surface with a persimmon left rule. */
 .callout {
   background: var(--accent-subtle);
-  border-left: 4px solid var(--accent-solid);
-  border-radius: 0 var(--radius-card) var(--radius-card) 0;
+  border-left: 3px solid var(--accent-solid);
+  border-radius: 0 var(--radius-inset) var(--radius-inset) 0;
   padding: var(--space-5) var(--space-6);
 }
 
 /* Hairline rule under section headings: persimmon, used sparingly */
 .rule {
-  width: 56px;
-  height: 3px;
+  width: 48px;
+  height: 2px;
   border: 0;
   background: var(--accent-solid);
   margin: 0;
@@ -99,7 +115,7 @@
 /* Offer row: price column + body, divided rows */
 .offer-row {
   display: grid;
-  grid-template-columns: 150px 1fr auto;
+  grid-template-columns: 160px 1fr auto;
   gap: var(--space-6);
   align-items: baseline;
   padding-block: var(--space-6);
@@ -111,12 +127,13 @@
 }
 
 .offer-price {
-  font-family: var(--font-tight);
-  font-weight: 600;
-  font-size: 15px;
-  letter-spacing: 0.02em;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.04em;
   color: var(--accent-strong);
   text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 767px) {
@@ -141,9 +158,9 @@
   justify-content: space-between;
   gap: var(--space-5);
   padding-block: var(--space-5);
-  font-family: var(--font-tight);
+  font-family: var(--font-display);
   font-weight: 500;
-  font-size: 19px;
+  font-size: 20px;
   letter-spacing: -0.01em;
   cursor: pointer;
   list-style: none;
@@ -156,6 +173,7 @@
 .faq-item summary::after {
   content: '+';
   flex-shrink: 0;
+  font-family: var(--font-mono);
   font-weight: 400;
   font-size: 22px;
   color: var(--accent-strong);
@@ -200,16 +218,18 @@
 
 .prose blockquote {
   background: var(--accent-subtle);
-  border-left: 4px solid var(--accent-solid);
-  border-radius: 0 12px 12px 0;
+  border-left: 3px solid var(--accent-solid);
+  border-radius: 0 var(--radius-inset) var(--radius-inset) 0;
   padding: var(--space-4) var(--space-5);
   color: var(--accent-strong);
-  font-family: var(--font-tight);
-  font-size: 19px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-style: italic;
 }
 
 .prose code {
-  font-size: 0.92em;
+  font-family: var(--font-mono);
+  font-size: 0.88em;
   background: var(--surface-raised);
   border: 1px solid var(--line);
   border-radius: 6px;
@@ -234,8 +254,8 @@
 .field textarea {
   width: 100%;
   padding: 13px 16px;
-  border: 1px solid #c9d0d5;
-  border-radius: 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-inset);
   background: var(--surface-raised);
   color: var(--text-primary);
   transition: border-color var(--dur-transition) var(--ease-precise);
@@ -243,13 +263,13 @@
 
 .field input::placeholder,
 .field textarea::placeholder {
-  color: #77828b;
+  color: var(--text-tertiary);
 }
 
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
-  border-color: var(--accent-strong);
+  border-color: var(--accent-solid);
   outline: none;
 }
 

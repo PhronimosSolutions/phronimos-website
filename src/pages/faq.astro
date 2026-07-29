@@ -2,42 +2,57 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { BOOKING_URL, SITE_URL } from '../config';
 
+// Answers are written to survive being read alone: no pronouns pointing at other
+// entries, no "as mentioned above", and the subject restated in the first clause.
+// Retrieval systems chunk by question, and a chunk has to make sense by itself.
 const faqs = [
   {
-    q: 'Is this just an audit?',
-    a: 'No. The audit is the paid diagnosis. The engagement is audit, then sprint, then managed service. The audit exists so the first build is aimed at the right workflow instead of a guess.',
+    q: 'How much does it cost to have AI agents built and maintained for a small business?',
+    a: 'Phronimos charges $999 for an AI Workflow Audit, from $3,500 for an Agent Implementation Sprint that puts the first agent into production, and $5,000 per month for the Managed AI Operator Retainer. The audit fee is credited in full toward a sprint or the first month of a retainer. A first year covering the audit, one sprint, and twelve months of retainer starts around $63,500. Scope changes are re-priced in writing before work continues.',
   },
   {
-    q: 'Is this AI consulting?',
-    a: 'Not in the usual sense. This is operational diagnosis plus managed implementation. You do not get a slide deck of ideas; you get a live operator and someone accountable for it working.',
+    q: 'What is a managed AI operator?',
+    a: 'A managed AI operator is a custom AI agent built for one specific job inside a business, connected to that business systems, bounded by explicit guardrails, and monitored by the firm that built it. The distinction from an AI tool is ownership: an operator has someone accountable for it continuing to work.',
   },
   {
-    q: 'Do I need to know anything about AI models or tooling?',
-    a: 'No. That is the point. You get outcomes and a visible queue. Models, tokens, infrastructure, and setup drama sit with us.',
+    q: 'How is Phronimos different from AI consulting?',
+    a: 'AI consulting typically ends at a recommendation. Phronimos runs the diagnosis, builds the agent, puts it into production, and stays accountable for it working afterward. The deliverable is a running system with a service standard behind it.',
   },
   {
-    q: 'What kinds of workflows work best first?',
-    a: 'Inbox triage, follow-ups, meeting outputs, lead intake and routing, document chase-ups, and repeated internal questions. Universal executive pain first, vertical-specific workflows once the fit is obvious.',
+    q: 'Should we hire someone to build AI automations, or build them in-house?',
+    a: 'Building in-house makes sense when a business has an engineer who can own the system for the next two years. Most companies with 5 to 50 people do not, and the failure point is rarely the build. It is month four, when an upstream tool changes and nobody notices the automation stopped working.',
   },
   {
-    q: 'Why start with a paid audit instead of a free call?',
-    a: 'Because most businesses do not need ten ideas. They need the right first move, backed by a real review of how work moves through the company. A paid diagnosis keeps that work serious and bounded.',
+    q: 'Is the AI Workflow Audit the whole engagement?',
+    a: 'The AI Workflow Audit is the paid diagnosis and the scoping document for what follows. A full Phronimos engagement runs audit, then implementation sprint, then managed retainer. The audit exists so the first build aims at the right workflow.',
   },
   {
-    q: 'Do you build giant custom systems?',
-    a: 'Only when the business case is real. The default bias is tight scope, fast deployment, and proven tools.',
+    q: 'Do I need to understand AI models or tooling to work with Phronimos?',
+    a: 'No. Clients approve outcomes and watch a shared request queue. Model selection, infrastructure, authentication, monitoring, and version control sit with Phronimos.',
   },
   {
-    q: 'Do you specialize by industry?',
-    a: 'Eventually, yes. Early on the smarter move is working across a few operator-heavy markets, like agencies, law firms, insurance, real estate, and recruiting, then narrowing where the pull is strongest.',
+    q: 'Which workflows should become AI agents first?',
+    a: 'The best first candidates are high-volume, low-judgment, and easy to measure: inbox triage, meeting follow-up, lead intake and routing, document chase-ups, and repeated internal questions. Workflows specific to an industry come second, once the pattern is proven in that business.',
   },
   {
-    q: 'What happens when an operator breaks?',
-    a: 'Monitoring and failure alerts reach us first, recovery paths run where possible, and there is a clear escalation route. Your team should never be the one discovering a failure.',
+    q: 'Why does Phronimos charge for the audit instead of offering a free call?',
+    a: 'A paid diagnosis keeps the engagement bounded and serious on both sides. Reviewing how work moves through a company, sizing what it costs, and scoping a build against it takes days of work, and pricing it that way means the findings get the attention they need. A free call tends to produce a list nobody owns.',
   },
   {
-    q: 'Who owns what gets built?',
-    a: 'The workflows, SOPs, and configurations built for your business are documented and handed off so you are never locked in. Ownership terms are set out plainly in each statement of work.',
+    q: 'What happens when an AI agent breaks?',
+    a: 'Every Phronimos operator carries monitoring and failure alerts that route to Phronimos rather than to the client team. Automatic recovery runs where it is possible, escalation goes to a named person, and every incident ends in a written account of what happened and what changed.',
+  },
+  {
+    q: 'Who owns what Phronimos builds?',
+    a: 'The workflows, SOPs, and configurations built for a client business are documented and handed over, so the client is not locked in. Ownership terms are set out plainly in each statement of work before the work starts.',
+  },
+  {
+    q: 'Who can access our data, and where does it live?',
+    a: 'Phronimos never holds client passwords. System access runs through a managed authentication layer where the client admin completes every authorization directly with the source system, and access is scoped to the systems named in the statement of work. Each client gets an isolated authentication surface, and access is revoked when the engagement ends.',
+  },
+  {
+    q: 'Does Phronimos specialize by industry?',
+    a: 'Not yet, by design. Phronimos currently works across several operator-heavy markets, including agencies, law firms, insurance teams, real estate teams, and recruiting firms, and will narrow where the pull is strongest. The universal workflows are close enough across these industries that the early lessons transfer.',
   },
 ];
 
@@ -54,17 +69,18 @@ const jsonLd = {
 ---
 
 <BaseLayout
-  title="FAQ | Phronimos"
-  description="Answers to the questions owners ask about the Phronimos AI Workflow Audit, implementation sprints, and the managed AI operator retainer."
+  title="AI Agent Services FAQ: Cost, Scope, Ownership, Security | Phronimos"
+  description="Straight answers on what Phronimos costs, what a managed AI operator is, who owns what gets built, and what happens when an AI agent breaks."
   jsonLd={jsonLd}
 >
   <section class="section faq-page">
     <div class="container faq-layout">
       <div class="faq-head">
         <hr class="rule" data-reveal />
-        <h1 data-reveal style="--reveal-i: 1">Questions owners ask.</h1>
+        <h1 data-reveal style="--reveal-i: 1">Questions owners ask</h1>
         <p class="lede" data-reveal style="--reveal-i: 2">
-          Straight answers, no theater. Anything missing, <a href={BOOKING_URL}>ask us directly</a>.
+          Cost, scope, ownership, and what happens when something breaks. Anything missing,
+          <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer">ask us directly</a>.
         </p>
       </div>
       <div class="faq-list">
@@ -91,12 +107,12 @@ const jsonLd = {
 
   .faq-head h1 {
     margin-top: var(--space-6);
-    max-width: 12ch;
+    max-width: 14ch;
   }
 
   .faq-head .lede {
     margin-top: var(--space-4);
-    max-width: 30ch;
+    max-width: 34ch;
   }
 
   @media (max-width: 860px) {

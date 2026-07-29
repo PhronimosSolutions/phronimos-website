@@ -4,6 +4,7 @@ import '../styles/components.css';
 import Seo from '../components/Seo.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { CONTACT_EMAIL, LEGAL_NAME, ORG_SAME_AS, SITE_NAME, SITE_URL } from '../config';
 
 interface Props {
   title: string;
@@ -13,6 +14,53 @@ interface Props {
 }
 
 const { title, description, jsonLd, ogType } = Astro.props;
+
+// Site-wide entity graph. Emitted on every page with stable @ids so page-level
+// blocks (FAQPage, Service, Article) can reference the organization by @id
+// instead of restating it. For a brand with no search history this is the
+// machine-readable answer to "what is Phronimos, and what does it sell."
+//
+// No Person entity and no postal address: the practice is deliberately not
+// publishing individual identity. Entity resolution therefore rests entirely on
+// ORG_SAME_AS, which makes filling that array more important, not less.
+const organization = {
+  '@type': 'ProfessionalService',
+  '@id': `${SITE_URL}/#organization`,
+  name: SITE_NAME,
+  legalName: LEGAL_NAME,
+  url: SITE_URL,
+  email: CONTACT_EMAIL,
+  logo: `${SITE_URL}/apple-touch-icon.png`,
+  image: `${SITE_URL}/og/og-default.png`,
+  description:
+    'Phronimos designs, builds, and manages custom AI agents for owner-led businesses, starting with a paid AI workflow audit.',
+  slogan: 'Practical Wisdom at Scale',
+  priceRange: '$$$',
+  areaServed: { '@type': 'Country', name: 'United States' },
+  knowsAbout: [
+    'AI workflow audit',
+    'AI agent implementation',
+    'managed AI agents',
+    'business process automation',
+  ],
+  ...(ORG_SAME_AS.length ? { sameAs: ORG_SAME_AS } : {}),
+};
+
+const website = {
+  '@type': 'WebSite',
+  '@id': `${SITE_URL}/#website`,
+  url: SITE_URL,
+  name: SITE_NAME,
+  publisher: { '@id': `${SITE_URL}/#organization` },
+};
+
+const siteGraph = {
+  '@context': 'https://schema.org',
+  '@graph': [organization, website],
+};
+
+const pageBlocks = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+const allJsonLd = [siteGraph, ...pageBlocks];
 ---
 
 <!doctype html>
@@ -30,7 +78,7 @@ const { title, description, jsonLd, ogType } = Astro.props;
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="alternate" type="application/rss+xml" title="Phronimos Notes" href="/rss.xml" />
     <meta name="generator" content={Astro.generator} />
-    <Seo title={title} description={description} jsonLd={jsonLd} ogType={ogType} />
+    <Seo title={title} description={description} jsonLd={allJsonLd} ogType={ogType} />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>

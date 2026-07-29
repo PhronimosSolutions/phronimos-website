@@ -4,24 +4,28 @@ import { CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
 ---
 
 <BaseLayout
-  title="AI Maturity Assessment | Phronimos"
-  description="A free 7-minute AI maturity diagnostic: 30 questions across six dimensions of AI readiness, with a scored custom report delivered within two business days."
+  title="Free AI Maturity Assessment for Small Businesses | Phronimos"
+  description="A free 7-minute AI readiness scorecard: 30 questions across six dimensions, scored against the Phronimos AI Maturity Model. Report emailed in two business days."
 >
   <!-- INTRO -->
   <section id="hero" class="section assess-hero" data-stage="hero">
     <div class="container">
       <hr class="rule" data-reveal />
       <h1 data-reveal style="--reveal-i: 1">
-        Find out where your business is on the AI Maturity Model.
+        Where does your business sit on the AI Maturity Model?
       </h1>
       <p class="lede" data-reveal style="--reveal-i: 2">
-        A free, 7-minute diagnostic. Custom report delivered to your inbox within two business
-        days.
+        A free 7-minute scorecard. It tells you where you stand across six dimensions and which one
+        is holding you back. Report emailed within two business days.
       </p>
       <ul class="assess-points" data-reveal style="--reveal-i: 3">
         <li>30 questions across six dimensions of AI readiness.</li>
-        <li>A scored report with a 90-day path to your next level.</li>
-        <li>No sales call required to get the report.</li>
+        <li>A scored report naming your weakest dimension and why it gates the rest.</li>
+        <li>
+          Where the scorecard stops: it names the gap. The <a href="/ai-workflow-audit/"
+            >AI Workflow Audit</a
+          > is how you find out which workflow to move first, and what it is worth.
+        </li>
       </ul>
       <button class="btn btn-primary" onclick="startAssessment()" id="start-btn" data-reveal style="--reveal-i: 4">
         Start the assessment
@@ -61,15 +65,19 @@ import { CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
     <div class="container">
       <hr class="rule" />
       <p class="eyebrow">Your assessment is in</p>
-      <h1>Thank you. We will be in touch.</h1>
+      <h2 class="thanks-head">Received. Your report is being scored.</h2>
       <p class="lede">
-        Your responses have been received. We are scoring your dimensions and drafting your custom
-        AI Maturity report now.
+        Your responses are in. We are scoring your six dimensions and drafting your AI Maturity
+        report now.
       </p>
       <ul class="assess-points">
-        <li>Your full report (PDF and slide deck) will arrive within two business days.</li>
-        <li>The report includes a 90-day path tailored to where you scored.</li>
-        <li>No sales call is required. You can read the report and decide what you want next.</li>
+        <li>Your full report (PDF and slide deck) arrives within two business days.</li>
+        <li>It names where you scored, and which dimension is gating the others.</li>
+        <li>
+          Read it and decide what you want next. If you want the workflow-level answer, the <a
+            href="/ai-workflow-audit/">AI Workflow Audit</a
+          > picks up where the scorecard stops.
+        </li>
       </ul>
       <p class="muted signoff">Phronimos &middot; <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></p>
     </div>
@@ -447,11 +455,24 @@ function focusFirstInput() {
     target = container.querySelector("h2");
     if (target) target.setAttribute("tabindex", "-1");
   }
-  if (!target) return;
-  target.scrollIntoView({ behavior: "smooth", block: "start" });
-  requestAnimationFrame(() => {
-    try { target.focus({ preventScroll: true }); } catch (_) { target.focus(); }
-  });
+
+  // Bring the TOP of the form (stepper + step title) into view, not the first
+  // field, which would push the heading above the fold and land the user partway
+  // down the step. Offset the sticky header so nothing hides behind it.
+  const stage = document.getElementById("form-stage");
+  if (stage) {
+    const header = document.querySelector(".site-header");
+    const headerH = header ? header.offsetHeight : 0;
+    const top = Math.max(stage.getBoundingClientRect().top + window.scrollY - headerH - 16, 0);
+    window.scrollTo({ top, behavior: "smooth" });
+  }
+
+  // Focus the first field for keyboard users, but never let focus move the scroll.
+  if (target) {
+    requestAnimationFrame(() => {
+      try { target.focus({ preventScroll: true }); } catch (_) { /* focus is best-effort */ }
+    });
+  }
 }
 
 function updateStepper() {
@@ -782,7 +803,7 @@ window.__assess = { state, computeScores, renderStep, isStepValid };
   }
 
   :global(.q-card.answered) {
-    border-color: #f0c4b3;
+    border-color: var(--accent-line);
   }
 
   :global(.q-card .q-num) {
@@ -834,7 +855,7 @@ window.__assess = { state, computeScores, renderStep, isStepValid };
   :global(.likert .dot) {
     width: 18px;
     height: 18px;
-    border: 1.5px solid #b9c1c7;
+    border: 1.5px solid var(--line-strong);
     border-radius: 50%;
     background: var(--surface-raised);
     transition: all var(--dur-instant) var(--ease-precise);
@@ -913,7 +934,7 @@ window.__assess = { state, computeScores, renderStep, isStepValid };
   :global(.multi .check) {
     width: 18px;
     height: 18px;
-    border: 1.5px solid #b9c1c7;
+    border: 1.5px solid var(--line-strong);
     border-radius: 4px;
     background: var(--surface-raised);
     display: flex;
@@ -989,8 +1010,8 @@ window.__assess = { state, computeScores, renderStep, isStepValid };
 
   :global(#next-btn:disabled),
   :global(#submit-btn:disabled) {
-    background: #aab3ba;
-    color: #f5f7f8;
+    background: var(--line-strong);
+    color: var(--text-tertiary);
     cursor: not-allowed;
   }
 
@@ -1084,7 +1105,14 @@ window.__assess = { state, computeScores, renderStep, isStepValid };
     margin-top: var(--space-6);
   }
 
-  .thanks h1 {
+  /* Rendered as h2 so the page keeps a single h1 (the hero question) regardless
+     of which stage is active. Styled at h1 scale. */
+  .thanks .thanks-head {
+    font-family: var(--font-display);
+    font-weight: 460;
+    font-size: clamp(30px, 4vw, 44px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
     margin-top: var(--space-3);
     max-width: 20ch;
   }

@@ -4,30 +4,30 @@ import { CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
 ---
 
 <BaseLayout
-  title="Book the Audit | Phronimos"
-  description="Book the Phronimos AI Workflow Audit. Tell us what keeps piling up and we reply within one business day."
+  title="Book an AI Workflow Audit | Phronimos"
+  description="Start an AI Workflow Audit with Phronimos. Tell us what keeps piling up, and we reply within one business day."
 >
   <section class="section contact">
     <div class="container contact-grid">
       <div class="contact-lead">
         <hr class="rule" data-reveal />
-        <h1 data-reveal style="--reveal-i: 1">Book the AI Workflow Audit.</h1>
+        <h1 data-reveal style="--reveal-i: 1">Book an AI Workflow Audit</h1>
         <p class="lede" data-reveal style="--reveal-i: 2">
           Tell us what keeps piling up. We reply within one business day.
         </p>
 
         <ol class="next-steps" data-reveal style="--reveal-i: 3">
           <li>
-            <h3>We schedule the discovery call</h3>
-            <p class="muted">A 45-minute recorded conversation about how work actually moves through your business.</p>
+            <h2>We schedule the discovery call</h2>
+            <p class="muted">A 45-minute recorded conversation about how work moves through your business today.</p>
           </li>
           <li>
-            <h3>We do the diagnosis</h3>
-            <p class="muted">Workflow review, tool-stack review, and bottleneck analysis against your real operations.</p>
+            <h2>We do the diagnosis</h2>
+            <p class="muted">Workflow review, tool-stack review, and bottleneck analysis against your live operations.</p>
           </li>
           <li>
-            <h3>You get the report</h3>
-            <p class="muted">Three to five concrete recommendations, an ROI baseline, and a recommended first sprint, walked through on a review call.</p>
+            <h2>You get the report</h2>
+            <p class="muted">Three to five concrete recommendations, an ROI baseline, and a scoped first sprint, walked through on a review call.</p>
           </li>
         </ol>
 
@@ -185,8 +185,11 @@ import { CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
     font-size: 15px;
   }
 
-  .next-steps h3 {
+  .next-steps h2 {
+    font-family: var(--font-tight);
+    font-weight: 500;
     font-size: 18px;
+    letter-spacing: -0.01em;
   }
 
   .next-steps .muted {
@@ -220,7 +223,7 @@ import { CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
   }
 
   .form-status[data-state='success'] {
-    color: #1d6b46;
+    color: #6cc39a;
   }
 
   .form-status[data-state='error'] {

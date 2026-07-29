@@ -1,10 +1,30 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { BOOKING_URL, CONTACT_EMAIL } from '../config';
+import {
+  BOOKING_URL,
+  CONTACT_EMAIL,
+  PUBLISH_SERVICE_STANDARD,
+  SERVICE_STANDARD,
+  SITE_URL,
+} from '../config';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: 'Managed AI agent implementation',
+  serviceType: 'AI agent design, implementation, and managed operation',
+  provider: { '@id': `${SITE_URL}/#organization` },
+  areaServed: { '@type': 'Country', name: 'United States' },
+  audience: {
+    '@type': 'BusinessAudience',
+    name: 'Owner-led businesses with 5 to 50 employees',
+  },
+  url: `${SITE_URL}/method/`,
+};
 
 const steps = [
   {
-    name: 'Audit',
+    name: 'AI Workflow Audit',
     head: 'Find the operational leak.',
     intro:
       'A focused, paid diagnosis of where work is leaking and which workflows should be handled first. Bounded, useful, and concrete.',
@@ -21,10 +41,10 @@ const steps = [
       'A clear diagnosis of where time is leaking and which one or two workflows should move first. You will know what should stay human, what should become a workflow, and what should become a managed AI operator.',
   },
   {
-    name: 'Sprint',
-    head: 'Build the first useful operator.',
+    name: 'Agent Implementation Sprint',
+    head: 'Build the first operator.',
     intro:
-      'One painful workflow gets built, tested, and handed off properly, instead of another PDF of recommendations.',
+      'One workflow gets designed, built, tested against live examples, and handed over with guardrails and documentation.',
     includes: [
       'First-operator design',
       'Agent and runtime configuration',
@@ -35,13 +55,13 @@ const steps = [
       'Team training session',
     ],
     outcome:
-      'One workflow becomes materially faster, cleaner, and less owner-dependent. Instead of "here is what to do," the result is: it is live, it works, and we know how it will be maintained.',
+      'One workflow becomes measurably faster and less owner-dependent. The deliverable is a running system with a documented maintenance path, and a baseline to measure it against.',
   },
   {
-    name: 'Manage',
+    name: 'Managed AI Operator Retainer',
     head: 'Keep the system running.',
     intro:
-      'The retainer turns AI adoption into a managed operating function instead of a side project. This is the ongoing partnership.',
+      'The retainer makes AI adoption a line in your operating budget with an owner attached. This is the ongoing partnership.',
     includes: [
       'One to two active requests at a time',
       'Under-48-hour turnaround target',
@@ -59,16 +79,23 @@ const steps = [
 ---
 
 <BaseLayout
-  title="Method | Phronimos"
-  description="How Phronimos works: a paid audit finds the operational leak, an implementation sprint builds the first AI operator, and a managed retainer keeps the system running."
+  title="How AI Agent Implementation Works: Audit, Sprint, Retainer | Phronimos"
+  description="How Phronimos builds and runs AI agents: a paid audit finds the operational leak, a sprint puts the first agent into production, and a retainer keeps it running."
+  jsonLd={jsonLd}
 >
   <section class="section-tight page-head">
     <div class="container">
       <hr class="rule" data-reveal />
-      <h1 data-reveal style="--reveal-i: 1">Audit first. Build second. Manage ongoing.</h1>
+      <h1 data-reveal style="--reveal-i: 1">How Phronimos builds and runs your AI agents</h1>
       <p class="lede" data-reveal style="--reveal-i: 2">
-        Most AI consulting stops at advice. Phronimos sells a controlled path from diagnosis to
-        owned execution, so the work actually changes.
+        <strong>Audit first. Build second. Manage ongoing.</strong> A paid diagnosis finds where work
+        leaks and scopes the build. A sprint puts the first operator into production. A monthly
+        retainer keeps it running and adds the next one. Each step ends in something you can hold,
+        and each one is a decision point.
+      </p>
+      <p class="muted head-links" data-reveal style="--reveal-i: 3">
+        Start here: <a href="/ai-workflow-audit/">what an AI workflow audit includes</a>, or read
+        <a href="/security/">how we handle access to your systems</a>.
       </p>
     </div>
   </section>
@@ -101,12 +128,31 @@ const steps = [
 
   <section class="section-tight reliability">
     <div class="container">
-      <h2 data-reveal>Reliability is the product.</h2>
-      <p class="lede" data-reveal style="--reveal-i: 1">
-        A digital teammate that works most of the time is not most of the way valuable. It is a
-        liability. So every operator ships with monitoring, failure alerts, recovery paths, and
-        clear escalation. Your team should never be the one discovering the system failed.
+      <h2 data-reveal>What happens when an AI agent breaks?</h2>
+      <p class="lede answer" data-reveal style="--reveal-i: 1">
+        Every operator carries monitoring, failure alerts, automatic recovery where it is possible,
+        and a named escalation path. Alerts reach Phronimos before they reach you, and every
+        incident ends in a written account of what happened and what changed.
       </p>
+      <p class="muted reliability-note" data-reveal style="--reveal-i: 2">
+        An agent that works most of the time is a liability, because the failures are silent and the
+        cost lands on whoever was trusting it. So reliability is engineered first and measured
+        continuously, on our side of the line.
+      </p>
+
+      {
+        PUBLISH_SERVICE_STANDARD && (
+          <div class="standard-grid" data-reveal style="--reveal-i: 3">
+            {SERVICE_STANDARD.map((item) => (
+              <div class="standard-item">
+                <p class="metric">{item.metric}</p>
+                <p class="standard-label">{item.label}</p>
+                <p class="muted">{item.detail}</p>
+              </div>
+            ))}
+          </div>
+        )
+      }
     </div>
   </section>
 
@@ -114,11 +160,11 @@ const steps = [
     <div class="container">
       <h2 class="display" data-reveal>Start where the risk is lowest.</h2>
       <p class="lede" data-reveal style="--reveal-i: 1">
-        The audit is a bounded first step with a concrete deliverable. If the findings are not
-        worth acting on, you keep the report and walk away smarter.
+        The audit is a bounded first step with a concrete deliverable, and it is the only
+        commitment you make up front. Everything after it is a separate decision.
       </p>
       <div class="cta-actions" data-reveal style="--reveal-i: 2">
-        <a href={BOOKING_URL} class="btn btn-primary">Book the AI Workflow Audit</a>
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the AI Workflow Audit</a>
         <span class="muted">or write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
       </div>
     </div>
@@ -133,7 +179,16 @@ const steps = [
 
   .page-head .lede {
     margin-top: var(--space-5);
-    max-width: 52ch;
+    max-width: 62ch;
+  }
+
+  .head-links {
+    margin-top: var(--space-5);
+    font-size: 15.5px;
+  }
+
+  .answer {
+    max-width: 64ch;
   }
 
   .step-section {
@@ -209,6 +264,41 @@ const steps = [
     max-width: 62ch;
   }
 
+  .reliability-note {
+    margin-top: var(--space-5);
+    max-width: 62ch;
+    font-size: 15.5px;
+  }
+
+  /* Published service standard. Numbers, not nouns: this is the block that
+     separates a managed service from a list of activities. */
+  .standard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-6);
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--line);
+  }
+
+  .standard-label {
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 15px;
+    margin-top: var(--space-2);
+  }
+
+  .standard-item .muted {
+    margin-top: var(--space-2);
+    font-size: 14.5px;
+  }
+
+  @media (max-width: 960px) {
+    .standard-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
   .final-cta .display {
     max-width: 16ch;
   }
@@ -233,6 +323,11 @@ const steps = [
 
     .include-list {
       columns: 1;
+    }
+
+    .standard-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-5);
     }
   }
 </style>

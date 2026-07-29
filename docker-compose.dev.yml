@@ -1,0 +1,21 @@
+services:
+  web:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0"
+    ports:
+      - "4321:4321"
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    environment:
+      - PUBLIC_WEB3FORMS_KEY=${PUBLIC_WEB3FORMS_KEY:-}
+      # Astro's file watcher inside the Linux VM needs polling to see
+      # changes made from the macOS host, otherwise hot-reload misses them.
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=300
+    stdin_open: true
+    tty: true
+
+volumes:
+  node_modules:

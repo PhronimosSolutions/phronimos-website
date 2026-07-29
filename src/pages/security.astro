@@ -1,0 +1,245 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BOOKING_URL, CONTACT_EMAIL, SITE_URL } from '../config';
+
+// Derived from security-policy.md. Changes to this page are trust-defining and
+// need sign-off before deploy, because everything on it is a commitment.
+//
+// Two of the five named target verticals are law firms and insurance agencies.
+// Neither can buy without this page existing.
+
+const principles = [
+  ['Phronimos never holds your passwords.', 'Access is granted through authorization flows you complete yourself. It is not collected, and it is not stored on our side.'],
+  ['Least privilege by default.', 'We request the minimum permissions a workflow needs, for the systems named in the statement of work, and nothing else.'],
+  ['Per-client isolation.', 'No client authentication surface touches another. Each engagement runs in its own isolated environment.'],
+  ['High-risk actions are gated.', 'Sends to your customers, payments, bulk changes, and deletions require approval from your named approver before an operator executes them.'],
+  ['We detect failures first.', 'Monitoring and alerting sit on our side of the line, so a broken operator reaches us before it reaches you.'],
+  ['Access ends when the engagement ends.', 'Every grant is revoked or handed back for revocation, data is returned or deleted per the agreement, and completion is confirmed in writing.'],
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Security and data handling',
+  url: `${SITE_URL}/security/`,
+  description:
+    'How Phronimos handles client credentials, system access, data, and operational risk when building and managing AI agents on client systems.',
+  publisher: { '@id': `${SITE_URL}/#organization` },
+};
+---
+
+<BaseLayout
+  title="Security and Data Handling | Phronimos"
+  description="How Phronimos handles credentials, access, and client data when running AI agents: managed OAuth, least privilege, per-client isolation, gated high-risk actions."
+  jsonLd={jsonLd}
+>
+  <section class="section-tight page-head">
+    <div class="container">
+      <hr class="rule" data-reveal />
+      <h1 data-reveal style="--reveal-i: 1">Security and data handling</h1>
+      <p class="lede answer" data-reveal style="--reveal-i: 2">
+        Building an AI operator means giving it access to systems that hold your business. This page
+        describes how Phronimos handles that access, what we can and cannot see, and where the
+        practice is still being built out.
+      </p>
+    </div>
+  </section>
+
+  <section class="section principles-band">
+    <div class="container">
+      <h2 data-reveal>Principles</h2>
+      <ul class="principle-list">
+        {
+          principles.map(([head, body], i) => (
+            <li data-reveal style={`--reveal-i: ${Math.min(i, 3)}`}>
+              <h3>{head}</h3>
+              <p class="muted">{body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section detail-band">
+    <div class="container narrow">
+      <h2 data-reveal>How does Phronimos get access to our systems?</h2>
+      <div class="prose" data-reveal style="--reveal-i: 1">
+        <p>
+          System access runs through a managed authentication layer. Your administrator completes
+          every authorization flow directly with the source system, whether that is your email
+          provider, CRM, or messaging tool. The credential exchange happens between your business
+          and that authentication layer. Phronimos never sees, receives, or stores your password or
+          plaintext tokens at any point.
+        </p>
+        <p>
+          Tokens live in the authentication provider's encrypted storage with automatic refresh. At
+          runtime, an operator presents a client-scoped identifier and the provider applies your
+          token at call time. Where a system offers no standard authorization flow, the key is
+          entered into the provider's own interface rather than anything Phronimos controls. Where
+          the provider does not support an integration at all, a documented fallback governs
+          transfer through a password manager or encrypted send, never plain email or chat.
+        </p>
+        <p>
+          After wiring, each integration is verified with a single read-only test call. Write access
+          is exercised only inside workflow-specific procedures that carry their own dry-run gates.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section detail-band alt">
+    <div class="container narrow">
+      <h2 data-reveal>What can an operator do without asking?</h2>
+      <div class="prose" data-reveal style="--reveal-i: 1">
+        <p>
+          Managed operators run inside approved runbooks rather than as free-roaming generalists.
+          Actions designated high-risk in your statement of work require approval from your named
+          approver before execution. That list typically covers external sends to your customers,
+          payments or financial commitments, bulk data changes, and deletions.
+        </p>
+        <p>
+          The same discipline governs Phronimos internally. Money, contracts, public posting, client
+          contact, and credential actions require named human approval and are never autonomous.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section detail-band">
+    <div class="container narrow">
+      <h2 data-reveal>What happens to our data?</h2>
+      <div class="prose" data-reveal style="--reveal-i: 1">
+        <p>
+          Client data is used only to perform the engagement. No training on your data, no resale,
+          no reuse across clients. Data categories, subprocessors, breach notification, and deletion
+          terms are defined per engagement in a data processing agreement signed before work begins.
+        </p>
+        <p>
+          Your transcripts and workflow content stay out of our logs and internal reports except
+          where the engagement requires it. Internal health checks reference filenames and statuses
+          rather than content.
+        </p>
+        <p>
+          When an engagement ends, every access grant is revoked or identified for you to revoke on
+          your side, data is returned or deleted per the agreement, and completion is confirmed in
+          writing.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section detail-band alt">
+    <div class="container narrow">
+      <h2 data-reveal>How do you know when something goes wrong?</h2>
+      <div class="prose" data-reveal style="--reveal-i: 1">
+        <p>
+          Managed workflows carry monitoring and failure alerting as part of the retainer. Phronimos
+          tracks failure counts, time to detect, time to recover, task success rate, and the share of
+          failures found by Phronimos before the client noticed. A scheduled health check verifies
+          pipeline agents, failure logs, data freshness, and connected-account status, including
+          early warning on expiring or revoked grants, which otherwise surface only at the next
+          operator call.
+        </p>
+        <p>
+          The commitment: when a managed workflow fails, Phronimos aims to know first, tell you
+          promptly with a plain account of the impact, and log the incident and the fix.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section final-cta">
+    <div class="container">
+      <hr class="rule" data-reveal />
+      <h2 class="display" data-reveal style="--reveal-i: 1">Questions before you grant anything?</h2>
+      <p class="lede" data-reveal style="--reveal-i: 2">
+        Ask them before the audit rather than after. Nothing on this page changes once an engagement
+        starts, and the full policy and data processing agreement are available on request.
+      </p>
+      <div class="cta-actions" data-reveal style="--reveal-i: 3">
+        <a href={`mailto:${CONTACT_EMAIL}`} class="btn btn-secondary">Email a question</a>
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the AI Workflow Audit</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head h1 {
+    margin-top: var(--space-6);
+    max-width: 20ch;
+  }
+
+  .page-head .answer {
+    margin-top: var(--space-5);
+  }
+
+  .answer {
+    max-width: 64ch;
+  }
+
+  .narrow {
+    max-width: 820px;
+  }
+
+  .principles-band {
+    border-top: 1px solid var(--line);
+    background: var(--surface-raised);
+  }
+
+  .principle-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-7) 0 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-7) var(--space-8);
+  }
+
+  .principle-list h3 {
+    font-size: 17.5px;
+  }
+
+  .principle-list .muted {
+    margin-top: var(--space-2);
+    font-size: 15px;
+    max-width: 46ch;
+  }
+
+  .detail-band {
+    border-top: 1px solid var(--line);
+  }
+
+  .detail-band.alt {
+    background: var(--surface-raised);
+  }
+
+  .detail-band .prose {
+    margin-top: var(--space-5);
+  }
+
+  .final-cta .display {
+    max-width: 20ch;
+  }
+
+  .final-cta .lede {
+    margin-top: var(--space-5);
+    max-width: 56ch;
+  }
+
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5);
+    margin-top: var(--space-7);
+  }
+
+  @media (max-width: 860px) {
+    .principle-list {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+  }
+</style>

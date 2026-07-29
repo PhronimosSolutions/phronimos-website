@@ -1,79 +1,149 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { BOOKING_URL, CONTACT_EMAIL, LEGAL_NAME, SITE_URL } from '../config';
+import {
+  AUDIT_CREDIT_NOTE,
+  BOOKING_URL,
+  CONTACT_EMAIL,
+  PRICE_AUDIT,
+  PRICE_AUDIT_VALUE,
+  PRICE_RETAINER,
+  PRICE_RETAINER_VALUE,
+  PRICE_SPRINT,
+  PRICE_SPRINT_VALUE,
+  PUBLISH_SERVICE_STANDARD,
+  SERVICE_STANDARD,
+  SITE_URL,
+} from '../config';
 
+// The organization entity now lives site-wide in BaseLayout with a stable @id.
+// This page adds only the offer catalogue, referenced back to that entity.
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'ProfessionalService',
-  name: 'Phronimos',
-  legalName: LEGAL_NAME,
+  '@type': 'OfferCatalog',
+  name: 'Phronimos engagements',
   url: SITE_URL,
-  email: CONTACT_EMAIL,
-  logo: `${SITE_URL}/apple-touch-icon.png`,
-  description:
-    'Phronimos designs, deploys, and manages AI operators that automate repetitive business workflows for owner-led companies.',
-  priceRange: '$1,500 - $5,000+/mo',
-  founder: { '@type': 'Person', name: 'Matthew Kirby' },
-  areaServed: 'United States',
+  provider: { '@id': `${SITE_URL}/#organization` },
+  itemListElement: [
+    {
+      '@type': 'Offer',
+      name: 'AI Workflow Audit',
+      description:
+        'A paid diagnosis of where operational time is leaking, with a findings report and a scoped first build.',
+      priceCurrency: 'USD',
+      priceSpecification: {
+        '@type': 'PriceSpecification',
+        price: PRICE_AUDIT_VALUE,
+        priceCurrency: 'USD',
+      },
+      url: `${SITE_URL}/ai-workflow-audit/`,
+    },
+    {
+      '@type': 'Offer',
+      name: 'Agent Implementation Sprint',
+      description:
+        'One workflow built into a production AI agent, tested against live examples and handed over with guardrails and an SOP.',
+      priceCurrency: 'USD',
+      priceSpecification: {
+        '@type': 'PriceSpecification',
+        minPrice: PRICE_SPRINT_VALUE,
+        priceCurrency: 'USD',
+      },
+      url: `${SITE_URL}/services/`,
+    },
+    {
+      '@type': 'Offer',
+      name: 'Managed AI Operator Retainer',
+      description:
+        'Monitoring, maintenance, and continued rollout of the AI agent layer under a monthly retainer.',
+      priceCurrency: 'USD',
+      priceSpecification: {
+        '@type': 'UnitPriceSpecification',
+        price: PRICE_RETAINER_VALUE,
+        priceCurrency: 'USD',
+        unitCode: 'MON',
+      },
+      url: `${SITE_URL}/services/`,
+    },
+  ],
 };
 
-const operators = [
-  ['Inbox triage', 'Priority surfaced, noise filed, drafts ready for review.'],
+// Where most first builds land: universal, high-volume, easy to measure.
+const starters = [
+  ['Inbox triage', 'Priority surfaced, noise filed, drafts staged for review.'],
   ['Meeting follow-up', 'Summaries, next steps, and owners captured every time.'],
   ['Lead intake and routing', 'Every inquiry qualified and put in front of the right person.'],
   ['Document chase-ups', 'The polite persistence nobody on your team has time for.'],
   ['Repeated internal questions', 'Answers pulled from your own knowledge, on demand.'],
-  ['Open-loop tracking', 'Commitments tracked until they actually close.'],
+  ['Open-loop tracking', 'Commitments tracked until they close.'],
+];
+
+// Where a custom build earns the retainer: multi-system, judgment-bearing,
+// consequential if it goes wrong. These describe the shape of the work, not
+// past engagements.
+const custom = [
+  [
+    'Matter intake and conflict screening',
+    'Inbound inquiry parsed, conflicts checked against the practice-management system, engagement letter drafted, and non-viable matters declined with the reason on file.',
+  ],
+  [
+    'Renewal chase across a book of business',
+    'Policy data reconciled from the agency management system, exposure changes flagged, and client outreach sequenced and escalated by expiry date.',
+  ],
+  [
+    'Candidate screening against a live requisition',
+    'Applicants scored against the actual scorecard, notes written back to the ATS, and borderline cases escalated with the reasoning attached.',
+  ],
 ];
 
 const fits = [
   'You lead a team of 5 to 50 and operations still route through you.',
-  'Repeated admin and follow-up work eats real hours every week.',
+  'Repeated admin and follow-up work eats hours every week.',
   'The SaaS stack is full, yet the work is still manual.',
-  'You want execution and ownership, not another strategy deck.',
+  'You want someone accountable for the system after it goes live.',
 ];
 ---
 
 <BaseLayout
-  title="Phronimos | Managed AI Operators for Owner-Led Businesses"
-  description="Phronimos builds and manages the AI operators that take repetitive work off your desk: inbox triage, follow-ups, intake, and more. Audit first, build second, manage ongoing."
+  title="Managed AI Agents for Small Businesses | Phronimos"
+  description="Phronimos designs, builds, and runs custom AI agents for owner-led businesses. Start with a $999 AI Workflow Audit, credited toward the build that follows."
   jsonLd={jsonLd}
 >
   <!-- 1. Hero: asymmetric split -->
   <section class="hero">
     <div class="container hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow" data-reveal>Managed AI Operators</p>
+        <p class="eyebrow" data-reveal>Managed AI agents</p>
         <h1 class="display" data-reveal style="--reveal-i: 1">
-          The inbox, the follow-ups,<br class="hero-br" /> the chasing. Handled.
+          The work that only moves<br class="hero-br" /> when you push it. <em>Handled.</em>
         </h1>
         <p class="lede" data-reveal style="--reveal-i: 2">
-          We find the workflows piling up around you, then build and manage the AI operators that
-          take them over.
+          Phronimos designs, builds, and runs custom AI agents for owner-led businesses. Each one is
+          wired into your systems, tested against your own cases, and monitored by us. You approve
+          outcomes. We own the machinery.
         </p>
         <div class="hero-ctas" data-reveal style="--reveal-i: 3">
-          <a href={BOOKING_URL} class="btn btn-primary">Book the AI Workflow Audit</a>
+          <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the AI Workflow Audit</a>
           <a href="/method/" class="btn btn-secondary">See how it works</a>
         </div>
       </div>
 
       <aside class="hero-panel card" data-reveal style="--reveal-i: 2" aria-label="What clients buy">
-        <p class="panel-label">What clients actually buy</p>
+        <p class="panel-label">What clients buy</p>
         <p class="panel-statement">
-          Fewer dropped follow-ups. Cleaner handoffs. Faster execution without another hire.
+          Fewer dropped follow-ups. Cleaner handoffs. Capacity without another hire.
         </p>
         <ul class="panel-list">
           <li>
-            <span>Inbox triage</span>
-            <span class="muted">first operator for most teams</span>
+            <span>AI Workflow Audit</span>
+            <span class="muted">{PRICE_AUDIT}</span>
           </li>
           <li>
-            <span>Meeting follow-up</span>
-            <span class="muted">summaries and next steps</span>
+            <span>Agent Implementation Sprint</span>
+            <span class="muted">{PRICE_SPRINT}</span>
           </li>
           <li>
-            <span>Lead intake and routing</span>
-            <span class="muted">no inquiry left waiting</span>
+            <span>Managed AI Operator Retainer</span>
+            <span class="muted">{PRICE_RETAINER}</span>
           </li>
         </ul>
       </aside>
@@ -81,28 +151,51 @@ const fits = [
     <div class="hero-geometry" aria-hidden="true"></div>
   </section>
 
-  <!-- 2. Problem: editorial manifesto band -->
-  <section class="section problem">
-    <div class="container problem-inner">
-      <hr class="rule" data-reveal />
-      <h2 class="h1" data-reveal style="--reveal-i: 1">
-        Most businesses do not need more AI tools.
-      </h2>
-      <p class="lede" data-reveal style="--reveal-i: 2">
-        They need relief. Fewer emails to hand-sort, fewer meetings that end in untracked
-        follow-ups, fewer open loops that only close when the owner pushes them.
+  <!-- 2. Definition: entity clarity, above the fold-adjacent -->
+  <section class="section-tight definition">
+    <div class="container definition-inner">
+      <p class="eyebrow" data-reveal>Definition</p>
+      <h2 class="h1" data-reveal style="--reveal-i: 1">What is a managed AI operator?</h2>
+      <p class="lede answer" data-reveal style="--reveal-i: 2">
+        A Phronimos operator is a custom AI agent built for one job inside your business: connected
+        to your systems, bounded by explicit guardrails, and monitored by us. Not a subscription you
+        configure and forget. A working system somebody is accountable for.
       </p>
-      <p class="muted trust-line" data-reveal style="--reveal-i: 3">
-        Phronimos is not AI hype and not a prompt pack. It is a practical
-        audit-to-implementation service for real business operations.
+      <p class="muted" data-reveal style="--reveal-i: 3">
+        Most of the market calls these AI agents. We call ours operators because the agent is only
+        half of what you buy. The other half is the monitoring, versioning, and escalation that
+        keeps it working in month six, when the tool it depends on changes and nobody on your team
+        notices.
       </p>
     </div>
   </section>
 
-  <!-- 3. Method: staggered progression -->
+  <!-- 3. Problem: editorial manifesto band -->
+  <section class="section problem">
+    <div class="container problem-inner">
+      <hr class="rule" data-reveal />
+      <h2 class="h1" data-reveal style="--reveal-i: 1">
+        Your stack is full. The work is still manual.
+      </h2>
+      <p class="lede" data-reveal style="--reveal-i: 2">
+        A CRM, a project tracker, a shared inbox, a meeting recorder, two automation platforms, and
+        an AI subscription someone bought after a conference. And the owner still clears email on
+        Sunday night.
+      </p>
+      <p class="muted trust-line" data-reveal style="--reveal-i: 3">
+        Software waits to be operated. The workflows that hurt are the ones nobody has time to
+        operate. Phronimos gives those workflows an owner that does not get busy.
+      </p>
+    </div>
+  </section>
+
+  <!-- 4. Method: staggered progression -->
   <section class="section method">
     <div class="container">
-      <h2 data-reveal>Audit first. Build second. Manage ongoing.</h2>
+      <h2 data-reveal>How a Phronimos engagement works</h2>
+      <p class="lede method-lede" data-reveal style="--reveal-i: 1">
+        Audit first. Build second. Manage ongoing.
+      </p>
       <div class="method-steps">
         <article class="card method-card" data-reveal>
           <p class="step-name">Audit</p>
@@ -133,51 +226,66 @@ const fits = [
     </div>
   </section>
 
-  <!-- 4. Signal room: the one deliberate dark moment -->
-  <section class="section theme-dark signal-room">
+  <!-- 5. Signal room: the deliberate warm band -->
+  <section class="section signal-room">
     <div class="container">
       <p class="eyebrow" data-reveal>The managed layer</p>
-      <h2 data-reveal style="--reveal-i: 1">Run like a system, not a science project.</h2>
+      <h2 data-reveal style="--reveal-i: 1">What does a managed AI agent service include?</h2>
+      <p class="lede answer" data-reveal style="--reveal-i: 2">
+        Every operator Phronimos builds is monitored, versioned, and covered by a service standard.
+        When something breaks, we find out first, contain it, and tell you what happened with the
+        trace attached.
+      </p>
       <div class="signal-grid">
         <article class="signal-card signal-live" data-reveal>
-          <div class="phi-signal" aria-hidden="true">
-            <svg viewBox="0 0 100 120" width="72" height="86">
-              <ellipse
-                class="signal-ring"
-                cx="50"
-                cy="60"
-                rx="28"
-                ry="24"
-                fill="none"
-                stroke="#E76F51"
-                stroke-width="6"
-                stroke-linecap="round"></ellipse>
-              <line
-                x1="50"
-                y1="18"
-                x2="50"
-                y2="102"
-                stroke="#F5F7F8"
-                stroke-width="6"
-                stroke-linecap="round"></line>
+          <div class="signal-mark" aria-hidden="true">
+            <svg viewBox="0 0 119.13 137.6" width="60" height="69" fill="#eef2f4" role="img">
+              <path
+                d="M62.76,136.6c-2.51,1.47-5.59,1.31-7.86-.46L2.05,105.09c-.79-.84-2.04-2.97-2.04-4.11v-63.7c-.01-1.97,1.55-4.16,3.24-5.17L54.37,1.68c3.59-2.14,7.03-2.41,10.57.24l50.3,29.7c1.98,1.17,3.89,3.14,3.89,5.65l-.02,63.05c0,2.89-2.24,4.51-4.47,5.82l-51.88,30.47ZM53.57,68.47l.47,57.82c1.39,1.58,3.46,2.73,5.67,3.1l51.82-30.5-.07-60.72L59.31,7.55,7.42,38.56l.05,60.77,21.36,12.6v-57.8l24.74,14.34Z"
+              ></path>
+              <polygon points="59.31 65.45 32.78 49.77 59.44 33.63 86.86 49.23 59.31 65.45"></polygon>
+              <polygon
+                points="59.82 110.5 59.56 93.18 69.53 87.31 69.54 65.65 89.54 54.04 89.7 92.94 59.82 110.5"
+              ></polygon>
             </svg>
           </div>
-          <h3>You are not the alarm system.</h3>
+          <p class="signal-status"><span class="signal-dot"></span>Monitoring · live</p>
+          <h3>You hear it from us first.</h3>
           <p class="muted">
-            Every operator is monitored, with failure alerts that reach us first. Your team should
-            never be the one discovering something broke.
+            Failure alerts route to us, never to your team. Recovery paths run automatically where
+            they can, and escalation goes to a named person rather than a ticket queue.
           </p>
         </article>
 
-        <article class="signal-card" data-reveal style="--reveal-i: 1">
-          <p class="metric">Under 48h</p>
-          <p class="muted">Turnaround target on active retainer requests.</p>
-        </article>
+        {
+          PUBLISH_SERVICE_STANDARD ? (
+            SERVICE_STANDARD.slice(0, 3).map((item, i) => (
+              <article class="signal-card" data-reveal style={`--reveal-i: ${i + 1}`}>
+                <p class="metric">{item.metric}</p>
+                <p class="signal-label">{item.label}</p>
+                <p class="muted">{item.detail}</p>
+              </article>
+            ))
+          ) : (
+            <>
+              <article class="signal-card" data-reveal style="--reveal-i: 1">
+                <p class="metric">Under 48h</p>
+                <p class="signal-label">New request turnaround</p>
+                <p class="muted">
+                  Target on retainer work. Incidents are handled on their own clock, not this one.
+                </p>
+              </article>
 
-        <article class="signal-card" data-reveal style="--reveal-i: 2">
-          <p class="metric">1 to 2</p>
-          <p class="muted">Active requests at a time. A tight queue with visible progress.</p>
-        </article>
+              <article class="signal-card" data-reveal style="--reveal-i: 2">
+                <h3>Versioned, and reversible.</h3>
+                <p class="muted">
+                  Prompts, models, and guardrails are versioned. Every change is testable, and every
+                  action an operator takes leaves a trace you can read.
+                </p>
+              </article>
+            </>
+          )
+        }
 
         <article class="signal-card signal-wide" data-reveal style="--reveal-i: 3">
           <h3>One controlled path.</h3>
@@ -190,39 +298,57 @@ const fits = [
     </div>
   </section>
 
-  <!-- 5. Operators: split list with aside -->
+  <!-- 6. Operators: split list with aside -->
   <section class="section operators">
     <div class="container operators-grid">
       <div class="operators-intro">
-        <h2 data-reveal>What gets turned into operators</h2>
-        <p class="lede" data-reveal style="--reveal-i: 1">
-          The first wins are the universal ones: the workflows every owner-led team drowns in.
+        <h2 data-reveal>Which workflows should become AI agents first?</h2>
+        <p class="lede answer" data-reveal style="--reveal-i: 1">
+          The first build is almost always a workflow every owner-led team drowns in: high volume,
+          low judgment, easy to measure. The retainer is where operators get specific to your
+          business.
         </p>
         <div class="callout" data-reveal style="--reveal-i: 2">
-          <p class="callout-head">Serious operators do not buy prompt packs.</p>
+          <p class="callout-head">The machinery stays with us.</p>
           <p>
-            They buy a system that removes executive drag and protects throughput. You never think
-            about models, tokens, or setup drama. That part sits with us.
+            You never choose a model, manage a token budget, or debug an integration. Phronimos owns
+            the runtime, the auth layer, the monitoring, and the version history for everything it
+            builds.
           </p>
         </div>
       </div>
-      <ul class="operators-list">
-        {
-          operators.map(([name, desc], i) => (
-            <li data-reveal style={`--reveal-i: ${i % 2}`}>
-              <h3>{name}</h3>
-              <p class="muted">{desc}</p>
-            </li>
-          ))
-        }
-      </ul>
+      <div class="operators-lists">
+        <h3 class="list-label">Where most teams start</h3>
+        <ul class="operators-list">
+          {
+            starters.map(([name, desc], i) => (
+              <li data-reveal style={`--reveal-i: ${i % 2}`}>
+                <h4>{name}</h4>
+                <p class="muted">{desc}</p>
+              </li>
+            ))
+          }
+        </ul>
+
+        <h3 class="list-label list-label-second">Where a custom operator earns its keep</h3>
+        <ul class="operators-list operators-list-single">
+          {
+            custom.map(([name, desc], i) => (
+              <li data-reveal style={`--reveal-i: ${i % 2}`}>
+                <h4>{name}</h4>
+                <p class="muted">{desc}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
     </div>
   </section>
 
-  <!-- 6. Who it's for: typographic grid -->
+  <!-- 7. Who it's for: typographic grid -->
   <section class="section-tight who">
     <div class="container">
-      <h2 data-reveal>Built for owner-led teams.</h2>
+      <h2 data-reveal>Who is a managed AI operator for?</h2>
       <ul class="who-grid">
         {
           fits.map((fit, i) => (
@@ -234,44 +360,52 @@ const fits = [
       </ul>
       <p class="muted markets" data-reveal>
         Common fits: agencies, law firms, insurance teams, real estate teams, recruiting firms, and
-        service businesses with real admin load.
+        service businesses with an office to run.
       </p>
     </div>
   </section>
 
-  <!-- 7. Engagement model: divided rows -->
+  <!-- 8. Engagement model: divided rows -->
   <section class="section engagement">
     <div class="container">
-      <h2 data-reveal>Three engagements. One controlled path.</h2>
+      <h2 data-reveal>What does it cost?</h2>
+      <p class="lede answer" data-reveal style="--reveal-i: 1">
+        An AI Workflow Audit costs {PRICE_AUDIT}. An Agent Implementation Sprint starts at $3,500,
+        depending on integration complexity. The Managed AI Operator Retainer is $5,000 per month.
+        Scope changes are re-priced in writing before work continues.
+      </p>
+      <p class="muted credit-note" data-reveal style="--reveal-i: 2">
+        {AUDIT_CREDIT_NOTE}
+      </p>
       <div class="offer-rows">
-        <a class="offer-row" href="/services/" data-reveal>
-          <span class="offer-price">$1,500 to $2,000</span>
+        <a class="offer-row" href="/ai-workflow-audit/" data-reveal>
+          <span class="offer-price">{PRICE_AUDIT}</span>
           <span>
             <span class="offer-name">AI Workflow Audit</span>
             <span class="muted offer-desc"
-              >Recorded discovery, workflow and tool-stack review, findings report, and a
-              recommended first sprint.</span
+              >Recorded discovery, workflow and tool-stack review, findings report, and a scoped
+              first sprint.</span
             >
           </span>
           <span class="offer-arrow" aria-hidden="true">&rarr;</span>
         </a>
         <a class="offer-row" href="/services/" data-reveal style="--reveal-i: 1">
-          <span class="offer-price">$3,500 to $7,500</span>
+          <span class="offer-price">{PRICE_SPRINT}</span>
           <span>
-            <span class="offer-name">Implementation Sprint</span>
+            <span class="offer-name">Agent Implementation Sprint</span>
             <span class="muted offer-desc"
-              >One painful workflow improved quickly, with testing, guardrails, and a proper
-              handoff.</span
+              >One workflow built into a production agent, tested on live examples, handed over with
+              guardrails and an SOP.</span
             >
           </span>
           <span class="offer-arrow" aria-hidden="true">&rarr;</span>
         </a>
         <a class="offer-row" href="/services/" data-reveal style="--reveal-i: 2">
-          <span class="offer-price">From $5,000 / mo</span>
+          <span class="offer-price">{PRICE_RETAINER}</span>
           <span>
-            <span class="offer-name">Managed Operator Retainer</span>
+            <span class="offer-name">Managed AI Operator Retainer</span>
             <span class="muted offer-desc"
-              >Maintenance, rollout, queue management, and reliability coverage.</span
+              >Monitoring, maintenance, new rollout, and a queue you can see into.</span
             >
           </span>
           <span class="offer-arrow" aria-hidden="true">&rarr;</span>
@@ -280,30 +414,31 @@ const fits = [
     </div>
   </section>
 
-  <!-- 8. FAQ teaser -->
+  <!-- 9. FAQ teaser -->
   <section class="section-tight faq-teaser">
     <div class="container faq-grid">
-      <h2 data-reveal>Questions owners ask.</h2>
+      <h2 data-reveal>Questions owners ask</h2>
       <div>
         <details class="faq-item" data-reveal>
-          <summary>Is this just an audit?</summary>
+          <summary>Is the audit the whole engagement?</summary>
           <p class="faq-body">
-            No. The audit is the paid diagnosis. The engagement is audit, then sprint, then managed
-            service.
+            The AI Workflow Audit is a paid diagnosis that scopes the first build. A full engagement
+            runs audit, then implementation sprint, then managed retainer.
           </p>
         </details>
         <details class="faq-item" data-reveal style="--reveal-i: 1">
-          <summary>Do I need to know anything about AI tooling?</summary>
+          <summary>Do I need to understand AI models or tooling?</summary>
           <p class="faq-body">
-            No. That is the point. You get outcomes and a visible queue; the machinery sits with
-            us.
+            No. Clients approve outcomes and watch a shared request queue. Model selection,
+            infrastructure, authentication, monitoring, and version control sit with Phronimos.
           </p>
         </details>
         <details class="faq-item" data-reveal style="--reveal-i: 2">
-          <summary>What workflows move first?</summary>
+          <summary>How much does it cost to have AI agents built and maintained?</summary>
           <p class="faq-body">
-            Inboxes, follow-ups, meeting outputs, intake and routing, and repeated internal
-            questions. Universal pain first, vertical-specific work second.
+            Phronimos charges {PRICE_AUDIT} for a workflow audit, from $3,500 to build and deploy
+            the first agent, and $5,000 per month to monitor, maintain, and expand the agent layer.
+            The audit fee is credited toward whichever comes next.
           </p>
         </details>
         <p class="faq-more" data-reveal><a href="/faq/">Read the full FAQ</a></p>
@@ -311,17 +446,21 @@ const fits = [
     </div>
   </section>
 
-  <!-- 9. Final CTA: editorial -->
+  <!-- 10. Final CTA: editorial -->
   <section class="section final-cta">
     <div class="container">
       <hr class="rule" data-reveal />
       <h2 class="display" data-reveal style="--reveal-i: 1">Start with the audit.</h2>
       <p class="lede" data-reveal style="--reveal-i: 2">
-        If work keeps piling up around you, the move is not another tool. It is finding what should
-        become a managed operator, and getting the first one live.
+        If work keeps piling up around you, the first move is finding which of it should become an
+        operator, and getting that one live.
+      </p>
+      <p class="muted cta-links" data-reveal style="--reveal-i: 3">
+        Before you book: <a href="/ai-workflow-audit/">what the audit includes</a> &middot;
+        <a href="/security/">how we handle access to your systems</a>
       </p>
       <div class="cta-actions" data-reveal style="--reveal-i: 3">
-        <a href={BOOKING_URL} class="btn btn-primary">Book the AI Workflow Audit</a>
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the AI Workflow Audit</a>
         <span class="muted">or write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
       </div>
     </div>
@@ -370,14 +509,21 @@ const fits = [
 
   .hero-geometry {
     position: absolute;
-    right: -180px;
-    top: -140px;
-    width: 560px;
-    height: 480px;
-    border: 1.5px solid #e6ebee;
+    right: -200px;
+    top: -160px;
+    width: 620px;
+    height: 620px;
+    border: 1px solid var(--accent-line);
     border-radius: 50%;
-    transform: rotate(-14deg);
     pointer-events: none;
+  }
+
+  .hero-geometry::before {
+    content: '';
+    position: absolute;
+    inset: 78px;
+    border: 1px dashed var(--grid-line);
+    border-radius: 50%;
   }
 
   .hero-panel {
@@ -387,19 +533,21 @@ const fits = [
   }
 
   .panel-label {
-    font-family: var(--font-tight);
+    font-family: var(--font-mono);
     font-weight: 500;
-    font-size: 14px;
-    color: var(--text-secondary);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
   }
 
   .panel-statement {
-    font-family: var(--font-tight);
-    font-weight: 500;
-    font-size: clamp(20px, 1.9vw, 24px);
-    line-height: 1.35;
-    letter-spacing: -0.015em;
-    margin-top: var(--space-3);
+    font-family: var(--font-display);
+    font-weight: 460;
+    font-size: clamp(21px, 2vw, 26px);
+    line-height: 1.28;
+    letter-spacing: -0.01em;
+    margin-top: var(--space-4);
   }
 
   .panel-list {
@@ -425,6 +573,38 @@ const fits = [
     font-weight: 400;
     font-size: 14px;
     text-align: right;
+  }
+
+  /* Definition band: the entity-clarity passage. Deliberately plain. */
+  .definition {
+    border-top: 1px solid var(--line);
+    background: var(--surface-raised);
+  }
+
+  .definition-inner {
+    max-width: 860px;
+  }
+
+  .definition .h1 {
+    margin-top: var(--space-4);
+    max-width: 22ch;
+  }
+
+  .definition .answer {
+    margin-top: var(--space-5);
+    max-width: 62ch;
+  }
+
+  .definition .muted {
+    margin-top: var(--space-5);
+    max-width: 66ch;
+    font-size: 15.5px;
+  }
+
+  /* A self-contained answer paragraph: sits directly under a question heading,
+     carries no links, and reads correctly if lifted out of the page alone. */
+  .answer {
+    max-width: 62ch;
   }
 
   /* Problem band: offset editorial */
@@ -453,6 +633,11 @@ const fits = [
   }
 
   /* Method: staggered cards over a connecting hairline */
+  .method-lede {
+    margin-top: var(--space-4);
+    max-width: 44ch;
+  }
+
   .method-steps {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -493,10 +678,10 @@ const fits = [
   }
 
   .step-name {
-    font-family: var(--font-tight);
-    font-weight: 600;
-    font-size: 13px;
-    letter-spacing: 0.12em;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--accent-strong);
   }
@@ -514,10 +699,22 @@ const fits = [
     margin-top: var(--space-7);
   }
 
-  /* Signal room */
+  /* Signal room: the deliberate warm band */
+  .signal-room {
+    position: relative;
+    background:
+      radial-gradient(90% 120% at 12% -10%, rgba(231, 111, 81, 0.16), transparent 55%),
+      var(--surface-band);
+    border-block: 1px solid var(--line);
+  }
+
   .signal-room h2 {
     margin-top: var(--space-4);
-    max-width: 22ch;
+    max-width: 24ch;
+  }
+
+  .signal-room .answer {
+    margin-top: var(--space-5);
   }
 
   .signal-grid {
@@ -526,6 +723,18 @@ const fits = [
     grid-template-rows: auto auto;
     gap: var(--space-5);
     margin-top: var(--space-8);
+  }
+
+  .signal-label {
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: -0.005em;
+    margin-top: var(--space-2);
+  }
+
+  .signal-label + .muted {
+    margin-top: var(--space-2);
   }
 
   .signal-card {
@@ -557,21 +766,48 @@ const fits = [
     letter-spacing: -0.015em;
   }
 
-  /* The living ring: a quiet sweep travelling the ellipse. Reduced motion stops it. */
-  .phi-signal {
+  .signal-mark {
     margin-bottom: auto;
+    opacity: 0.92;
+  }
+
+  /* Live status: a mono label with a quietly pulsing persimmon dot. */
+  .signal-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-top: var(--space-4);
+  }
+
+  .signal-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent-solid);
+    box-shadow: 0 0 0 0 var(--accent-line);
+    flex-shrink: 0;
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    .signal-ring {
-      stroke-dasharray: 132 33;
-      animation: ring-sweep 7s linear infinite;
+    .signal-dot {
+      animation: signal-pulse 2.6s var(--ease-out-soft) infinite;
     }
   }
 
-  @keyframes ring-sweep {
-    to {
-      stroke-dashoffset: -165;
+  @keyframes signal-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(231, 111, 81, 0.5);
+    }
+    70% {
+      box-shadow: 0 0 0 8px rgba(231, 111, 81, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(231, 111, 81, 0);
     }
   }
 
@@ -603,17 +839,42 @@ const fits = [
     font-size: 15.5px;
   }
 
+  .list-label {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .list-label-second {
+    display: block;
+    margin-top: var(--space-8);
+    color: var(--accent-strong);
+  }
+
   .operators-list {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: var(--space-6) 0 0;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--space-7) var(--space-6);
   }
 
-  .operators-list h3 {
+  .operators-list-single {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  .operators-list h4 {
+    font-family: var(--font-tight);
+    font-weight: 500;
     font-size: 18px;
+    letter-spacing: -0.01em;
   }
 
   .operators-list .muted {
@@ -623,7 +884,7 @@ const fits = [
 
   /* Who it's for */
   .who h2 {
-    max-width: 16ch;
+    max-width: 22ch;
   }
 
   .who-grid {
@@ -663,6 +924,20 @@ const fits = [
   }
 
   /* Engagement rows */
+  .engagement .answer {
+    margin-top: var(--space-4);
+  }
+
+  /* The credit is the whole reason a low front-door fee reads as a qualifying
+     step rather than the ceiling on the practice. Give it its own weight. */
+  .credit-note {
+    margin-top: var(--space-4);
+    max-width: 60ch;
+    font-size: 15.5px;
+    padding-left: var(--space-4);
+    border-left: 2px solid var(--accent-solid);
+  }
+
   .offer-rows {
     margin-top: var(--space-7);
   }
@@ -727,6 +1002,11 @@ const fits = [
     max-width: 52ch;
   }
 
+  .cta-links {
+    margin-top: var(--space-5);
+    font-size: 15.5px;
+  }
+
   .cta-actions {
     display: flex;
     flex-wrap: wrap;
@@ -776,6 +1056,11 @@ const fits = [
     .operators-list {
       grid-template-columns: 1fr;
       gap: var(--space-6);
+    }
+
+    .definition-inner,
+    .definition .h1 {
+      max-width: none;
     }
 
     .who-grid {

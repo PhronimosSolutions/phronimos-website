@@ -1,0 +1,453 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import {
+  AUDIT_CREDIT_NOTE,
+  BOOKING_URL,
+  CONTACT_EMAIL,
+  PRICE_AUDIT,
+  PRICE_AUDIT_VALUE,
+  PRICE_SPRINT,
+  SITE_URL,
+} from '../config';
+
+// Category-ownership page. "AI workflow audit" names the entry offer and has a
+// thin SERP with no incumbent, so this page is written to be the definitional
+// answer an assistant quotes, not to chase volume. Structure follows the pattern
+// that gets extracted: question-shaped headings, a self-contained answer under
+// each, a comparison table, and prices stated in prose.
+
+const includes = [
+  ['45-minute recorded discovery call', 'How work moves through the business today, in your words.'],
+  ['Workflow and tool-stack review', 'What you run, what it costs, and where the systems stop talking.'],
+  ['Bottleneck analysis', 'Where hours leak, and whether the cause is a tool, a handoff, or an owner.'],
+  ['Findings report', 'Three to five concrete recommendations in priority order.'],
+  ['ROI baseline estimate', 'What the leaking hours cost you per week, so later claims have a number to beat.'],
+  ['30-minute review call', 'The report walked through live, with questions answered.'],
+  ['Scoped first sprint', 'A specific workflow, a specific build, and a specific price.'],
+];
+
+const verdicts = [
+  ['What should stay human', 'Work where the judgment is the value, and automating it would remove the point.'],
+  ['What should become a workflow', 'Work that needs documentation and routing more than it needs AI.'],
+  ['What should become an operator', 'Work with enough volume, enough structure, and enough pain to justify a build.'],
+  ['What should wait', 'Work sitting on data or systems that are not ready, and what would make them ready.'],
+];
+
+const faqs = [
+  {
+    q: 'What is an AI workflow audit?',
+    a: 'An AI workflow audit is a paid diagnostic engagement that maps how work moves through a business, measures where operational time is lost, and decides which specific workflows should be automated first. It ends in a written report: prioritized recommendations, a cost baseline for the hours being lost, and a first build scoped with a price.',
+  },
+  {
+    q: 'How much does an AI workflow audit cost?',
+    a: 'The Phronimos AI Workflow Audit costs $999 as a flat fee, agreed before the work starts and not dependent on how many systems are in scope. The fee is credited in full toward an Agent Implementation Sprint or the first month of a Managed AI Operator Retainer, so for anyone who goes on to build, the diagnosis is effectively free.',
+  },
+  {
+    q: 'How long does an AI workflow audit take?',
+    a: 'The audit runs on a 45-minute recorded discovery call, followed by the review work, and closes with a 30-minute call walking through the report. Most businesses spend about 90 minutes of their own time in total.',
+  },
+  {
+    q: 'What do I get at the end of an AI workflow audit?',
+    a: 'A written findings report with three to five recommendations in priority order, an estimate of hours lost per week and what they cost, a plain statement of what should stay human, and a scoped first build with a price attached.',
+  },
+  {
+    q: 'Why pay for an audit instead of taking a free consultation?',
+    a: 'A free consultation ends in a conversation. A paid audit ends in a reviewed diagnosis with a cost baseline and a scoped build, and it keeps the engagement bounded on both sides. The $999 fee is credited toward whatever gets built next, so it functions as a deposit on the work rather than a separate cost. Should the findings point nowhere, the report is still yours to use.',
+  },
+  {
+    q: 'Do I have to buy anything after the audit?',
+    a: 'No. The audit is a standalone engagement with its own deliverable. It is designed to make the next decision obvious, including the decision to stop.',
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    '@id': `${SITE_URL}/ai-workflow-audit/#service`,
+    name: 'AI Workflow Audit',
+    serviceType: 'AI workflow audit',
+    description:
+      'A paid diagnostic engagement that identifies where operational time leaks in a business and which workflows should become AI agents first.',
+    provider: { '@id': `${SITE_URL}/#organization` },
+    areaServed: { '@type': 'Country', name: 'United States' },
+    audience: {
+      '@type': 'BusinessAudience',
+      name: 'Owner-led businesses with 5 to 50 employees',
+    },
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'USD',
+      priceSpecification: {
+        '@type': 'PriceSpecification',
+        price: PRICE_AUDIT_VALUE,
+        priceCurrency: 'USD',
+      },
+      url: `${SITE_URL}/ai-workflow-audit/`,
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    url: `${SITE_URL}/ai-workflow-audit/`,
+    mainEntity: faqs.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'AI Workflow Audit',
+        item: `${SITE_URL}/ai-workflow-audit/`,
+      },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="What Is an AI Workflow Audit? Scope, Cost, and Deliverables | Phronimos"
+  description="An AI workflow audit is a paid diagnosis of where operational time leaks and which workflows to automate first. The Phronimos audit is $999, credited toward the build."
+  jsonLd={jsonLd}
+>
+  <section class="section-tight page-head">
+    <div class="container">
+      <hr class="rule" data-reveal />
+      <p class="eyebrow" data-reveal style="--reveal-i: 1">AI Workflow Audit &middot; {PRICE_AUDIT}, credited forward</p>
+      <h1 data-reveal style="--reveal-i: 2">What is an AI workflow audit?</h1>
+      <p class="lede answer" data-reveal style="--reveal-i: 3">
+        An AI workflow audit is a paid diagnostic engagement that reviews how work actually moves
+        through a business, identifies where operational time leaks, and determines which specific
+        workflows should be automated first. The deliverable is a findings report with prioritized
+        recommendations, an ROI baseline, and a scoped first build.
+      </p>
+      <p class="muted" data-reveal style="--reveal-i: 4">
+        The Phronimos audit is a flat {PRICE_AUDIT}, takes about 90 minutes of your time, and ends
+        in a written verdict you keep whether or not you build anything.
+      </p>
+      <p class="muted credit-note" data-reveal style="--reveal-i: 5">
+        {AUDIT_CREDIT_NOTE}
+      </p>
+      <div class="cta-actions" data-reveal style="--reveal-i: 6">
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the AI Workflow Audit</a>
+        <a href="/method/" class="btn btn-secondary">See the full method</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section includes-band">
+    <div class="container">
+      <h2 data-reveal>What does an AI workflow audit include?</h2>
+      <p class="lede answer" data-reveal style="--reveal-i: 1">
+        The audit covers a recorded discovery call, a review of your workflows and tool stack, a
+        bottleneck analysis, a written findings report with three to five recommendations, an ROI
+        baseline, a review call, and a scoped first sprint.
+      </p>
+      <ul class="detail-list" data-reveal style="--reveal-i: 2">
+        {
+          includes.map(([name, desc]) => (
+            <li>
+              <h3>{name}</h3>
+              <p class="muted">{desc}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section verdict-band">
+    <div class="container">
+      <h2 data-reveal>What does the audit actually decide?</h2>
+      <p class="lede answer" data-reveal style="--reveal-i: 1">
+        The audit sorts your recurring work into four buckets and says which is which. Most of the
+        value is in the first and last buckets, because those are the ones that stop you wasting
+        money.
+      </p>
+      <ul class="verdict-list" data-reveal style="--reveal-i: 2">
+        {
+          verdicts.map(([name, desc]) => (
+            <li>
+              <h3>{name}</h3>
+              <p class="muted">{desc}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="muted verdict-note" data-reveal>
+        A recurring finding: a large share of what feels like judgment work is repetition wearing a
+        judgment costume. Separating the two is most of the exercise.
+      </p>
+    </div>
+  </section>
+
+  <section class="section compare-band">
+    <div class="container">
+      <h2 data-reveal>Audit, free consultation, or straight to a build?</h2>
+      <p class="lede answer" data-reveal style="--reveal-i: 1">
+        There are three ways to start automating work, and each is right in different
+        circumstances. The audit is the right first step when you know operations feel heavy but
+        cannot yet name which workflow is costing you most.
+      </p>
+      <div class="table-wrap" data-reveal style="--reveal-i: 2">
+        <table class="compare">
+          <thead>
+            <tr>
+              <th scope="col">Starting point</th>
+              <th scope="col">Cost</th>
+              <th scope="col">What you get</th>
+              <th scope="col">When it is right</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Free consultation</th>
+              <td>$0</td>
+              <td>A conversation and a list of ideas.</td>
+              <td>You already know the workflow and want to test whether a vendor is credible.</td>
+            </tr>
+            <tr class="highlight">
+              <th scope="row">AI Workflow Audit</th>
+              <td>{PRICE_AUDIT}<span class="credit-flag">credited forward</span></td>
+              <td>
+                A reviewed diagnosis, an ROI baseline, a prioritized report, and a scoped first
+                build.
+              </td>
+              <td>
+                Operations feel heavier than they should and you cannot yet name the biggest leak.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Straight to a build</th>
+              <td>{PRICE_SPRINT}</td>
+              <td>One workflow built into a production agent.</td>
+              <td>
+                You have already diagnosed the bottleneck and can name the workflow and its inputs.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted compare-note" data-reveal>
+        Because the audit fee is credited forward, starting with the diagnosis costs nothing extra
+        for anyone who goes on to build. It only stays a cost if the findings tell you to stop,
+        which is the case where it has already paid for itself.
+      </p>
+    </div>
+  </section>
+
+  <section class="section-tight audit-faq">
+    <div class="container">
+      <h2 data-reveal>AI workflow audit questions</h2>
+      <div class="faq-list" data-reveal style="--reveal-i: 1">
+        {
+          faqs.map(({ q, a }) => (
+            <details class="faq-item">
+              <summary>{q}</summary>
+              <p class="faq-body">{a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section final-cta">
+    <div class="container">
+      <hr class="rule" data-reveal />
+      <h2 class="display" data-reveal style="--reveal-i: 1">Start with the diagnosis.</h2>
+      <p class="lede" data-reveal style="--reveal-i: 2">
+        Ninety minutes of your time, a fixed fee agreed up front, and a written verdict you keep
+        whichever way the decision goes.
+      </p>
+      <div class="cta-actions" data-reveal style="--reveal-i: 3">
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the AI Workflow Audit</a>
+        <span class="muted">or write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head h1 {
+    margin-top: var(--space-4);
+    max-width: 20ch;
+  }
+
+  .page-head .answer {
+    margin-top: var(--space-5);
+  }
+
+  .page-head .muted {
+    margin-top: var(--space-5);
+    max-width: 56ch;
+    font-size: 15.5px;
+  }
+
+  .answer {
+    max-width: 64ch;
+  }
+
+  section > .container > .answer,
+  section > .container > .lede.answer {
+    margin-top: var(--space-4);
+  }
+
+  .includes-band {
+    border-top: 1px solid var(--line);
+    background: var(--surface-raised);
+  }
+
+  .detail-list,
+  .verdict-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-7) 0 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6) var(--space-7);
+    border-top: 1px solid var(--line);
+    padding-top: var(--space-6);
+  }
+
+  .detail-list h3,
+  .verdict-list h3 {
+    font-size: 17px;
+  }
+
+  .detail-list .muted,
+  .verdict-list .muted {
+    margin-top: var(--space-2);
+    font-size: 15px;
+    max-width: 46ch;
+  }
+
+  .verdict-band {
+    border-top: 1px solid var(--line);
+  }
+
+  .verdict-note {
+    margin-top: var(--space-6);
+    max-width: 60ch;
+    font-size: 15.5px;
+  }
+
+  .compare-band {
+    border-top: 1px solid var(--line);
+    background: var(--surface-band);
+  }
+
+  .table-wrap {
+    margin-top: var(--space-7);
+    overflow-x: auto;
+  }
+
+  table.compare {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 680px;
+    font-size: 15.5px;
+  }
+
+  table.compare th,
+  table.compare td {
+    text-align: left;
+    vertical-align: top;
+    padding: var(--space-4) var(--space-5) var(--space-4) 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  table.compare thead th {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  table.compare tbody th {
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 16.5px;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    padding-right: var(--space-6);
+  }
+
+  table.compare td {
+    color: var(--text-secondary);
+    max-width: 34ch;
+  }
+
+  table.compare tr.highlight th,
+  table.compare tr.highlight td {
+    background: var(--accent-subtle);
+  }
+
+  table.compare tr.highlight th {
+    color: var(--accent-strong);
+  }
+
+  .compare-note {
+    margin-top: var(--space-5);
+    max-width: 64ch;
+    font-size: 15px;
+  }
+
+  .credit-flag {
+    display: block;
+    margin-top: 3px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-strong);
+  }
+
+  .credit-note {
+    margin-top: var(--space-4);
+    max-width: 60ch;
+    font-size: 15.5px;
+    padding-left: var(--space-4);
+    border-left: 2px solid var(--accent-solid);
+  }
+
+  .audit-faq .faq-list {
+    margin-top: var(--space-6);
+    max-width: 76ch;
+  }
+
+  .final-cta .display {
+    max-width: 16ch;
+  }
+
+  .final-cta .lede {
+    margin-top: var(--space-5);
+    max-width: 52ch;
+  }
+
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5);
+    margin-top: var(--space-7);
+  }
+
+  @media (max-width: 860px) {
+    .detail-list,
+    .verdict-list {
+      grid-template-columns: 1fr;
+      gap: var(--space-5);
+    }
+  }
+</style>
