@@ -1,0 +1,113 @@
+---
+// FIG. 02 — Where the work pools.
+//
+// Six streams of work, one person they all route through, and two that do
+// not come out the other side. The drawing is the claim on this section:
+// the stack is full and the work is still manual, because software waits
+// to be operated and there is one operator.
+//
+// The dropped lanes draw last, in persimmon, ending in a drafting break
+// mark. A break mark means the line does not continue. That is the point.
+import Figure from './Figure.astro';
+
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+
+const lanes = [24, 52, 80, 108, 136, 164];
+const dropped = [80, 136];
+const node = { x: 206, y: 76, w: 44, h: 36, cy: 94 };
+---
+
+<Figure id="Fig. 02" title="Where the work pools" class={`fig-bottleneck ${className ?? ''}`}>
+  <svg
+    viewBox="0 0 440 232"
+    role="img"
+    aria-label="Diagram: six streams of inbound work all converge on one person, and two of the six never resume on the other side."
+  >
+    <text class="f-micro" x="8" y="12">INBOUND WORK</text>
+
+    {
+      lanes.map((y, i) => (
+        <>
+          <path class="f-line f-draw" pathLength="100" d={`M8,${y} H168`} style={`--fig-d: ${i * 60}`} />
+          <rect class="f-node f-pop" x="22" y={y - 3.5} width="7" height="7" style={`--fig-d: ${80 + i * 30}`} />
+          <path
+            class="f-line f-draw"
+            pathLength="100"
+            d={`M168,${y} L${node.x},${node.cy}`}
+            style={`--fig-d: ${230 + i * 20}`}
+          />
+        </>
+      ))
+    }
+
+    <rect
+      class="f-node f-pop"
+      x={node.x}
+      y={node.y}
+      width={node.w}
+      height={node.h}
+      style="--fig-d: 360"
+    />
+    <text class="f-key f-pop" x="228" y="99" text-anchor="middle" style="--fig-d: 400">YOU</text>
+
+    {
+      lanes
+        .filter((y) => !dropped.includes(y))
+        .map((y, i) => (
+          <path
+            class="f-line f-draw"
+            pathLength="100"
+            d={`M250,${node.cy} L288,${y}`}
+            style={`--fig-d: ${420 + i * 20}`}
+          />
+        ))
+    }
+
+    {
+      lanes
+        .filter((y) => !dropped.includes(y))
+        .map((y, i) => (
+          <>
+            <path class="f-line f-draw" pathLength="100" d={`M288,${y} H396`} style={`--fig-d: ${520 + i * 30}`} />
+            <path class="f-line f-draw" pathLength="100" d={`M396,${y - 4} V${y + 4}`} style={`--fig-d: ${550 + i * 30}`} />
+          </>
+        ))
+    }
+    <path class="f-line f-draw" pathLength="100" d="M400,24 H406 V164 H400" style="--fig-d: 650" />
+    <text class="f-micro f-pop" x="410" y="97" style="--fig-d: 680">DONE</text>
+
+    {
+      dropped.map((y, i) => (
+        <>
+          {/* A dropped path is persimmon from the moment it leaves the node,
+              not just at the break: the whole run is the thing being shown. */}
+          <path
+            class="f-hot f-draw"
+            pathLength="100"
+            d={`M250,${node.cy} L288,${y}`}
+            style={`--fig-d: ${730 + i * 110}`}
+          />
+          <path class="f-hot f-draw" pathLength="100" d={`M288,${y} H300`} style={`--fig-d: ${790 + i * 110}`} />
+          <path
+            class="f-hot f-draw"
+            pathLength="100"
+            d={`M296,${y + 5} L302,${y - 5} M300,${y + 5} L306,${y - 5}`}
+            style={`--fig-d: ${840 + i * 110}`}
+          />
+          <text class="f-micro f-accent f-pop" x="314" y={y + 3} style={`--fig-d: ${890 + i * 110}`}>
+            DROPPED
+          </text>
+        </>
+      ))
+    }
+
+    <!-- Dashed guides fade in rather than draw: f-draw owns stroke-dasharray. -->
+    <path class="f-guide f-pop" d="M228,112 V196" style="--fig-d: 1060" />
+    <text class="f-label f-pop" x="228" y="212" text-anchor="middle" style="--fig-d: 1110"
+      >EVERY PATH RUNS THROUGH ONE PERSON</text
+    >
+  </svg>
+</Figure>

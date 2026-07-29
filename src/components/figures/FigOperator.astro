@@ -1,0 +1,121 @@
+---
+// FIG. 01 — Operator schematic.
+//
+// The one plate that answers "what am I actually buying." Four ports in,
+// one bounded operator, two ways out: routine work runs unattended, and
+// anything high-risk stops at a named human before it happens. The open
+// square on the left branch against the gate on the right carries that
+// contrast without a caption, so there isn't one.
+//
+// This is the only drawing on the site with a live trace, because it is
+// the only drawing showing a thing that runs. The stall at the gate is
+// the argument: the drawing stops and waits for a person.
+//
+// Route (user units, total 508): port -> bus -> operator (occluded from
+// 98 to 174) -> split -> high-risk branch -> gate at 350 -> join ->
+// terminal. The op-trace keyframes in figures.css are keyed to those
+// distances. Move a coordinate here and the percentages move with it.
+import Figure from './Figure.astro';
+
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+
+const ports = [
+  { x: 56, label: 'EMAIL' },
+  { x: 152, label: 'CRM' },
+  { x: 248, label: 'DOCUMENTS' },
+  { x: 344, label: 'CALENDAR' },
+];
+---
+
+<Figure
+  id="Fig. 01"
+  title="Operator schematic"
+  class={`fig-operator ${className ?? ''}`}
+  states={['Ready', 'Running', 'Held for approval', 'Cleared, logged']}
+>
+  <svg
+    viewBox="0 0 400 348"
+    role="img"
+    aria-label="Schematic: four business systems feed one bounded operator. Routine actions run unattended. High-risk actions stop at your named approver before anything happens. Both paths end in a written log."
+  >
+    <!-- Systems bracket -->
+    <text class="f-micro" x="200" y="12" text-anchor="middle">YOUR SYSTEMS</text>
+    <path class="f-line f-draw" pathLength="100" d="M56,24 V18 H344 V24" style="--fig-d: 0" />
+
+    {
+      ports.map((p, i) => (
+        <>
+          <text class="f-micro f-pop" x={p.x} y="38" text-anchor="middle" style={`--fig-d: ${100 + i * 40}`}>
+            {p.label}
+          </text>
+          <rect class="f-node f-pop" x={p.x - 5} y="44" width="10" height="10" style={`--fig-d: ${100 + i * 40}`} />
+          <path
+            class="f-line f-draw"
+            pathLength="100"
+            d={`M${p.x},54 V80`}
+            style={`--fig-d: ${120 + i * 40}`}
+          />
+        </>
+      ))
+    }
+
+    <!-- Bus into the operator -->
+    <path class="f-line f-draw" pathLength="100" d="M56,80 H344" style="--fig-d: 290" />
+    <path class="f-line f-draw" pathLength="100" d="M200,80 V104" style="--fig-d: 350" />
+
+    <!-- The live trace, drawn before the operator and the gate so both
+         panels occlude it. The signal goes in, and comes out decided. -->
+    <path class="f-trace" d="M152,54 V80 H200 V202 H304 V300 H200 V308" />
+
+    <!-- Operator -->
+    <rect class="f-node f-pop" x="112" y="104" width="176" height="76" style="--fig-d: 380" />
+    <rect class="f-op-edge" x="112" y="104" width="176" height="76" />
+    <svg x="187" y="112" width="26" height="30" viewBox="0 0 119.13 137.6" fill="var(--text-secondary)">
+      <path
+        d="M62.76,136.6c-2.51,1.47-5.59,1.31-7.86-.46L2.05,105.09c-.79-.84-2.04-2.97-2.04-4.11v-63.7c-.01-1.97,1.55-4.16,3.24-5.17L54.37,1.68c3.59-2.14,7.03-2.41,10.57.24l50.3,29.7c1.98,1.17,3.89,3.14,3.89,5.65l-.02,63.05c0,2.89-2.24,4.51-4.47,5.82l-51.88,30.47ZM53.57,68.47l.47,57.82c1.39,1.58,3.46,2.73,5.67,3.1l51.82-30.5-.07-60.72L59.31,7.55,7.42,38.56l.05,60.77,21.36,12.6v-57.8l24.74,14.34Z"
+      ></path>
+      <polygon points="59.31 65.45 32.78 49.77 59.44 33.63 86.86 49.23 59.31 65.45"></polygon>
+      <polygon points="59.82 110.5 59.56 93.18 69.53 87.31 69.54 65.65 89.54 54.04 89.7 92.94 59.82 110.5"
+      ></polygon>
+    </svg>
+    <text class="f-key f-pop" x="200" y="160" text-anchor="middle" style="--fig-d: 440">OPERATOR</text>
+    <text class="f-micro f-pop" x="200" y="173" text-anchor="middle" style="--fig-d: 480"
+      >ONE JOB &middot; GUARDRAILED</text
+    >
+
+    <!-- Split -->
+    <path class="f-line f-draw" pathLength="100" d="M200,180 V202" style="--fig-d: 490" />
+    <path class="f-line f-draw" pathLength="100" d="M96,202 H304" style="--fig-d: 530" />
+    <path class="f-line f-draw" pathLength="100" d="M96,202 V216" style="--fig-d: 570" />
+    <path class="f-line f-draw" pathLength="100" d="M304,202 V216" style="--fig-d: 570" />
+
+    <!-- Left branch: routine. An open square, because nothing stops here. -->
+    <text class="f-micro f-pop" x="96" y="229" text-anchor="middle" style="--fig-d: 600">ROUTINE</text>
+    <path class="f-line f-draw" pathLength="100" d="M96,236 V252" style="--fig-d: 610" />
+    <rect class="f-node f-pop" x="90" y="252" width="12" height="12" style="--fig-d: 640" />
+    <path class="f-line f-draw" pathLength="100" d="M96,264 V300" style="--fig-d: 670" />
+
+    <!-- Right branch: high risk. A gate, because a person stops it. -->
+    <text class="f-micro f-pop" x="304" y="229" text-anchor="middle" style="--fig-d: 600">HIGH RISK</text>
+    <path class="f-line f-draw" pathLength="100" d="M304,236 V252" style="--fig-d: 610" />
+    <rect class="f-node f-pop" x="242" y="252" width="124" height="28" style="--fig-d: 640" />
+    <rect class="f-gate-bar" x="242" y="252" width="3" height="28"></rect>
+    <rect class="f-gate-fill" x="242" y="252" width="3" height="28"></rect>
+    <rect class="f-gate-fill f-gate-ring" x="242" y="252" width="124" height="28"></rect>
+    <text class="f-label f-pop" x="304" y="270" text-anchor="middle" style="--fig-d: 670"
+      >YOUR APPROVER</text
+    >
+    <path class="f-line f-draw" pathLength="100" d="M304,280 V300" style="--fig-d: 680" />
+
+    <!-- Join and terminal -->
+    <path class="f-line f-draw" pathLength="100" d="M96,300 H304" style="--fig-d: 720" />
+    <path class="f-line f-draw" pathLength="100" d="M200,300 V308" style="--fig-d: 760" />
+    <rect class="f-node f-pop" x="192" y="308" width="16" height="12" style="--fig-d: 780" />
+    <text class="f-label f-pop" x="200" y="338" text-anchor="middle" style="--fig-d: 800"
+      >ACTED, AND LOGGED</text
+    >
+  </svg>
+</Figure>

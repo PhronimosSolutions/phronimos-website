@@ -1,0 +1,51 @@
+---
+// FIG. 05 — Requested scope.
+//
+// Least privilege as a drawing rather than a sentence. Three nested
+// boundaries: everything the connected system can do, the narrower set
+// we ask for, and the narrower set again that the work actually needs.
+// The hatched ring is the standard drafting mark for a region that is
+// out of scope, and it does the job a paragraph would otherwise do.
+//
+// This plate does not animate a trace, because nothing here runs. It
+// draws itself in and stops.
+import Figure from './Figure.astro';
+
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<Figure id="Fig. 05" title="Requested scope" class={`fig-scope ${className ?? ''}`}>
+  <svg
+    viewBox="0 0 400 232"
+    role="img"
+    aria-label="Three nested boundaries: everything the connected system could do, the narrower set of permissions Phronimos requests, and the narrower set again that the workflow actually needs. The region between the outer two is hatched as not requested."
+  >
+    <defs>
+      <pattern id="fig-hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="7" stroke="var(--fig-guide)" stroke-width="1"></line>
+      </pattern>
+    </defs>
+
+    <!-- The out-of-scope ring, drawn as one even-odd path. -->
+    <path class="f-hatch f-pop" fill-rule="evenodd" d="M20,36 H380 V190 H20 Z M70,68 H330 V158 H70 Z" style="--fig-d: 320" />
+
+    <path class="f-guide f-pop" d="M20,36 H380 V190 H20 Z" style="--fig-d: 0" />
+    <text class="f-micro f-pop" x="28" y="56" style="--fig-d: 60">WHAT THE SYSTEM COULD DO</text>
+
+    <path class="f-line f-draw" pathLength="100" d="M70,68 H330 V158 H70 Z" style="--fig-d: 160" />
+    <text class="f-micro f-pop" x="78" y="88" style="--fig-d: 240">WHAT WE REQUEST</text>
+
+    <rect class="f-scope-core f-pop" x="110" y="98" width="180" height="30" style="--fig-d: 400" />
+    <text class="f-label f-strong f-pop" x="200" y="117" text-anchor="middle" style="--fig-d: 440"
+      >WHAT THE WORK NEEDS</text
+    >
+
+    <!-- Leader out of the hatched ring: diagonal, then a shoulder that sits
+         clear of the label's descenders rather than striking through them. -->
+    <path class="f-line f-pop" d="M304,176 L344,218 H392" style="--fig-d: 520" />
+    <text class="f-micro f-pop" x="392" y="211" text-anchor="end" style="--fig-d: 560">NOT REQUESTED</text>
+  </svg>
+</Figure>

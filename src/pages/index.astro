@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import FigOperator from '../components/figures/FigOperator.astro';
+import FigBottleneck from '../components/figures/FigBottleneck.astro';
 import {
   AUDIT_CREDIT_NOTE,
   BOOKING_URL,
@@ -153,20 +155,25 @@ const fits = [
 
   <!-- 2. Definition: entity clarity, above the fold-adjacent -->
   <section class="section-tight definition">
-    <div class="container definition-inner">
-      <p class="eyebrow" data-reveal>Definition</p>
-      <h2 class="h1" data-reveal style="--reveal-i: 1">What is a managed AI operator?</h2>
-      <p class="lede answer" data-reveal style="--reveal-i: 2">
-        A Phronimos operator is a custom AI agent built for one job inside your business: connected
-        to your systems, bounded by explicit guardrails, and monitored by us. Not a subscription you
-        configure and forget. A working system somebody is accountable for.
-      </p>
-      <p class="muted" data-reveal style="--reveal-i: 3">
-        Most of the market calls these AI agents. We call ours operators because the agent is only
-        half of what you buy. The other half is the monitoring, versioning, and escalation that
-        keeps it working in month six, when the tool it depends on changes and nobody on your team
-        notices.
-      </p>
+    <div class="container definition-grid">
+      <div class="definition-inner">
+        <p class="eyebrow" data-reveal>Definition</p>
+        <h2 class="h1" data-reveal style="--reveal-i: 1">What is a managed AI operator?</h2>
+        <p class="lede answer" data-reveal style="--reveal-i: 2">
+          A Phronimos operator is a custom AI agent built for one job inside your business:
+          connected to your systems, bounded by explicit guardrails, and monitored by us. Not a
+          subscription you configure and forget. A working system somebody is accountable for.
+        </p>
+        <p class="muted" data-reveal style="--reveal-i: 3">
+          Most of the market calls these AI agents. We call ours operators because the agent is only
+          half of what you buy. The other half is the monitoring, versioning, and escalation that
+          keeps it working in month six, when the tool it depends on changes and nobody on your team
+          notices.
+        </p>
+      </div>
+      <div class="definition-fig">
+        <FigOperator />
+      </div>
     </div>
   </section>
 
@@ -186,6 +193,9 @@ const fits = [
         Software waits to be operated. The workflows that hurt are the ones nobody has time to
         operate. Phronimos gives those workflows an owner that does not get busy.
       </p>
+      <div class="problem-fig">
+        <FigBottleneck />
+      </div>
     </div>
   </section>
 
@@ -575,14 +585,29 @@ const fits = [
     text-align: right;
   }
 
-  /* Definition band: the entity-clarity passage. Deliberately plain. */
+  /* Definition band: the passage carries the words, FIG. 01 carries the
+     shape. Text left, plate right, on the same baseline. */
   .definition {
     border-top: 1px solid var(--line);
     background: var(--surface-raised);
   }
 
+  .definition-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: clamp(40px, 5vw, 72px);
+    align-items: center;
+  }
+
   .definition-inner {
-    max-width: 860px;
+    max-width: 640px;
+  }
+
+  /* The plate sits at the head of its column rather than centred in it:
+     centring would shrink the grid item to fit-content and take the
+     drawing down with it. */
+  .definition-fig {
+    margin-top: var(--space-2);
   }
 
   .definition .h1 {
@@ -630,6 +655,10 @@ const fits = [
     margin-top: var(--space-5);
     font-size: 15.5px;
     max-width: 56ch;
+  }
+
+  .problem-fig {
+    margin-top: var(--space-8);
   }
 
   /* Method: staggered cards over a connecting hairline */
@@ -1018,6 +1047,7 @@ const fits = [
   /* Mobile collapse */
   @media (max-width: 860px) {
     .hero-grid,
+    .definition-grid,
     .operators-grid,
     .faq-grid {
       grid-template-columns: 1fr;

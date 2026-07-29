@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import FigStages from '../components/figures/FigStages.astro';
+import FigDetection from '../components/figures/FigDetection.astro';
 import {
   BOOKING_URL,
   CONTACT_EMAIL,
@@ -97,6 +99,9 @@ const steps = [
         Start here: <a href="/ai-workflow-audit/">what an AI workflow audit includes</a>, or read
         <a href="/security/">how we handle access to your systems</a>.
       </p>
+      <div class="head-fig">
+        <FigStages />
+      </div>
     </div>
   </section>
 
@@ -139,6 +144,10 @@ const steps = [
         cost lands on whoever was trusting it. So reliability is engineered first and measured
         continuously, on our side of the line.
       </p>
+
+      <div class="reliability-fig">
+        <FigDetection />
+      </div>
 
       {
         PUBLISH_SERVICE_STANDARD && (
@@ -185,6 +194,11 @@ const steps = [
   .head-links {
     margin-top: var(--space-5);
     font-size: 15.5px;
+  }
+
+  .head-fig,
+  .reliability-fig {
+    margin-top: var(--space-8);
   }
 
   .answer {

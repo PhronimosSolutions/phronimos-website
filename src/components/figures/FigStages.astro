@@ -1,0 +1,117 @@
+---
+// FIG. 03 — The staged commitment.
+//
+// The engagement drawn to scale rather than numbered 01/02/03. Three
+// bounded segments on one axis: the audit is short and closed at both
+// ends, the sprint is longer, and the retainer runs off the sheet with
+// an arrow because it does not have a defined end.
+//
+// The information numbering can't carry is in the gaps. Between each
+// segment sits a decision diamond, so the drawing says the thing the
+// copy says: each stage ends, and you choose again.
+import Figure from './Figure.astro';
+import { PRICE_AUDIT, PRICE_RETAINER, PRICE_SPRINT } from '../../config';
+
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+
+const stages = [
+  { name: 'AUDIT', note: 'FIND THE LEAK', from: 40, to: 160, price: PRICE_AUDIT },
+  { name: 'SPRINT', note: 'BUILD THE FIRST OPERATOR', from: 184, to: 340, price: PRICE_SPRINT },
+  { name: 'RETAINER', note: 'RUN IT, AND ADD THE NEXT', from: 364, to: 552, price: PRICE_RETAINER },
+];
+const decisions = [172, 352];
+const AXIS = 116;
+const DIM = 148;
+---
+
+<Figure id="Fig. 03" title="The engagement, staged" class={`fig-stages ${className ?? ''}`}>
+  <svg
+    viewBox="0 0 580 196"
+    role="img"
+    aria-label="Measured drawing: three stages along one axis. The audit and the sprint are closed at both ends, and the retainer runs off the drawing with an arrow because it has no defined end. A decision point sits between each stage, and each stage carries its price on a dimension line."
+  >
+    {
+      stages.map((s, i) => {
+        const mid = (s.from + s.to) / 2;
+        const open = i === stages.length - 1;
+        const gap = String(s.price).length * 4.6 + 12;
+        return (
+          <>
+            <text class="f-key f-pop" x={mid} y="44" text-anchor="middle" style={`--fig-d: ${i * 130}`}>
+              {s.name}
+            </text>
+            <text class="f-micro f-pop" x={mid} y="62" text-anchor="middle" style={`--fig-d: ${40 + i * 130}`}>
+              {s.note}
+            </text>
+
+            {/* Extension lines from the axis down to the dimension line. */}
+            <path class="f-guide f-pop" d={`M${s.from},${AXIS} V${DIM + 8}`} style={`--fig-d: ${60 + i * 130}`} />
+            {!open && (
+              <path class="f-guide f-pop" d={`M${s.to},${AXIS} V${DIM + 8}`} style={`--fig-d: ${60 + i * 130}`} />
+            )}
+
+            {/* The segment itself, with witness ticks at each closed end. */}
+            <path
+              class="f-line f-heavy f-draw"
+              pathLength="100"
+              d={`M${s.from},${AXIS} H${s.to}`}
+              style={`--fig-d: ${80 + i * 130}`}
+            />
+            <path class="f-line f-heavy f-pop" d={`M${s.from},${AXIS - 9} V${AXIS + 9}`} style={`--fig-d: ${80 + i * 130}`} />
+            {open ? (
+              <path
+                class="f-line f-heavy f-pop"
+                d={`M${s.to - 9},${AXIS - 5} L${s.to},${AXIS} L${s.to - 9},${AXIS + 5}`}
+                style={`--fig-d: ${170 + i * 130}`}
+              />
+            ) : (
+              <path class="f-line f-heavy f-pop" d={`M${s.to},${AXIS - 9} V${AXIS + 9}`} style={`--fig-d: ${170 + i * 130}`} />
+            )}
+
+            {/* Dimension line, broken around the figure it carries. */}
+            <path
+              class="f-dim f-pop"
+              d={`M${s.from},${DIM} H${mid - gap} M${mid + gap},${DIM} H${open ? s.to - 8 : s.to}`}
+              style={`--fig-d: ${190 + i * 130}`}
+            />
+            <path class="f-dim f-pop" d={`M${s.from},${DIM - 4} V${DIM + 4}`} style={`--fig-d: ${190 + i * 130}`} />
+            {open ? (
+              <path
+                class="f-dim f-pop"
+                d={`M${s.to - 8},${DIM - 4} L${s.to},${DIM} L${s.to - 8},${DIM + 4}`}
+                style={`--fig-d: ${190 + i * 130}`}
+              />
+            ) : (
+              <path class="f-dim f-pop" d={`M${s.to},${DIM - 4} V${DIM + 4}`} style={`--fig-d: ${190 + i * 130}`} />
+            )}
+            <text class="f-label f-strong f-pop" x={mid} y={DIM + 4} text-anchor="middle" style={`--fig-d: ${210 + i * 130}`}>
+              {String(s.price).toUpperCase()}
+            </text>
+          </>
+        );
+      })
+    }
+
+    {
+      decisions.map((x, i) => (
+        <>
+          <path
+            class="f-fill f-pop"
+            d={`M${x},${AXIS - 7} L${x + 7},${AXIS} L${x},${AXIS + 7} L${x - 7},${AXIS} Z`}
+            style={`--fig-d: ${480 + i * 60}`}
+          />
+          <text class="f-micro f-pop" x={x} y={AXIS - 18} text-anchor="middle" style={`--fig-d: ${520 + i * 60}`}>
+            DECISION
+          </text>
+        </>
+      ))
+    }
+
+    <text class="f-micro f-pop" x="40" y="186" style="--fig-d: 640"
+      >THE AUDIT FEE IS CREDITED TOWARD WHATEVER COMES NEXT</text
+    >
+  </svg>
+</Figure>

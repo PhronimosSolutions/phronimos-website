@@ -1,0 +1,87 @@
+---
+// FIG. 04 — Detection order.
+//
+// Two lanes with a line between them. The fault happens in the Phronimos
+// lane, and it is detected and contained before anything crosses into
+// the client's lane. The whole argument is in the geometry: the marker
+// labelled "you're told" sits to the right of the one labelled
+// "contained", and no line touches the lower lane before it.
+//
+// The spike is the only persimmon on the plate. Everything after it is
+// drawn cold, which is the point being made about incidents.
+import Figure from './Figure.astro';
+
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+
+const TOP = 66;
+const BOTTOM = 152;
+
+// Spacing is set by the widest pair of adjacent labels, not by an even
+// division: "YOU'RE TOLD" and "ON THE RECORD" need the extra room.
+const events = [
+  { x: 150, lane: TOP, label: 'FAULT' },
+  { x: 240, lane: TOP, label: 'WE DETECT' },
+  { x: 330, lane: TOP, label: 'CONTAIN' },
+  { x: 420, lane: BOTTOM, label: "YOU'RE TOLD" },
+  { x: 520, lane: BOTTOM, label: 'ON THE RECORD' },
+];
+---
+
+<Figure id="Fig. 04" title="Detection order" class={`fig-detection ${className ?? ''}`}>
+  <svg
+    viewBox="0 0 570 206"
+    role="img"
+    aria-label="Timeline in two lanes. A fault occurs in the Phronimos lane, is detected and contained there, and only then crosses into your team's lane as a notification followed by a written account."
+  >
+    <text class="f-micro f-pop" x="8" y={TOP + 4} style="--fig-d: 0">PHRONIMOS</text>
+    <text class="f-micro f-pop" x="8" y={BOTTOM + 4} style="--fig-d: 40">YOUR TEAM</text>
+
+    <!-- The line between the two lanes. -->
+    <path class="f-guide f-pop" d="M100,110 H562" style="--fig-d: 80" />
+    <text class="f-micro f-pop" x="562" y="104" text-anchor="end" style="--fig-d: 120">THE LINE</text>
+
+    <!-- Bracket: everything under it happens before you are involved. -->
+    <path class="f-line f-draw" pathLength="100" d="M150,30 V22 H330 V30" style="--fig-d: 600" />
+    <text class="f-micro f-pop" x="240" y="16" text-anchor="middle" style="--fig-d: 660"
+      >OUR SIDE OF THE LINE</text
+    >
+
+    <!-- Signal: flat, fault spike, then the run along our lane and across. -->
+    <path class="f-line f-draw" pathLength="100" d={`M100,${TOP} H145`} style="--fig-d: 160" />
+    <path class="f-hot f-draw" pathLength="100" d={`M145,${TOP} L150,38 L155,${TOP}`} style="--fig-d: 220" />
+    <path class="f-line f-draw" pathLength="100" d={`M155,${TOP} H420`} style="--fig-d: 300" />
+    <path class="f-line f-draw" pathLength="100" d={`M420,${TOP} V${BOTTOM}`} style="--fig-d: 400" />
+    <path class="f-line f-draw" pathLength="100" d={`M420,${BOTTOM} H562`} style="--fig-d: 460" />
+
+    {
+      events.map((e, i) => (
+        <>
+          <rect
+            class="f-node f-pop"
+            x={e.x - 4}
+            y={e.lane - 4}
+            width="8"
+            height="8"
+            style={`--fig-d: ${240 + i * 70}`}
+          />
+          <text
+            class="f-micro f-pop"
+            x={e.x}
+            y={e.lane + 22}
+            text-anchor="middle"
+            style={`--fig-d: ${280 + i * 70}`}
+          >
+            {e.label}
+          </text>
+        </>
+      ))
+    }
+
+    <text class="f-micro f-pop" x="100" y="196" style="--fig-d: 720"
+      >CONTAINED BEFORE IT CROSSES THE LINE</text
+    >
+  </svg>
+</Figure>

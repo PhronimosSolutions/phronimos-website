@@ -1,0 +1,480 @@
+/* Figures — the Phronimos drawing set.
+   ------------------------------------------------------------------
+   Every diagram on this site is drawn as a plate from an engineering
+   drawing set: hairline construction, square nodes, mono annotation,
+   a dimension line where something is measured, and a title block
+   underneath carrying a sheet number and a state.
+
+   Rules, so five drawings read as one system:
+   1. Persimmon marks exactly one thing per plate — the signal, the
+      gate, or the number that matters. Never two.
+   2. Nodes are squares. The brandmark is a cube; circles fight it.
+   3. Motion is construction, not decoration. Plates draw themselves
+      in once as they enter view, then hold. Only FIG. 01 carries a
+      live trace, because only FIG. 01 is showing a thing that runs.
+   4. Reduced motion and no-JS get the finished plate immediately.
+   5. On a phone a plate is never just shrunk. Narrow plates scale their
+      annotation back up to the size it was drawn at; wide plates are
+      panned, the way you move a drawing sheet under your eye.
+   ------------------------------------------------------------------ */
+
+.fig {
+  /* No margin reset here: the global reset already zeroes it, and declaring
+     it again would outrank the placement margins pages set on a plate.
+     A plate decides how big it is; the page decides where it sits.
+     Annotation is authored in real px. On narrow viewports a plate scales
+     down, so this scales the type back to roughly where it started. */
+  --f-scale: 1;
+}
+
+/* Drawn size. Every plate is authored near 1:1: the annotation is real mono
+   type and the strokes are real hairlines, so scaling one up coarsens both.
+   Pages position a plate; the plate decides how big it wants to be. */
+.fig-operator {
+  max-width: 460px;
+}
+
+.fig-bottleneck {
+  max-width: 620px;
+}
+
+.fig-stages {
+  max-width: 660px;
+}
+
+.fig-detection {
+  max-width: 640px;
+}
+
+.fig-scope {
+  max-width: 470px;
+}
+
+.fig svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+/* Title block: sheet number, title, and state. The one device that
+   makes a drawing look like it came from a set rather than a slide. */
+.fig-block {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+.fig-id {
+  color: var(--accent-strong);
+  flex-shrink: 0;
+}
+
+.fig-title {
+  color: var(--text-tertiary);
+}
+
+/* The state readout. Four values stacked in the same slot; only the
+   active one is opaque. Resolved state is the default, so a reader
+   with motion off sees the outcome rather than a blank. */
+.fig-state {
+  margin-left: auto;
+  position: relative;
+  flex-shrink: 0;
+  text-align: right;
+  white-space: nowrap;
+  color: var(--text-tertiary);
+}
+
+.fig-state span {
+  display: block;
+  opacity: 0;
+}
+
+.fig-state span:not(:first-child) {
+  position: absolute;
+  inset: 0 0 auto auto;
+}
+
+.fig-state span:last-child {
+  opacity: 1;
+}
+
+.fig-state .is-held {
+  color: var(--accent-strong);
+}
+
+/* ---------------- Drawing primitives ---------------- */
+
+.f-line,
+.f-guide,
+.f-hot,
+.f-node,
+.f-fill {
+  fill: none;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+}
+
+/* A drawn line has to survive being 1px on a near-black field, so the
+   plates run one step brighter than the page's structural hairline. */
+.fig {
+  --fig-stroke: #414e58;
+  --fig-guide: #2b353c;
+}
+
+.f-line {
+  stroke: var(--fig-stroke);
+  stroke-width: 1;
+}
+
+/* Construction guides, leaders, boundaries: present but recessive. */
+.f-guide {
+  stroke: var(--fig-guide);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+
+.f-node {
+  stroke: var(--fig-stroke);
+  stroke-width: 1;
+  fill: var(--surface-canvas);
+}
+
+.f-hot {
+  stroke: var(--accent-solid);
+  stroke-width: 1.5;
+}
+
+/* Object line: the thing being drawn, heavier than what measures it. */
+.f-heavy {
+  stroke-width: 1.75;
+}
+
+/* Dimension line: subordinate to the object it measures, so the figure
+   it carries reads first. */
+.f-dim {
+  stroke: var(--fig-guide);
+  stroke-width: 1;
+  fill: none;
+  stroke-linecap: square;
+}
+
+.f-fill {
+  fill: var(--accent-solid);
+  stroke: none;
+}
+
+.f-key,
+.f-label,
+.f-micro {
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
+
+.f-key {
+  font-size: calc(13px * var(--f-scale));
+  letter-spacing: 0.04em;
+  fill: var(--text-primary);
+}
+
+.f-label {
+  font-size: calc(11px * var(--f-scale));
+  letter-spacing: 0.11em;
+  fill: var(--text-secondary);
+}
+
+.f-micro {
+  font-size: calc(9.5px * var(--f-scale));
+  letter-spacing: 0.13em;
+  fill: var(--text-tertiary);
+}
+
+.f-accent {
+  fill: var(--accent-strong);
+}
+
+/* For the one figure on a plate that is a measurement, not an annotation. */
+.f-strong {
+  fill: var(--text-primary);
+}
+
+/* Hatch marks a region as out of scope. Drafting convention, and it
+   saves a paragraph on the security page. */
+.f-hatch {
+  fill: url(#fig-hatch);
+  stroke: none;
+}
+
+/* FIG. 05's innermost boundary: the only filled shape in the set. */
+.f-scope-core {
+  fill: var(--accent-subtle);
+  stroke: var(--accent-solid);
+  stroke-width: 1;
+}
+
+/* ---------------- Motion ---------------- */
+
+/* Plates construct themselves once. Paths carry pathLength="100" so
+   every stroke animates on the same 0–100 scale regardless of length. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js .fig .f-draw {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+  }
+
+  html.js .fig.revealed .f-draw {
+    animation: fig-draw 700ms var(--ease-out-soft) forwards;
+    animation-delay: calc(var(--fig-d, 0) * 1ms);
+  }
+
+  html.js .fig .f-pop {
+    opacity: 0;
+  }
+
+  html.js .fig.revealed .f-pop {
+    animation: fig-pop 420ms var(--ease-out-soft) forwards;
+    animation-delay: calc(var(--fig-d, 0) * 1ms);
+  }
+}
+
+@keyframes fig-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fig-pop {
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---------------- FIG. 01 — the live trace ---------------- */
+/* One signal, one run, one pause at the gate. The pause is the point:
+   it is the moment the drawing shows a human being asked. */
+
+.fig-operator .f-trace {
+  stroke: var(--accent-solid);
+  stroke-width: 2.5;
+  fill: none;
+  stroke-linecap: round;
+  /* Gap far longer than the 508-unit route, so exactly one dash walks it. */
+  stroke-dasharray: 16 800;
+  stroke-dashoffset: 0;
+  opacity: 0;
+}
+
+.fig-operator .f-gate-bar {
+  fill: var(--accent-solid);
+  opacity: 0.3;
+}
+
+.fig-operator .f-gate-fill {
+  fill: var(--accent-solid);
+  opacity: 0;
+}
+
+.fig-operator .f-gate-ring {
+  fill: none;
+  stroke: var(--accent-solid);
+  stroke-width: 1;
+}
+
+.fig-operator .f-op-edge {
+  stroke: var(--accent-solid);
+  stroke-width: 1.5;
+  fill: none;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html.js .fig-operator.revealed .f-trace {
+    /* Linear: an instrument trace travels at a constant rate. */
+    animation: op-trace 3400ms linear 1650ms forwards;
+  }
+
+  html.js .fig-operator.revealed .f-gate-fill {
+    animation: op-gate 3400ms linear 1650ms forwards;
+  }
+
+  html.js .fig-operator.revealed .f-op-edge {
+    animation: op-edge 3400ms linear 1650ms forwards;
+  }
+
+  html.js .fig-operator.revealed .fig-state span {
+    animation: op-state 3400ms linear 1650ms forwards;
+  }
+
+  html.js .fig-operator.revealed .fig-state .is-ready {
+    animation-name: op-state-ready;
+  }
+
+  html.js .fig-operator.revealed .fig-state .is-running {
+    animation-name: op-state-running;
+  }
+
+  html.js .fig-operator.revealed .fig-state .is-held {
+    animation-name: op-state-held;
+  }
+}
+
+/* The dash walks the 508-unit route and stops dead at the gate (350)
+   from 48% to 74%. That stall is the argument the drawing is making. */
+@keyframes op-trace {
+  0% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  48% {
+    stroke-dashoffset: -342;
+  }
+  74% {
+    stroke-dashoffset: -342;
+  }
+  96% {
+    stroke-dashoffset: -500;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: -500;
+    opacity: 0;
+  }
+}
+
+@keyframes op-gate {
+  0%,
+  46% {
+    opacity: 0;
+  }
+  50%,
+  72% {
+    opacity: 0.9;
+  }
+  78%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* The operator panel occludes the trace between route distance 98 and
+   174 — 14% to 24% of the run. It lights while the signal is inside. */
+@keyframes op-edge {
+  0%,
+  10% {
+    opacity: 0;
+  }
+  15%,
+  23% {
+    opacity: 1;
+  }
+  30%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes op-state-ready {
+  0%,
+  8% {
+    opacity: 1;
+  }
+  12%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes op-state-running {
+  0%,
+  9% {
+    opacity: 0;
+  }
+  13%,
+  46% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes op-state-held {
+  0%,
+  47% {
+    opacity: 0;
+  }
+  51%,
+  72% {
+    opacity: 1;
+  }
+  77%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes op-state {
+  0%,
+  74% {
+    opacity: 0;
+  }
+  80%,
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ---------------- Reduction ---------------- */
+
+@media (max-width: 640px) {
+  /* These three fit a phone column at about 0.88. Scaling the annotation
+     back up costs nothing, because each was laid out with the clearance. */
+  .fig-operator,
+  .fig-bottleneck,
+  .fig-scope {
+    --f-scale: 1.1;
+  }
+
+  /* These two are wide by nature: a staged axis and a two-lane timeline.
+     Shrinking either to 350px would make the labels unreadable and the
+     label spacing meaningless, so the sheet is panned instead. */
+  .fig-stages .fig-sheet,
+  .fig-detection .fig-sheet {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+  }
+
+  .fig-stages .fig-sheet svg,
+  .fig-detection .fig-sheet svg {
+    min-width: 540px;
+  }
+
+  .fig-block {
+    flex-wrap: wrap;
+    font-size: 10px;
+  }
+
+  .fig-state {
+    margin-left: 0;
+    width: 100%;
+    text-align: left;
+  }
+
+  .fig-state span:not(:first-child) {
+    inset: 0 auto auto 0;
+  }
+}

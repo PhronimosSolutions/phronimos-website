@@ -1,0 +1,40 @@
+---
+// Title block for a plate in the drawing set. Sheet number, title, and an
+// optional state readout on the right. Styles live in styles/figures.css.
+//
+// `states` renders a stacked readout: every entry occupies the same slot and
+// only the active one is opaque. The last entry is the resolved state and is
+// the default, so reduced-motion and no-JS readers see the outcome rather
+// than an empty field.
+interface Props {
+  id: string;
+  title: string;
+  states?: string[];
+  class?: string;
+}
+
+const { id, title, states, class: className } = Astro.props;
+
+// Class hooks on the intermediate states so FIG. 01 can time them against
+// its trace. Order is fixed: ready, running, held, resolved.
+const stateClass = ['is-ready', 'is-running', 'is-held', 'is-resolved'];
+---
+
+<figure class:list={['fig', className]} data-reveal>
+  <div class="fig-sheet">
+    <slot />
+  </div>
+  <figcaption class="fig-block">
+    <span class="fig-id">{id}</span>
+    <span class="fig-title">{title}</span>
+    {
+      states && states.length > 0 && (
+        <span class="fig-state" aria-hidden="true">
+          {states.map((s, i) => (
+            <span class={stateClass[i] ?? 'is-resolved'}>{s}</span>
+          ))}
+        </span>
+      )
+    }
+  </figcaption>
+</figure>
