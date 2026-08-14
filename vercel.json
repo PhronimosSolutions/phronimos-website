@@ -41,5 +41,18 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "phronimos.io"
+        }
+      ],
+      "destination": "https://www.phronimos.io/$1",
+      "permanent": true
+    }
   ]
 }
