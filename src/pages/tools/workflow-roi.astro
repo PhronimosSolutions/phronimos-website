@@ -1,0 +1,364 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { CONTACT_EMAIL, PRICE_SPRINT, PRICE_SPRINT_VALUE, SITE_URL } from '../../config';
+
+const pageUrl = `${SITE_URL}/tools/workflow-roi/`;
+
+// Vanilla-JS calculator. Formula is transparent, printed on the page, and
+// runs live as the inputs change. No email gate — an optional "email me
+// these results" button pre-fills a mailto: with the numbers, no backend.
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Workflow ROI calculator',
+  url: pageUrl,
+  isPartOf: { '@id': `${SITE_URL}/#organization` },
+  about: 'A free calculator that estimates annual dollars saved and months to break even when a manual workflow is automated with an AI agent.',
+};
+---
+
+<BaseLayout
+  title="Workflow ROI Calculator | Phronimos"
+  description={`Free calculator. Given hours per week and a fully-loaded hourly cost, estimates annual dollars saved if a workflow is automated and months to break even against the ${PRICE_SPRINT} Agent Implementation Sprint.`}
+  jsonLd={jsonLd}
+>
+  <main class="page tool-page">
+    <section class="section-tight page-head">
+      <div class="container">
+        <hr class="rule" data-reveal />
+        <p class="eyebrow" data-reveal style="--reveal-i: 1">Tool &middot; Free</p>
+        <h1 data-reveal style="--reveal-i: 2">Workflow ROI calculator</h1>
+        <p class="lede answer" data-reveal style="--reveal-i: 3">
+          Enter three numbers about a workflow you might automate. The calculator returns the annual
+          dollars saved if the automation works at the success rate you assume, and the months to
+          break even against a {PRICE_SPRINT} Agent Implementation Sprint. Formula visible below.
+          No email gate, no accounts, results on the page.
+        </p>
+      </div>
+    </section>
+
+    <section class="section calc-band">
+      <div class="container calc-grid">
+        <form id="roi-form" class="calc-form" novalidate>
+          <div class="field">
+            <label for="hours">Hours per week the workflow eats today</label>
+            <p class="q-hint muted">Across everyone who touches it. If two people spend two hours each, that is four.</p>
+            <div class="input-with-unit">
+              <input type="number" id="hours" name="hours" min="0" step="0.5" value="6" inputmode="decimal" />
+              <span class="unit">hrs/wk</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="rate">Fully-loaded hourly cost of that person</label>
+            <p class="q-hint muted">Salary + benefits + overhead ÷ 2,000. A $75k role usually loads to $55–$65/hr; a $150k role to $110–$130/hr.</p>
+            <div class="input-with-unit">
+              <span class="unit unit-prefix">$</span>
+              <input type="number" id="rate" name="rate" min="0" step="1" value="75" inputmode="decimal" />
+              <span class="unit">/hr</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="success">Automation success rate assumption</label>
+            <p class="q-hint muted">The share of the work the agent does without needing a human to catch it. Default 85% is realistic for a first-shipped workflow with monitoring; raise it as you gather evidence.</p>
+            <div class="input-with-unit">
+              <input type="number" id="success" name="success" min="0" max="100" step="1" value="85" inputmode="decimal" />
+              <span class="unit">%</span>
+            </div>
+          </div>
+        </form>
+
+        <aside class="calc-result" aria-live="polite">
+          <div class="result-block">
+            <p class="result-label">Annual dollars saved</p>
+            <p class="result-value" id="annual-saved">$0</p>
+            <p class="result-sub muted">Assumes 52 weeks; adjust below if the workflow is seasonal.</p>
+          </div>
+
+          <div class="result-block">
+            <p class="result-label">Monthly dollars saved</p>
+            <p class="result-value" id="monthly-saved">$0</p>
+          </div>
+
+          <div class="result-block">
+            <p class="result-label">Break-even against a {PRICE_SPRINT} sprint</p>
+            <p class="result-value" id="breakeven">—</p>
+            <p class="result-sub muted">Months of automation savings needed to cover the sprint fee.</p>
+          </div>
+
+          <div class="cta-row">
+            <a id="mailto-btn" class="btn btn-secondary" href="#">Email me these results</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section formula-band">
+      <div class="container">
+        <h2 data-reveal>How the calculation works</h2>
+        <p class="answer" data-reveal>
+          The formula is intentionally boring. There is no discount rate, no productivity
+          multiplier, and no assumed rebound effect. Automation success rate is the one lever that
+          moves the number the most, which is why it is exposed rather than baked in.
+        </p>
+        <pre class="formula-box" aria-label="Formula"><code>weekly_saved   = hours_per_week × hourly_rate × (success_rate ÷ 100)
+annual_saved   = weekly_saved × 52
+monthly_saved  = annual_saved ÷ 12
+breakeven_mos  = {PRICE_SPRINT_VALUE} ÷ monthly_saved</code></pre>
+        <p class="muted formula-note" data-reveal>
+          What this does not include: the cost of the reliability layer (monitoring, incident
+          response, quarterly review) — that runs $5,000/month on a Fractional AI Officer retainer.
+          A workflow that only saves $5,000/year should probably not be the first thing you
+          automate. A workflow that saves $50,000/year at 85% success rate is a strong candidate.
+        </p>
+        <p class="footer-note">Last reviewed: 2026-08-13.</p>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script
+  is:inline
+  define:vars={{
+    SPRINT_FEE: PRICE_SPRINT_VALUE,
+    CONTACT_EMAIL,
+  }}
+>
+  const hoursEl = document.getElementById('hours');
+  const rateEl = document.getElementById('rate');
+  const successEl = document.getElementById('success');
+  const annualEl = document.getElementById('annual-saved');
+  const monthlyEl = document.getElementById('monthly-saved');
+  const breakevenEl = document.getElementById('breakeven');
+  const mailtoBtn = document.getElementById('mailto-btn');
+
+  const money = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  });
+
+  function compute() {
+    const hours = parseFloat(hoursEl.value) || 0;
+    const rate = parseFloat(rateEl.value) || 0;
+    const successPct = Math.min(100, Math.max(0, parseFloat(successEl.value) || 0));
+    const success = successPct / 100;
+
+    const weeklySaved = hours * rate * success;
+    const annualSaved = weeklySaved * 52;
+    const monthlySaved = annualSaved / 12;
+    const breakevenMos = monthlySaved > 0 ? SPRINT_FEE / monthlySaved : null;
+
+    annualEl.textContent = money.format(annualSaved);
+    monthlyEl.textContent = money.format(monthlySaved);
+    if (breakevenMos === null || !isFinite(breakevenMos)) {
+      breakevenEl.textContent = '—';
+    } else if (breakevenMos < 1) {
+      breakevenEl.textContent = 'Less than 1 month';
+    } else if (breakevenMos > 60) {
+      breakevenEl.textContent = 'Over 5 years';
+    } else {
+      breakevenEl.textContent = `${breakevenMos.toFixed(1)} months`;
+    }
+
+    const subject = 'Workflow ROI estimate';
+    const body =
+      `Workflow ROI estimate\n` +
+      `----------------------\n` +
+      `Hours per week:          ${hours}\n` +
+      `Hourly cost:             $${rate}\n` +
+      `Success rate assumption: ${successPct}%\n\n` +
+      `Weekly saved:            ${money.format(weeklySaved)}\n` +
+      `Monthly saved:           ${money.format(monthlySaved)}\n` +
+      `Annual saved:            ${money.format(annualSaved)}\n` +
+      `Break-even vs $${SPRINT_FEE} sprint: ${breakevenEl.textContent}\n\n` +
+      `From: https://phronimos.io/tools/workflow-roi/\n`;
+    mailtoBtn.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
+  ['input', 'change'].forEach((ev) => {
+    hoursEl.addEventListener(ev, compute);
+    rateEl.addEventListener(ev, compute);
+    successEl.addEventListener(ev, compute);
+  });
+
+  compute();
+</script>
+
+<style>
+  .page-head h1 {
+    margin-top: var(--space-4);
+    max-width: 22ch;
+  }
+
+  .page-head .lede {
+    margin-top: var(--space-5);
+    max-width: 66ch;
+  }
+
+  .answer {
+    max-width: 66ch;
+  }
+
+  .calc-band {
+    border-top: 1px solid var(--line);
+    background: var(--surface-raised);
+  }
+
+  .calc-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: var(--space-8);
+    align-items: start;
+  }
+
+  .calc-form .field {
+    margin-bottom: var(--space-6);
+  }
+
+  .calc-form label {
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 16px;
+  }
+
+  .q-hint {
+    font-size: 14px;
+    margin: var(--space-2) 0 var(--space-3);
+    max-width: 54ch;
+  }
+
+  .input-with-unit {
+    display: inline-flex;
+    align-items: center;
+    background: var(--surface-canvas);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 4px 12px;
+    transition: border-color var(--dur-instant) var(--ease-precise);
+  }
+
+  .input-with-unit:focus-within {
+    border-color: var(--accent-strong);
+    box-shadow: 0 0 0 2px rgba(231, 111, 81, 0.18);
+  }
+
+  .input-with-unit input {
+    border: none;
+    background: transparent;
+    padding: 10px 4px;
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 20px;
+    width: 100px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    outline: none;
+    color: var(--text-primary);
+  }
+
+  .input-with-unit .unit {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+    letter-spacing: 0.06em;
+    padding-left: 6px;
+  }
+
+  .input-with-unit .unit-prefix {
+    padding: 0 4px 0 0;
+    font-size: 16px;
+  }
+
+  .calc-result {
+    background: var(--surface-canvas);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--accent-solid);
+    border-radius: 0 14px 14px 0;
+    padding: var(--space-6);
+    position: sticky;
+    top: 88px;
+  }
+
+  .result-block {
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .result-block:first-child {
+    padding-top: 0;
+  }
+
+  .result-block:last-child {
+    border-bottom: none;
+  }
+
+  .result-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-strong);
+  }
+
+  .result-value {
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 32px;
+    letter-spacing: -0.02em;
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .result-sub {
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  .cta-row {
+    margin-top: var(--space-5);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--line);
+  }
+
+  .formula-band {
+    border-top: 1px solid var(--line);
+  }
+
+  .formula-box {
+    margin-top: var(--space-6);
+    padding: var(--space-5);
+    background: var(--surface-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-x: auto;
+  }
+
+  .formula-note {
+    margin-top: var(--space-5);
+    max-width: 66ch;
+    font-size: 15px;
+  }
+
+  .footer-note {
+    margin-top: var(--space-7);
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+
+  @media (max-width: 960px) {
+    .calc-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+
+    .calc-result {
+      position: static;
+    }
+  }
+</style>

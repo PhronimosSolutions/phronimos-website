@@ -1,0 +1,128 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BOOKING_URL, CONTACT_EMAIL, SITE_URL } from '../config';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Reliability standard',
+  url: `${SITE_URL}/reliability/`,
+  isPartOf: { '@id': `${SITE_URL}/#organization` },
+  about: 'Managed AI agent reliability commitments — detection targets, escalation, response times, SLA credits.',
+};
+---
+
+<BaseLayout
+  title="Reliability standard | Phronimos"
+  description="What Phronimos commits to when a managed workflow fails: detection targets, escalation, response times, and SLA credits. Real commitments, not adjectives."
+  jsonLd={jsonLd}
+>
+  <main class="page">
+    <span class="eyebrow">Reliability</span>
+
+    <h1 class="display">What we commit to when a managed workflow fails.</h1>
+
+    <p class="lede">
+      Real commitments, not adjectives. Every one of these is measured against actual runs, and the SLA credits below trigger automatically when a threshold is breached.
+    </p>
+
+    <h2>What does Phronimos commit to for detection speed?</h2>
+    <p class="answer">
+      For every workflow under a Fractional AI Officer retainer, Phronimos aims to detect a silent failure within a target window measured from the moment the failure occurs to the moment an alert fires on our side. Detection targets vary by workflow severity tier.
+    </p>
+
+    <table class="commitment-table">
+      <thead>
+        <tr><th>Severity</th><th>Detection target</th><th>Definition</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Critical</td>
+          <td>&lt; 15 minutes</td>
+          <td>Customer-facing workflow, revenue-impacting, or compliance-adjacent.</td>
+        </tr>
+        <tr>
+          <td>High</td>
+          <td>&lt; 2 hours</td>
+          <td>Internal workflow with downstream dependencies; delay creates rework.</td>
+        </tr>
+        <tr>
+          <td>Medium</td>
+          <td>&lt; 24 hours</td>
+          <td>Isolated internal workflow; delay costs time but not customers.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Who gets paged when detection fires?</h2>
+    <p class="answer">
+      On detection, Phronimos pages an on-call operator through the primary channel (Slack, SMS, or email — client picks at onboarding). The client's designated contact is looped in within the same window if we can't confirm the failure is contained.
+    </p>
+
+    <ul class="escalation-list">
+      <li><strong>Critical</strong>: on-call paged within 5 minutes of detection; client contact looped in within 30 minutes if unresolved.</li>
+      <li><strong>High</strong>: on-call paged within 30 minutes; client contact notified within 4 hours if unresolved.</li>
+      <li><strong>Medium</strong>: on-call notified next business hour; client contact notified in the next weekly reliability digest.</li>
+    </ul>
+
+    <h2>What response times does Phronimos target?</h2>
+    <p class="answer">
+      Response time = detection to first mitigating action. Not the same as resolution time (which depends on root cause and often on a third party). Response is what we control.
+    </p>
+
+    <table class="commitment-table">
+      <thead>
+        <tr><th>Severity</th><th>Response target</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Critical</td><td>&lt; 30 minutes</td></tr>
+        <tr><td>High</td><td>&lt; 4 business hours</td></tr>
+        <tr><td>Medium</td><td>&lt; 1 business day</td></tr>
+      </tbody>
+    </table>
+
+    <h2>What happens when an agent fails?</h2>
+    <p class="answer">
+      Every managed workflow ships with a rollback plan, a documented human takeover procedure, and a freeze switch. On failure, Phronimos executes the least-disruptive available response in that order.
+    </p>
+
+    <ol class="response-list">
+      <li><strong>Rollback</strong> to the last known-good state if the workflow has a checkpoint. Preferred response — the client's downstream state stays consistent.</li>
+      <li><strong>Human takeover</strong> by a Phronimos operator or the client's designated user, following the workflow's documented takeover procedure. Applied when rollback isn't possible or wouldn't help.</li>
+      <li><strong>Freeze</strong> — the workflow is paused, the trigger disabled, and the client is notified with a plain-English summary of what stopped and what didn't. Applied when we're not yet sure the failure is contained.</li>
+    </ol>
+
+    <h2>What are the SLA credits when Phronimos misses these commitments?</h2>
+    <p class="answer">
+      When we breach a detection or response target on a Critical or High severity workflow, the client's next retainer invoice is credited automatically. Credits are proportional to the miss, capped at one month of retainer, and don't require the client to file anything.
+    </p>
+
+    <table class="commitment-table">
+      <thead>
+        <tr><th>Breach</th><th>Credit</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Critical detection miss (&gt; 15 min)</td><td>10% of next monthly retainer</td></tr>
+        <tr><td>Critical response miss (&gt; 30 min)</td><td>10% of next monthly retainer</td></tr>
+        <tr><td>High detection miss (&gt; 2 hours)</td><td>5% of next monthly retainer</td></tr>
+        <tr><td>High response miss (&gt; 4 business hours)</td><td>5% of next monthly retainer</td></tr>
+        <tr><td>Any combined miss on a single incident</td><td>Stacks to a per-incident cap of 25%</td></tr>
+        <tr><td>Monthly cap</td><td>100% of that month's retainer</td></tr>
+      </tbody>
+    </table>
+
+    <h2>What isn't covered by these commitments?</h2>
+    <p class="answer">
+      The Agent Reliability Review (the $999 diagnostic) is not covered by these SLAs — it's a one-time review, not a managed engagement. Implementation Sprint deliverables come with a 30-day quality warranty on the specific workflow shipped. Everything else — third-party outages, client-side auth changes, changes we weren't told about — is triaged the same way but not counted as a breach.
+    </p>
+
+    <p>See a redacted example of how a real incident gets reported: <a href="/reliability/sample-incident/">Sample incident report</a>.</p>
+
+    <div class="cta-row">
+      <a class="btn btn-primary" href={BOOKING_URL}>Book a Reliability Review</a>
+      <a class="btn btn-secondary" href={`mailto:${CONTACT_EMAIL}?subject=Reliability%20standard%20question`}>Ask about the SLA</a>
+    </div>
+
+    <p class="footer-note">Last reviewed: 2026-08-01.</p>
+  </main>
+</BaseLayout>

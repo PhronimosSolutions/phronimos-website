@@ -1,0 +1,604 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  AUDIT_NAME,
+  BOOKING_URL,
+  PRICE_AUDIT,
+  PRICE_SPRINT,
+  SITE_URL,
+} from '../../config';
+
+// Interactive readiness scorecard. Standalone tool — no email gate, no
+// account, no server. State lives in the DOM. The score sorts a visitor into
+// one of four buckets (Not yet / Review / Sprint / Retainer) and names the
+// concrete next step for each. The 10 questions are the same signal the
+// Agent Reliability Review runs at more depth: agents in production, ownership,
+// evidence of failure, monitoring posture, blast radius, willingness to fund.
+
+const pageUrl = `${SITE_URL}/tools/reliability-readiness-scorecard/`;
+
+const questions = [
+  {
+    id: 'q1',
+    text: 'You have at least one AI agent, automation, or workflow running in production today.',
+    hint: 'A ChatGPT workflow a person triggers by hand does not count. A scheduled Zap, an n8n workflow, an agent that sends emails or updates a CRM without human trigger — that counts.',
+  },
+  {
+    id: 'q2',
+    text: 'You can name every AI workflow currently running in your business without checking.',
+    hint: 'If you would need to open three tools to answer this, mark no.',
+  },
+  {
+    id: 'q3',
+    text: 'You know, per workflow, what happens when it fails — or if anything at all is watching for a failure.',
+    hint: 'Monitoring counts; hoping does not.',
+  },
+  {
+    id: 'q4',
+    text: 'A workflow has produced a wrong output, an empty output, or stopped running in the last 90 days.',
+    hint: 'Silent failures count if you know about them. Not knowing counts as no — it is the signal the review pays for itself on.',
+  },
+  {
+    id: 'q5',
+    text: 'A customer, client, or internal user has ever noticed one of these failures before you did.',
+    hint: 'This is the blast-radius question. A yes here is a strong reason to run a review.',
+  },
+  {
+    id: 'q6',
+    text: 'You have somebody internally who owns whether the workflows are still working next Tuesday.',
+    hint: 'Not the person who built it. The person accountable for it running.',
+  },
+  {
+    id: 'q7',
+    text: 'You could produce, on request, a list of every credential and integration each workflow depends on.',
+    hint: 'Without asking the person who set it up.',
+  },
+  {
+    id: 'q8',
+    text: 'A single workflow going wrong for a week would cost your business more than $2,000.',
+    hint: 'Refunds, remediation, lost deals, angry-client discounts, staff time cleaning up.',
+  },
+  {
+    id: 'q9',
+    text: 'You have budget to spend $999–$3,500 this quarter on fixing reliability if the diagnosis warrants it.',
+    hint: 'Not "would like to." Have.',
+  },
+  {
+    id: 'q10',
+    text: 'You would rather have a written diagnosis with evidence than another conversation about possibilities.',
+    hint: 'Signal question. If the answer is no, a discovery call is a better first step than a paid review.',
+  },
+];
+
+// Scoring buckets. Uses a small set of signals, not just a total:
+//   - agents_in_prod (q1): gates everything. No → not ready.
+//   - failure_signal (q4 or q5): if yes, review is warranted regardless of total.
+//   - retainer_signal (q1 + q4 + q6 + q8): the shape of a retainer buyer.
+// The bucket message is served client-side after the score computes.
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Agent reliability readiness scorecard',
+  url: pageUrl,
+  isPartOf: { '@id': `${SITE_URL}/#organization` },
+  about: 'A ten-question readiness scorecard that decides whether an owner-led firm is ready for an Agent Reliability Review, an Agent Implementation Sprint, or a Fractional AI Officer retainer.',
+};
+---
+
+<BaseLayout
+  title="Agent Reliability Readiness Scorecard | Phronimos"
+  description="A ten-question, five-minute readiness scorecard. Free, no email gate, results on-screen. Tells you whether an Agent Reliability Review is the right next step — or whether something else is."
+  jsonLd={jsonLd}
+>
+  <main class="page tool-page">
+    <section class="section-tight page-head">
+      <div class="container">
+        <hr class="rule" data-reveal />
+        <p class="eyebrow" data-reveal style="--reveal-i: 1">Tool &middot; Free</p>
+        <h1 data-reveal style="--reveal-i: 2">Reliability readiness scorecard</h1>
+        <p class="lede answer" data-reveal style="--reveal-i: 3">
+          Ten yes/no questions, about five minutes. The score decides whether an {AUDIT_NAME} is the
+          right next step, whether you should skip straight to a sprint or retainer, or whether the
+          honest answer is <em>not yet</em>. Results appear on the page. No email gate, no account,
+          no data stored.
+        </p>
+      </div>
+    </section>
+
+    <section class="section scorecard-band">
+      <div class="container">
+        <form id="scorecard" class="scorecard" novalidate>
+          {
+            questions.map((q, i) => (
+              <fieldset class="q-card" data-q={q.id}>
+                <legend>
+                  <span class="q-num">Question {String(i + 1).padStart(2, '0')}</span>
+                  <span class="q-text">{q.text}</span>
+                </legend>
+                <p class="q-hint muted">{q.hint}</p>
+                <div class="yn" role="radiogroup" aria-label={q.text}>
+                  <label>
+                    <input type="radio" name={q.id} value="yes" />
+                    <span>Yes</span>
+                  </label>
+                  <label>
+                    <input type="radio" name={q.id} value="no" />
+                    <span>No</span>
+                  </label>
+                </div>
+              </fieldset>
+            ))
+          }
+
+          <div class="score-actions">
+            <button type="button" id="score-btn" class="btn btn-primary" disabled>Score my readiness</button>
+            <button type="button" id="reset-btn" class="btn btn-secondary" hidden>Reset</button>
+            <p class="progress-text muted" id="progress-text">0 of {questions.length} answered</p>
+          </div>
+        </form>
+
+        <div id="result" class="result" hidden>
+          <hr class="rule" />
+          <p class="eyebrow" id="result-tag">Your result</p>
+          <h2 id="result-headline">&nbsp;</h2>
+          <p class="result-body" id="result-body">&nbsp;</p>
+
+          <div class="result-detail">
+            <p class="result-label">Score</p>
+            <p class="result-score"><span id="result-score-num">0</span> / <span>{questions.length}</span></p>
+          </div>
+
+          <div class="result-detail">
+            <p class="result-label">Signal read</p>
+            <ul class="signal-list" id="signal-list"></ul>
+          </div>
+
+          <div class="result-cta" id="result-cta"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section footer-band">
+      <div class="container">
+        <h2>How this scorecard works</h2>
+        <p class="answer">
+          The ten questions map to the four silent-failure modes and the buying signals for each
+          Phronimos engagement. The score is not just a total: it also reads whether AI is running
+          at all, whether a failure has already hit a customer, whether somebody owns operation
+          today, and whether a single workflow failing for a week would cost more than the review
+          fee. The recommendation combines all four signals. The full formula is below.
+        </p>
+        <details class="formula">
+          <summary>See the formula</summary>
+          <ul>
+            <li><strong>Q1 (agents in production)</strong> — if no, no other signal matters; recommendation is not-yet.</li>
+            <li><strong>Q4 or Q5 (evidence of failure)</strong> — if either yes, a review is warranted regardless of total.</li>
+            <li><strong>Q6 (accountable owner)</strong> and <strong>Q8 (blast radius {'>'}$2k/week)</strong> — combined with Q1 + Q4, indicates a retainer-shaped buyer.</li>
+            <li><strong>Q9 (budget)</strong> and <strong>Q10 (want a diagnosis)</strong> — buying-readiness signals; a no on either shifts the recommendation toward a free call.</li>
+            <li><strong>Total yes count</strong> — 0–3 not-yet, 4–6 review, 7–8 review or sprint, 9–10 review-then-retainer.</li>
+          </ul>
+        </details>
+        <p class="footer-note">Last reviewed: 2026-08-13.</p>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script
+  is:inline
+  define:vars={{
+    BOOKING_URL,
+    PRICE_AUDIT,
+    PRICE_SPRINT,
+    QUESTION_COUNT: questions.length,
+  }}
+>
+  const answers = {};
+  const form = document.getElementById('scorecard');
+  const scoreBtn = document.getElementById('score-btn');
+  const resetBtn = document.getElementById('reset-btn');
+  const progressText = document.getElementById('progress-text');
+  const result = document.getElementById('result');
+
+  function updateProgress() {
+    const answered = Object.keys(answers).length;
+    progressText.textContent = `${answered} of ${QUESTION_COUNT} answered`;
+    scoreBtn.disabled = answered < QUESTION_COUNT;
+  }
+
+  form.addEventListener('change', (e) => {
+    const el = e.target;
+    if (el && el.name && el.type === 'radio') {
+      answers[el.name] = el.value;
+      const card = el.closest('.q-card');
+      if (card) card.classList.add('answered');
+      updateProgress();
+    }
+  });
+
+  function computeResult() {
+    const total = Object.values(answers).filter((v) => v === 'yes').length;
+    const inProd = answers.q1 === 'yes';
+    const failureEvidence = answers.q4 === 'yes' || answers.q5 === 'yes';
+    const accountableOwner = answers.q6 === 'yes';
+    const bigBlastRadius = answers.q8 === 'yes';
+    const hasBudget = answers.q9 === 'yes';
+    const wantsDiagnosis = answers.q10 === 'yes';
+
+    const signals = [];
+
+    if (!inProd) {
+      signals.push('No AI workflows in production yet.');
+      return {
+        bucket: 'not-yet',
+        tag: 'Not the right time for a review',
+        headline: 'Build something first, then diagnose it.',
+        body: `The Agent Reliability Review diagnoses what is already running. With nothing in production, the review has nothing to look at. Better next step: read /method/ to see how the audit → sprint → retainer sequence works, then start with an Agent Implementation Sprint (from ${PRICE_SPRINT}) once you can name the workflow you want in production.`,
+        signals,
+        cta: {
+          primary: { href: '/method/', label: 'Read how the method works' },
+          secondary: { href: '/services/', label: 'See services' },
+        },
+      };
+    }
+
+    signals.push('At least one AI workflow is running in production.');
+    if (failureEvidence) signals.push('Evidence of at least one silent failure in the last 90 days.');
+    if (accountableOwner) signals.push('An internal owner is accountable for reliability.');
+    if (!accountableOwner) signals.push('No internal owner accountable for reliability yet.');
+    if (bigBlastRadius) signals.push('A single workflow failing for a week would cost more than $2,000.');
+    if (!hasBudget) signals.push('No budget allocated this quarter — talk before deciding.');
+    if (!wantsDiagnosis) signals.push('Not sure a paid diagnosis is the right shape — a discovery call may fit better first.');
+
+    if (total <= 3) {
+      return {
+        bucket: 'not-yet',
+        tag: 'Foundations first',
+        headline: 'The review is not the highest-leverage next step yet.',
+        body: `The scorecard suggests the AI in production is small enough — or unobserved enough — that a paid diagnosis would over-scope the problem. Better next step: name a single workflow that is hurting most, and either fix its monitoring in-house or scope a small sprint against it.`,
+        signals,
+        cta: {
+          primary: { href: '/services/', label: 'See services' },
+          secondary: { href: '/method/', label: 'Read the method' },
+        },
+      };
+    }
+
+    if (total >= 4 && total <= 6) {
+      return {
+        bucket: 'review',
+        tag: `Ready for the ${PRICE_AUDIT} review`,
+        headline: 'The Agent Reliability Review is the right next step.',
+        body: `You have agents in production and enough signal that something is worth diagnosing. The review will map every finding to one of four silent-failure modes, quantify blast radius per finding, and hand back a monitoring posture recommendation. The fee is credited forward against whatever gets built or retained after.${!wantsDiagnosis ? ' Consider a free discovery call first — the signal question flagged that a conversation might be a better opener.' : ''}`,
+        signals,
+        cta: {
+          primary: { href: BOOKING_URL, label: 'Book the review' },
+          secondary: { href: '/ai-workflow-audit/', label: 'What the review includes' },
+        },
+      };
+    }
+
+    if (total >= 7 && total <= 8) {
+      return {
+        bucket: 'review-or-sprint',
+        tag: 'Review or straight to sprint',
+        headline: 'Diagnose first, or if the workflow is already scoped, skip to a sprint.',
+        body: `You are clearly running production AI with real cost when it fails. Two paths: start with the review to be sure the sprint targets the right workflow, or — if the workflow is already scoped, inputs identified, escalation agreed — skip to an Agent Implementation Sprint. The review fee is credited forward, so starting with it costs nothing extra if you go on to build.`,
+        signals,
+        cta: {
+          primary: { href: BOOKING_URL, label: 'Book the review' },
+          secondary: { href: '/services/', label: 'Look at the sprint' },
+        },
+      };
+    }
+
+    // 9 or 10 — retainer shape
+    return {
+      bucket: 'retainer',
+      tag: 'Retainer-shaped',
+      headline: 'You are ready for a Fractional AI Officer retainer.',
+      body: `The signals point at a Fractional AI Officer: agents in production, evidence of silent failure, real blast radius, and someone internal who wants an accountable owner. The typical path is a ${PRICE_AUDIT} review first — one week — to baseline the surface, then the retainer starts in month two with the review fee credited against the first month.`,
+      signals,
+      cta: {
+        primary: { href: '/services/fractional-ai-officer/', label: 'See the Fractional AI Officer page' },
+        secondary: { href: BOOKING_URL, label: 'Book the review as the on-ramp' },
+      },
+    };
+  }
+
+  scoreBtn.addEventListener('click', () => {
+    if (Object.keys(answers).length < QUESTION_COUNT) return;
+    const r = computeResult();
+    const yesCount = Object.values(answers).filter((v) => v === 'yes').length;
+
+    document.getElementById('result-tag').textContent = r.tag;
+    document.getElementById('result-headline').textContent = r.headline;
+    document.getElementById('result-body').textContent = r.body;
+    document.getElementById('result-score-num').textContent = yesCount;
+
+    const sigList = document.getElementById('signal-list');
+    sigList.innerHTML = '';
+    r.signals.forEach((s) => {
+      const li = document.createElement('li');
+      li.textContent = s;
+      sigList.appendChild(li);
+    });
+
+    const ctaHost = document.getElementById('result-cta');
+    ctaHost.innerHTML = '';
+    const primary = document.createElement('a');
+    primary.href = r.cta.primary.href;
+    primary.className = 'btn btn-primary';
+    primary.textContent = r.cta.primary.label;
+    if (r.cta.primary.href.startsWith('http')) {
+      primary.target = '_blank';
+      primary.rel = 'noopener noreferrer';
+    }
+    const secondary = document.createElement('a');
+    secondary.href = r.cta.secondary.href;
+    secondary.className = 'btn btn-secondary';
+    secondary.textContent = r.cta.secondary.label;
+    ctaHost.appendChild(primary);
+    ctaHost.appendChild(secondary);
+
+    result.hidden = false;
+    resetBtn.hidden = false;
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  resetBtn.addEventListener('click', () => {
+    Object.keys(answers).forEach((k) => delete answers[k]);
+    form.reset();
+    document.querySelectorAll('.q-card.answered').forEach((el) => el.classList.remove('answered'));
+    result.hidden = true;
+    resetBtn.hidden = true;
+    updateProgress();
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  updateProgress();
+</script>
+
+<style>
+  .tool-page {
+    padding-bottom: 0;
+  }
+
+  .page-head h1 {
+    margin-top: var(--space-4);
+    max-width: 22ch;
+  }
+
+  .page-head .lede {
+    margin-top: var(--space-5);
+    max-width: 62ch;
+  }
+
+  .answer {
+    max-width: 66ch;
+  }
+
+  .scorecard-band {
+    border-top: 1px solid var(--line);
+    background: var(--surface-raised);
+  }
+
+  .scorecard {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  .q-card {
+    background: var(--surface-canvas);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: var(--space-5);
+    margin: 0 0 var(--space-4);
+    box-shadow: var(--shadow-card);
+    transition: border-color var(--dur-transition) var(--ease-precise);
+  }
+
+  .q-card.answered {
+    border-color: var(--accent-line);
+  }
+
+  .q-card legend {
+    display: block;
+    padding: 0;
+  }
+
+  .q-num {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-strong);
+  }
+
+  .q-text {
+    display: block;
+    margin-top: 6px;
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 17px;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+
+  .q-hint {
+    font-size: 14px;
+    margin-top: var(--space-3);
+    max-width: 60ch;
+  }
+
+  .yn {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+
+  .yn label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface-raised);
+    cursor: pointer;
+    transition: border-color var(--dur-instant) var(--ease-precise), background-color var(--dur-instant) var(--ease-precise);
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .yn label input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .yn label:hover {
+    border-color: var(--text-secondary);
+  }
+
+  .yn label:has(input:checked) {
+    border-color: var(--accent-strong);
+    background: var(--surface-callout);
+    color: var(--accent-strong);
+  }
+
+  .score-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+    flex-wrap: wrap;
+  }
+
+  .progress-text {
+    font-size: 13px;
+  }
+
+  .result {
+    max-width: 780px;
+    margin: var(--space-8) auto 0;
+  }
+
+  .result .eyebrow {
+    margin-top: var(--space-6);
+  }
+
+  #result-headline {
+    margin-top: var(--space-3);
+    max-width: 24ch;
+  }
+
+  .result-body {
+    margin-top: var(--space-5);
+    max-width: 66ch;
+    font-size: 16px;
+    color: var(--text-secondary);
+  }
+
+  .result-detail {
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--line);
+  }
+
+  .result-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-strong);
+  }
+
+  .result-score {
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 32px;
+    margin-top: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .signal-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-3) 0 0;
+  }
+
+  .signal-list li {
+    padding: 8px 0 8px 22px;
+    position: relative;
+    font-size: 15px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .signal-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 18px;
+    width: 12px;
+    height: 2px;
+    background: var(--accent-solid);
+  }
+
+  .result-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+  }
+
+  .footer-band {
+    border-top: 1px solid var(--line);
+  }
+
+  .footer-band h2 {
+    max-width: 30ch;
+  }
+
+  .footer-band .answer {
+    margin-top: var(--space-4);
+  }
+
+  .formula {
+    margin-top: var(--space-5);
+    max-width: 68ch;
+  }
+
+  .formula summary {
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-secondary);
+    padding: var(--space-3) 0;
+  }
+
+  .formula ul {
+    margin: var(--space-3) 0 0 var(--space-5);
+    font-size: 14.5px;
+    color: var(--text-secondary);
+  }
+
+  .formula li {
+    padding: 4px 0;
+  }
+
+  .footer-note {
+    margin-top: var(--space-7);
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+
+  @media (max-width: 600px) {
+    .yn {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

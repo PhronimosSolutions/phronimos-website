@@ -1,0 +1,353 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { CONTACT_EMAIL, SITE_URL } from '../../config';
+
+const pageUrl = `${SITE_URL}/tools/cost-of-manual-process/`;
+
+// Companion calculator to /tools/workflow-roi/. Same design language,
+// simpler inputs — this one just computes what a manual process is costing
+// today, without an automation-comparison. Useful for baselining before a
+// review or a sprint.
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Cost of a manual process calculator',
+  url: pageUrl,
+  isPartOf: { '@id': `${SITE_URL}/#organization` },
+  about: 'A free calculator that estimates the monthly hours and annual dollars a repeated manual process consumes.',
+};
+---
+
+<BaseLayout
+  title="Cost of a Manual Process Calculator | Phronimos"
+  description="Free calculator. Given monthly volume, minutes per instance, and a fully-loaded hourly cost, estimates hours per month and annual dollars tied up in a repeated manual process. No email gate."
+  jsonLd={jsonLd}
+>
+  <main class="page tool-page">
+    <section class="section-tight page-head">
+      <div class="container">
+        <hr class="rule" data-reveal />
+        <p class="eyebrow" data-reveal style="--reveal-i: 1">Tool &middot; Free</p>
+        <h1 data-reveal style="--reveal-i: 2">What is a manual process costing you?</h1>
+        <p class="lede answer" data-reveal style="--reveal-i: 3">
+          Three numbers, one answer: how many hours a month a repeated manual process consumes and
+          the annual dollars tied up in it. Useful for baselining before an Agent Reliability
+          Review or an Implementation Sprint. Formula visible below. No email gate.
+        </p>
+      </div>
+    </section>
+
+    <section class="section calc-band">
+      <div class="container calc-grid">
+        <form id="cost-form" class="calc-form" novalidate>
+          <div class="field">
+            <label for="volume">Volume per month</label>
+            <p class="q-hint muted">How many times the process runs. Applications processed, invoices sent, leads triaged, tickets closed — whatever the unit is.</p>
+            <div class="input-with-unit">
+              <input type="number" id="volume" name="volume" min="0" step="1" value="200" inputmode="numeric" />
+              <span class="unit">/month</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="minutes">Minutes per instance</label>
+            <p class="q-hint muted">The realistic median across a normal day, including the parts nobody logs — reading the email, opening the tab, waiting for the page to load, double-checking the field.</p>
+            <div class="input-with-unit">
+              <input type="number" id="minutes" name="minutes" min="0" step="0.5" value="8" inputmode="decimal" />
+              <span class="unit">min</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="rate">Fully-loaded hourly cost</label>
+            <p class="q-hint muted">Salary + benefits + overhead ÷ 2,000. A $75k role usually loads to $55–$65/hr; a $150k role to $110–$130/hr.</p>
+            <div class="input-with-unit">
+              <span class="unit unit-prefix">$</span>
+              <input type="number" id="rate" name="rate" min="0" step="1" value="65" inputmode="decimal" />
+              <span class="unit">/hr</span>
+            </div>
+          </div>
+        </form>
+
+        <aside class="calc-result" aria-live="polite">
+          <div class="result-block">
+            <p class="result-label">Hours per month</p>
+            <p class="result-value" id="monthly-hours">0</p>
+            <p class="result-sub muted">Total time this process consumes each month.</p>
+          </div>
+
+          <div class="result-block">
+            <p class="result-label">Cost per month</p>
+            <p class="result-value" id="monthly-cost">$0</p>
+          </div>
+
+          <div class="result-block">
+            <p class="result-label">Annual cost</p>
+            <p class="result-value" id="annual-cost">$0</p>
+            <p class="result-sub muted">Assumes 12 months at the current volume.</p>
+          </div>
+
+          <div class="cta-row">
+            <a id="mailto-btn" class="btn btn-secondary" href="#">Email me these results</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section formula-band">
+      <div class="container">
+        <h2 data-reveal>How the calculation works</h2>
+        <p class="answer" data-reveal>
+          Plain arithmetic. No hidden multipliers. If the number looks bigger than expected, it
+          usually is — most owner-led firms underestimate the true cost of a repeated process by 30
+          to 50% because the transitional time (opening the tab, reading the email, deciding what
+          to do) is never in the estimate.
+        </p>
+        <pre class="formula-box" aria-label="Formula"><code>hours_per_month  = (volume_per_month × minutes_per_instance) ÷ 60
+cost_per_month   = hours_per_month × hourly_rate
+annual_cost      = cost_per_month × 12</code></pre>
+        <p class="muted formula-note" data-reveal>
+          Next step: if the annual cost is comfortably above the sprint fee, run the numbers on
+          <a href="/tools/workflow-roi/">the ROI calculator</a> to see how quickly automation
+          would pay back. If it is not, this is probably not the workflow to automate first.
+        </p>
+        <p class="footer-note">Last reviewed: 2026-08-13.</p>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script
+  is:inline
+  define:vars={{
+    CONTACT_EMAIL,
+  }}
+>
+  const volumeEl = document.getElementById('volume');
+  const minutesEl = document.getElementById('minutes');
+  const rateEl = document.getElementById('rate');
+  const monthlyHoursEl = document.getElementById('monthly-hours');
+  const monthlyCostEl = document.getElementById('monthly-cost');
+  const annualCostEl = document.getElementById('annual-cost');
+  const mailtoBtn = document.getElementById('mailto-btn');
+
+  const money = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  });
+
+  const hours = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 });
+
+  function compute() {
+    const volume = parseFloat(volumeEl.value) || 0;
+    const minutes = parseFloat(minutesEl.value) || 0;
+    const rate = parseFloat(rateEl.value) || 0;
+
+    const monthlyHours = (volume * minutes) / 60;
+    const monthlyCost = monthlyHours * rate;
+    const annualCost = monthlyCost * 12;
+
+    monthlyHoursEl.textContent = `${hours.format(monthlyHours)} hrs`;
+    monthlyCostEl.textContent = money.format(monthlyCost);
+    annualCostEl.textContent = money.format(annualCost);
+
+    const subject = 'Manual process cost estimate';
+    const body =
+      `Manual process cost estimate\n` +
+      `-----------------------------\n` +
+      `Volume per month:        ${volume}\n` +
+      `Minutes per instance:    ${minutes}\n` +
+      `Hourly cost:             $${rate}\n\n` +
+      `Hours per month:         ${hours.format(monthlyHours)}\n` +
+      `Cost per month:          ${money.format(monthlyCost)}\n` +
+      `Annual cost:             ${money.format(annualCost)}\n\n` +
+      `From: https://phronimos.io/tools/cost-of-manual-process/\n`;
+    mailtoBtn.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
+  ['input', 'change'].forEach((ev) => {
+    volumeEl.addEventListener(ev, compute);
+    minutesEl.addEventListener(ev, compute);
+    rateEl.addEventListener(ev, compute);
+  });
+
+  compute();
+</script>
+
+<style>
+  .page-head h1 {
+    margin-top: var(--space-4);
+    max-width: 24ch;
+  }
+
+  .page-head .lede {
+    margin-top: var(--space-5);
+    max-width: 66ch;
+  }
+
+  .answer {
+    max-width: 66ch;
+  }
+
+  .calc-band {
+    border-top: 1px solid var(--line);
+    background: var(--surface-raised);
+  }
+
+  .calc-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: var(--space-8);
+    align-items: start;
+  }
+
+  .calc-form .field {
+    margin-bottom: var(--space-6);
+  }
+
+  .calc-form label {
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 16px;
+  }
+
+  .q-hint {
+    font-size: 14px;
+    margin: var(--space-2) 0 var(--space-3);
+    max-width: 54ch;
+  }
+
+  .input-with-unit {
+    display: inline-flex;
+    align-items: center;
+    background: var(--surface-canvas);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 4px 12px;
+    transition: border-color var(--dur-instant) var(--ease-precise);
+  }
+
+  .input-with-unit:focus-within {
+    border-color: var(--accent-strong);
+    box-shadow: 0 0 0 2px rgba(231, 111, 81, 0.18);
+  }
+
+  .input-with-unit input {
+    border: none;
+    background: transparent;
+    padding: 10px 4px;
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 20px;
+    width: 100px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    outline: none;
+    color: var(--text-primary);
+  }
+
+  .input-with-unit .unit {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+    letter-spacing: 0.06em;
+    padding-left: 6px;
+  }
+
+  .input-with-unit .unit-prefix {
+    padding: 0 4px 0 0;
+    font-size: 16px;
+  }
+
+  .calc-result {
+    background: var(--surface-canvas);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--accent-solid);
+    border-radius: 0 14px 14px 0;
+    padding: var(--space-6);
+    position: sticky;
+    top: 88px;
+  }
+
+  .result-block {
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .result-block:first-child {
+    padding-top: 0;
+  }
+
+  .result-block:last-child {
+    border-bottom: none;
+  }
+
+  .result-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-strong);
+  }
+
+  .result-value {
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 32px;
+    letter-spacing: -0.02em;
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .result-sub {
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  .cta-row {
+    margin-top: var(--space-5);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--line);
+  }
+
+  .formula-band {
+    border-top: 1px solid var(--line);
+  }
+
+  .formula-box {
+    margin-top: var(--space-6);
+    padding: var(--space-5);
+    background: var(--surface-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-x: auto;
+  }
+
+  .formula-note {
+    margin-top: var(--space-5);
+    max-width: 66ch;
+    font-size: 15px;
+  }
+
+  .footer-note {
+    margin-top: var(--space-7);
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+
+  @media (max-width: 960px) {
+    .calc-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+
+    .calc-result {
+      position: static;
+    }
+  }
+</style>
