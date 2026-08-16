@@ -23,14 +23,67 @@ export const PRICE_RETAINER_VALUE = 5000;
 // The credit is what keeps a $999 front door from reading as the ceiling on the
 // whole practice. State it wherever the audit price appears.
 export const AUDIT_CREDIT_NOTE =
-  'The audit fee is credited in full toward an Agent Implementation Sprint or the first month of a Managed AI Operator Retainer.';
+  'The review fee is credited in full toward an Agent Implementation Sprint or the first month of a Fractional AI Officer retainer.';
+
+// --- Offer names + customer-facing framings -------------------------------
+// Single source for the canonical offer names and the customer-facing framings.
+// The $999 offering was renamed from "AI Workflow Audit" to "Agent Reliability
+// Review" — the review is the actual thing sold. "AI Workflow Audit" is kept
+// as the SEO-anchor phrase on the /ai-workflow-audit/ URL + H1 only; every
+// other surface uses AUDIT_NAME.
+export const AUDIT_NAME = 'Agent Reliability Review';
+export const AUDIT_SEO_ANCHOR = 'AI Workflow Audit';
+export const AUDIT_FRAMING = 'is what you already built actually working?';
+export const AUDIT_HEADLINE_ONE_LINER =
+  'A diagnostic of the AI agents and workflows you already have — mapped to the four silent-failure modes, evidence per finding, and a monitoring posture so the next failure gets caught before your customer sees it.';
+
+export const SPRINT_NAME = 'Agent Implementation Sprint';
+export const SPRINT_HEADLINE_ONE_LINER =
+  'Put one painful workflow into production, with testing, guardrails, and a documented handover.';
+
+export const RETAINER_NAME = 'Fractional AI Officer';
+export const RETAINER_FRAMING = 'roughly one junior FTE, without the hire';
+export const RETAINER_HEADLINE_ONE_LINER =
+  'A managed AI operator layer at roughly the capacity of one junior engineering hire — without the salary, benefits, or onboarding cost.';
 
 // Company profile URLs for schema.org sameAs. This is the highest-value
 // structured data a brand with no search history can publish: it is the
 // machine-readable statement of which entity "Phronimos" refers to.
-// TODO: add the LinkedIn company page, X, Clutch, and any directory profiles.
-// An empty array is omitted from the markup, so partial is fine.
-export const ORG_SAME_AS: string[] = [];
+// Empty strings are filtered before emit, so partial is fine — but every
+// entry that lands here should be a canonical, resolvable URL.
+export const ORG_SAME_AS: string[] = [
+  // TODO: LinkedIn company URL — e.g. 'https://www.linkedin.com/company/phronimos/'
+  // TODO: Crunchbase organization URL — e.g. 'https://www.crunchbase.com/organization/phronimos'
+  // TODO: Wikidata entity URL — e.g. 'https://www.wikidata.org/wiki/Q...'
+].filter(Boolean);
+
+// Founder identity. Kept in config so the About-page Person schema and the
+// Organization.founder reference stay in lockstep. If the founder record is
+// left blank, the Person block is suppressed rather than emitted with holes.
+// TODO: confirm Matthew's full legal name spelling as it should appear in
+//       schema (currently the common name — legal name for entity records
+//       may differ).
+export const FOUNDER_NAME = 'Matthew Kirby';
+// TODO: LinkedIn personal URL — e.g. 'https://www.linkedin.com/in/matthewdkirby/'
+export const FOUNDER_LINKEDIN = '';
+export const FOUNDER_JOB_TITLE = 'Founder';
+export const FOUNDER_KNOWS_ABOUT: string[] = [
+  'AI implementation',
+  'AI governance',
+  'managed AI operations',
+  'small business operations',
+  'reliability engineering',
+];
+
+// Service-area business: San Diego, CA. Google Business Profile guidance for
+// SABs is to hide the street address; schema.org accepts a PostalAddress with
+// only locality/region/country, which is the right shape for a service-area
+// firm without a public storefront.
+export const ORG_ADDRESS = {
+  addressLocality: 'San Diego',
+  addressRegion: 'CA',
+  addressCountry: 'US',
+};
 
 // --- Service standard -------------------------------------------------------
 // Publishing numeric reliability commitments is the single largest available

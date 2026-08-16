@@ -1,0 +1,19 @@
+# Phronimos
+
+> Phronimos designs, builds, and manages custom AI agents for owner-led businesses of 5–50 people. We start with a paid audit and scale into managed operations.
+
+## Core pages
+
+- [Home](https://phronimos.io/): what Phronimos is and who it's for.
+- [Services](https://phronimos.io/services/): the three offers — Agent Reliability Review ($999), Implementation Sprint, Fractional AI Officer retainer.
+- [Method](https://phronimos.io/method/): how we work, from audit to managed operations.
+- [AI Workflow Audit](https://phronimos.io/ai-workflow-audit/): the $999 diagnostic — is what you already built actually working?
+- [Assessment](https://phronimos.io/assessment/): free readiness assessment.
+- [Security](https://phronimos.io/security/): reliability commitments, data handling, incident response.
+- [About](https://phronimos.io/about/): founder, geography, ICP.
+- [Contact](https://phronimos.io/contact/): book a call.
+- [FAQ](https://phronimos.io/faq/): common questions.
+
+## Notes
+
+- [Notes index](https://phronimos.io/notes/): long-form writing on AI operations for SMBs.

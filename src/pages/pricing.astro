@@ -1,0 +1,649 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import {
+  AUDIT_CREDIT_NOTE,
+  AUDIT_HEADLINE_ONE_LINER,
+  AUDIT_NAME,
+  BOOKING_URL,
+  CONTACT_EMAIL,
+  PRICE_AUDIT,
+  PRICE_AUDIT_VALUE,
+  PRICE_RETAINER,
+  PRICE_RETAINER_VALUE,
+  PRICE_SPRINT,
+  PRICE_SPRINT_VALUE,
+  RETAINER_FRAMING,
+  RETAINER_HEADLINE_ONE_LINER,
+  RETAINER_NAME,
+  SITE_URL,
+  SPRINT_HEADLINE_ONE_LINER,
+  SPRINT_NAME,
+} from '../config';
+
+// Single-page pricing ladder. The three-tier logic (diagnose, build, run)
+// is explained before the table so an extraction crawler answering "what does
+// Phronimos cost" gets the shape in prose, and a human comparing offers gets
+// the numbers side by side. Prices come from config — every constant on this
+// page routes back to a single source of truth.
+
+const tiers = [
+  {
+    price: PRICE_AUDIT,
+    name: AUDIT_NAME,
+    id: 'agent-reliability-review',
+    tag: 'Start here',
+    tagline: 'Is what you already built actually working?',
+    bestFor:
+      'Owners who have already bought or built AI agents, workflows, or automations and are not sure whether they still work.',
+    outcome:
+      'A written diagnosis mapped to the four silent-failure modes, evidence per finding, and a monitoring posture so the next failure gets caught before your customer sees it.',
+    cta: { label: 'Book the review', href: BOOKING_URL },
+    detail: '/ai-workflow-audit/',
+  },
+  {
+    price: PRICE_SPRINT,
+    name: SPRINT_NAME,
+    id: 'agent-implementation-sprint',
+    tag: 'Build one',
+    tagline: 'Put one painful workflow into production.',
+    bestFor:
+      'Owners with a specific workflow scoped and ready to ship — auth in place, inputs identified, escalation path agreed.',
+    outcome:
+      'One workflow becomes measurably faster and less owner-dependent, with testing, guardrails, and a documented handover.',
+    cta: { label: 'Scope a sprint', href: `mailto:${CONTACT_EMAIL}?subject=Agent%20Implementation%20Sprint` },
+    detail: '/services/#agent-implementation-sprint',
+  },
+  {
+    price: PRICE_RETAINER,
+    name: RETAINER_NAME,
+    id: 'fractional-ai-officer',
+    tag: 'Keep it running',
+    tagline: RETAINER_FRAMING,
+    bestFor:
+      'Owners who have one or more agents in production and want an accountable operator layer without hiring for it.',
+    outcome:
+      'AI adoption becomes a line in the operating budget with an owner attached, monitoring for the four silent-failure modes, and a queue you can see into.',
+    cta: { label: 'Talk about the retainer', href: `mailto:${CONTACT_EMAIL}?subject=Fractional%20AI%20Officer` },
+    detail: '/services/fractional-ai-officer/',
+  },
+];
+
+// Comparison rows: each cell answers the row-question for the tier in a phrase,
+// not a paragraph. If a cell needs more than 14 words, the row is wrong.
+const compareRows = [
+  {
+    q: 'What you get',
+    cells: [
+      'Written diagnostic + monitoring posture',
+      'One workflow shipped + handover docs',
+      'Ongoing operations + monthly report',
+    ],
+  },
+  {
+    q: 'Time from kickoff',
+    cells: ['About 2 weeks', '4–6 weeks per workflow', 'Continuous, month to month'],
+  },
+  {
+    q: 'Your time in',
+    cells: ['~90 minutes', '4–6 hours across the sprint', '1 monthly review call'],
+  },
+  {
+    q: 'Reliability monitoring',
+    cells: ['Recommended posture, not run', 'Shipped with the workflow', 'Actively monitored on our side'],
+  },
+  {
+    q: 'Incident response',
+    cells: ['Not included', '30-day quality warranty on the shipped workflow', 'Detection + response targets in the SLA'],
+  },
+  {
+    q: 'New workflows added',
+    cells: ['Scoped, not built', 'One, in this engagement', 'One to two active at a time'],
+  },
+  {
+    q: 'Escalation path',
+    cells: ['Recommended', 'Documented at handover', 'Named + tested per workflow'],
+  },
+  {
+    q: 'Fee credited forward',
+    cells: ['Yes — toward sprint or first month of retainer', 'No', 'No'],
+  },
+  {
+    q: 'Commitment',
+    cells: ['Fixed fee, single engagement', 'Fixed scope, priced before start', 'Month-to-month, 30-day notice'],
+  },
+];
+
+const auditServiceId = `${SITE_URL}/services/#agent-reliability-review`;
+const sprintServiceId = `${SITE_URL}/services/#agent-implementation-sprint`;
+const retainerServiceId = `${SITE_URL}/services/#fractional-ai-officer`;
+const pricingUrl = `${SITE_URL}/pricing/`;
+
+// Three Service records mirroring the /services/ page, but with mainEntityOfPage
+// pointing at /pricing/ so a crawler landing on the pricing page sees this page
+// as the canonical location for the price statement. The @id values are shared
+// with /services/ on purpose — same entity, two contexts.
+const auditService = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  '@id': auditServiceId,
+  name: AUDIT_NAME,
+  serviceType: 'AI workflow audit',
+  description: AUDIT_HEADLINE_ONE_LINER,
+  provider: { '@id': `${SITE_URL}/#organization` },
+  areaServed: { '@type': 'Country', name: 'United States' },
+  audience: {
+    '@type': 'BusinessAudience',
+    name: 'Owner-led businesses with 5 to 50 employees',
+  },
+  url: `${SITE_URL}/ai-workflow-audit/`,
+  mainEntityOfPage: pricingUrl,
+  offers: {
+    '@type': 'Offer',
+    priceCurrency: 'USD',
+    priceSpecification: {
+      '@type': 'PriceSpecification',
+      price: PRICE_AUDIT_VALUE,
+      priceCurrency: 'USD',
+      valueAddedTaxIncluded: false,
+    },
+    url: `${SITE_URL}/ai-workflow-audit/`,
+  },
+};
+
+const sprintService = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  '@id': sprintServiceId,
+  name: SPRINT_NAME,
+  serviceType: 'AI agent implementation',
+  description: SPRINT_HEADLINE_ONE_LINER,
+  provider: { '@id': `${SITE_URL}/#organization` },
+  areaServed: { '@type': 'Country', name: 'United States' },
+  audience: {
+    '@type': 'BusinessAudience',
+    name: 'Owner-led businesses with 5 to 50 employees',
+  },
+  url: `${SITE_URL}/services/`,
+  mainEntityOfPage: pricingUrl,
+  offers: {
+    '@type': 'Offer',
+    priceCurrency: 'USD',
+    priceSpecification: {
+      '@type': 'PriceSpecification',
+      minPrice: PRICE_SPRINT_VALUE,
+      priceCurrency: 'USD',
+      valueAddedTaxIncluded: false,
+    },
+    url: `${SITE_URL}/services/`,
+  },
+};
+
+const retainerService = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  '@id': retainerServiceId,
+  name: RETAINER_NAME,
+  serviceType: 'Managed AI operations',
+  description: RETAINER_HEADLINE_ONE_LINER,
+  provider: { '@id': `${SITE_URL}/#organization` },
+  areaServed: { '@type': 'Country', name: 'United States' },
+  audience: {
+    '@type': 'BusinessAudience',
+    name: 'Owner-led businesses with 5 to 50 employees',
+  },
+  url: `${SITE_URL}/services/fractional-ai-officer/`,
+  mainEntityOfPage: pricingUrl,
+  offers: {
+    '@type': 'Offer',
+    priceCurrency: 'USD',
+    priceSpecification: {
+      '@type': 'UnitPriceSpecification',
+      price: PRICE_RETAINER_VALUE,
+      priceCurrency: 'USD',
+      unitCode: 'MON',
+      billingIncrement: 1,
+      referenceQuantity: {
+        '@type': 'QuantitativeValue',
+        value: 1,
+        unitCode: 'MON',
+      },
+    },
+    url: `${SITE_URL}/services/fractional-ai-officer/`,
+  },
+};
+
+const breadcrumbs = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+    { '@type': 'ListItem', position: 2, name: 'Pricing', item: pricingUrl },
+  ],
+};
+
+const jsonLd = [auditService, sprintService, retainerService, breadcrumbs];
+---
+
+<BaseLayout
+  title="Pricing: Audit, Build, Managed Retainer | Phronimos"
+  description={`Phronimos pricing: ${PRICE_AUDIT} Agent Reliability Review credited forward, ${PRICE_SPRINT} Agent Implementation Sprint, ${PRICE_RETAINER} Fractional AI Officer retainer. Full ladder on one page with a comparison table.`}
+  jsonLd={jsonLd}
+>
+  <section class="section-tight page-head">
+    <div class="container">
+      <hr class="rule" data-reveal />
+      <p class="eyebrow" data-reveal style="--reveal-i: 1">Pricing</p>
+      <h1 data-reveal style="--reveal-i: 2">What Phronimos charges, on one page.</h1>
+      <p class="lede answer" data-reveal style="--reveal-i: 3">
+        Three engagements, in one order. A {PRICE_AUDIT} <strong>{AUDIT_NAME}</strong> answers whether
+        what you already built is actually working. A {PRICE_SPRINT} <strong>{SPRINT_NAME}</strong>
+        puts one painful workflow into production, with testing, guardrails, and a documented
+        handover. A {PRICE_RETAINER} <strong>{RETAINER_NAME}</strong> retainer keeps it running and
+        adds the next one. Each one is fixed-scope, priced before it starts, and re-priced in writing
+        if scope changes during the work. The review fee is credited forward, so anyone who goes on
+        to build effectively gets the diagnosis free.
+      </p>
+      <p class="credit-note" data-reveal style="--reveal-i: 4">
+        {AUDIT_CREDIT_NOTE}
+      </p>
+    </div>
+  </section>
+
+  <section class="section tier-band">
+    <div class="container">
+      <div class="tier-grid">
+        {
+          tiers.map((tier) => (
+            <article class="tier-card" id={tier.id} data-reveal>
+              <p class="tier-tag">{tier.tag}</p>
+              <p class="tier-price">{tier.price}</p>
+              <h2 class="tier-name">{tier.name}</h2>
+              <p class="tier-line">{tier.tagline}</p>
+              <p class="tier-best">
+                <strong>Best for:</strong> {tier.bestFor}
+              </p>
+              <p class="tier-outcome">{tier.outcome}</p>
+              <div class="tier-actions">
+                <a href={tier.cta.href} class="btn btn-primary" target={tier.cta.href.startsWith('http') ? '_blank' : undefined} rel={tier.cta.href.startsWith('http') ? 'noopener noreferrer' : undefined}>{tier.cta.label}</a>
+                <a href={tier.detail} class="tier-detail-link">See details</a>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section compare-band">
+    <div class="container">
+      <h2 data-reveal>What's included at each tier?</h2>
+      <p class="lede answer" data-reveal style="--reveal-i: 1">
+        The comparison below reads left-to-right as the natural sequence: diagnose, build, run. Most
+        engagements begin at the review because the diagnosis is credited forward. Some skip
+        straight to a sprint or the retainer when the workflow is already scoped.
+      </p>
+      <div class="table-wrap" data-reveal style="--reveal-i: 2">
+        <table class="compare">
+          <thead>
+            <tr>
+              <th scope="col">&nbsp;</th>
+              {tiers.map((tier) => (
+                <th scope="col">
+                  <span class="col-price">{tier.price}</span>
+                  <span class="col-name">{tier.name}</span>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {
+              compareRows.map((row) => (
+                <tr>
+                  <th scope="row">{row.q}</th>
+                  {row.cells.map((cell) => (
+                    <td>{cell}</td>
+                  ))}
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight q-band">
+    <div class="container">
+      <h2 data-reveal>How the pricing works</h2>
+
+      <h3 data-reveal>What's included in the review?</h3>
+      <p class="answer" data-reveal>
+        A 45-minute working call with whoever owns the workflows, a diagnostic run against the four
+        silent-failure modes (bad output on green status, dropped webhooks, stalled triggers,
+        downstream data loss), per-workflow findings with evidence and blast-radius numbers, a
+        remediation plan with hours-of-effort per fix, and a monitoring posture recommendation. Two
+        weeks from kickoff. About 90 minutes of your time.
+      </p>
+
+      <h3 data-reveal>How does the sprint work?</h3>
+      <p class="answer" data-reveal>
+        One workflow is designed, built, tested against live examples, and handed over with
+        guardrails, escalation paths, an SOP, and a team training session. The scope is agreed
+        before work starts and the price is fixed to that scope. If scope changes during the work,
+        it gets re-priced in writing before continuing. Sprints run 4–6 weeks. Complexity moves the
+        price above the {PRICE_SPRINT} floor; the number is agreed up front.
+      </p>
+
+      <h3 data-reveal>What does the retainer include?</h3>
+      <p class="answer" data-reveal>
+        One to two active requests at a time, an under-48-hour turnaround target, monitoring for the
+        four silent-failure modes, incident response against the published <a href="/reliability/">
+        reliability standard</a>, maintenance and tuning of what's already running, new-workflow
+        rollout at retainer pace, a customer-facing request queue, async video updates, and a
+        monthly report. Priced flat at {PRICE_RETAINER}, month-to-month, 30-day notice.
+      </p>
+
+      <h3 data-reveal>How does the credit-forward mechanic work?</h3>
+      <p class="answer" data-reveal>
+        The {PRICE_AUDIT} review fee is credited in full toward an {SPRINT_NAME} or the first month
+        of a {RETAINER_NAME} retainer. For anyone who goes on to build, the diagnosis is effectively
+        free. If the findings point nowhere, the report is still yours to use — the review has
+        already paid for itself by preventing a build that would have failed.
+      </p>
+
+      <h3 data-reveal>What isn't priced on this page?</h3>
+      <p class="answer" data-reveal>
+        Engineering time on custom software builds, third-party subscription costs (model APIs,
+        automation platforms, integration tools — passed through at cost), and any work outside the
+        agreed scope of a specific engagement. Those get priced separately, in writing, before they
+        start.
+      </p>
+
+      <h3 data-reveal>Is there a minimum term on the retainer?</h3>
+      <p class="answer" data-reveal>
+        No. The retainer is month-to-month with 30-day notice on either side. The commercial promise
+        rests on the monthly report showing what changed, not on a lock-in.
+      </p>
+    </div>
+  </section>
+
+  <section class="section tools-band">
+    <div class="container">
+      <h2 data-reveal>Run the numbers before you talk to us</h2>
+      <p class="lede answer" data-reveal style="--reveal-i: 1">
+        Two calculators to make the case internally. The formulas are visible on each page — no
+        email gate, no accounts.
+      </p>
+      <ul class="tool-list" data-reveal style="--reveal-i: 2">
+        <li>
+          <h3><a href="/tools/workflow-roi/">Workflow ROI calculator</a></h3>
+          <p class="muted">
+            Given the hours a workflow eats each week and the fully-loaded cost of the person doing
+            it, computes annual dollars saved if it were automated and months to break even against
+            the {PRICE_SPRINT} sprint.
+          </p>
+        </li>
+        <li>
+          <h3><a href="/tools/cost-of-manual-process/">Cost of a manual process</a></h3>
+          <p class="muted">
+            Given volume per month, minutes per instance, and a loaded hourly cost, computes the
+            hours per month and the annual dollars tied up in the process.
+          </p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section final-cta">
+    <div class="container">
+      <hr class="rule" data-reveal />
+      <h2 class="display" data-reveal style="--reveal-i: 1">Start with the diagnosis.</h2>
+      <p class="lede" data-reveal style="--reveal-i: 2">
+        Ninety minutes of your time, a fixed fee agreed up front, and a written verdict you keep
+        whichever way the decision goes.
+      </p>
+      <div class="cta-actions" data-reveal style="--reveal-i: 3">
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the {AUDIT_NAME}</a>
+        <span class="muted">or write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
+      </div>
+      <p class="footer-note">Last reviewed: 2026-08-13.</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head h1 {
+    margin-top: var(--space-4);
+    max-width: 22ch;
+  }
+
+  .page-head .lede {
+    margin-top: var(--space-5);
+    max-width: 66ch;
+  }
+
+  .answer {
+    max-width: 66ch;
+  }
+
+  .credit-note {
+    margin-top: var(--space-5);
+    max-width: 60ch;
+    font-size: 15.5px;
+    padding-left: var(--space-4);
+    border-left: 2px solid var(--accent-solid);
+  }
+
+  .tier-band {
+    border-top: 1px solid var(--line);
+    background: var(--surface-raised);
+  }
+
+  .tier-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+  }
+
+  .tier-card {
+    background: var(--surface-canvas);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tier-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-strong);
+  }
+
+  .tier-price {
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 28px;
+    letter-spacing: -0.02em;
+    margin-top: var(--space-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tier-name {
+    margin-top: var(--space-3);
+    font-size: 22px;
+  }
+
+  .tier-line {
+    margin-top: var(--space-3);
+    color: var(--text-secondary);
+    font-style: italic;
+    font-size: 15.5px;
+    max-width: 30ch;
+  }
+
+  .tier-best {
+    margin-top: var(--space-4);
+    font-size: 15px;
+    color: var(--text-secondary);
+  }
+
+  .tier-outcome {
+    margin-top: var(--space-4);
+    font-size: 15px;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--line);
+  }
+
+  .tier-actions {
+    margin-top: auto;
+    padding-top: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: flex-start;
+  }
+
+  .tier-detail-link {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .compare-band {
+    border-top: 1px solid var(--line);
+  }
+
+  .table-wrap {
+    margin-top: var(--space-7);
+    overflow-x: auto;
+  }
+
+  table.compare {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 780px;
+    font-size: 15px;
+  }
+
+  table.compare th,
+  table.compare td {
+    text-align: left;
+    vertical-align: top;
+    padding: var(--space-4) var(--space-4);
+    border-bottom: 1px solid var(--line);
+  }
+
+  table.compare thead th {
+    border-bottom: 1px solid var(--line-strong);
+    padding-bottom: var(--space-4);
+  }
+
+  table.compare thead th .col-price {
+    display: block;
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--accent-strong);
+    letter-spacing: -0.01em;
+  }
+
+  table.compare thead th .col-name {
+    display: block;
+    margin-top: 4px;
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--text-primary);
+  }
+
+  table.compare tbody th {
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--text-secondary);
+    width: 22%;
+  }
+
+  table.compare tbody td {
+    color: var(--text-primary);
+  }
+
+  .q-band {
+    border-top: 1px solid var(--line);
+    background: var(--surface-raised);
+  }
+
+  .q-band h2 {
+    margin-bottom: var(--space-6);
+  }
+
+  .q-band h3 {
+    margin-top: var(--space-6);
+    font-size: 18px;
+  }
+
+  .q-band .answer {
+    margin-top: var(--space-3);
+    max-width: 68ch;
+  }
+
+  .tools-band {
+    border-top: 1px solid var(--line);
+  }
+
+  .tool-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-7) 0 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+    border-top: 1px solid var(--line);
+    padding-top: var(--space-6);
+  }
+
+  .tool-list h3 {
+    font-size: 18px;
+  }
+
+  .tool-list .muted {
+    margin-top: var(--space-3);
+    font-size: 15px;
+    max-width: 48ch;
+  }
+
+  .final-cta .display {
+    max-width: 16ch;
+  }
+
+  .final-cta .lede {
+    margin-top: var(--space-5);
+    max-width: 52ch;
+  }
+
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5);
+    margin-top: var(--space-7);
+  }
+
+  .footer-note {
+    margin-top: var(--space-7);
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+
+  @media (max-width: 960px) {
+    .tier-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .tool-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

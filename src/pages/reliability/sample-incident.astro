@@ -1,0 +1,109 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_URL } from '../../config';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: 'Sample incident report (redacted)',
+    datePublished: '2026-08-01',
+    author: { '@id': `${SITE_URL}/#organization` },
+    publisher: { '@id': `${SITE_URL}/#organization` },
+    mainEntityOfPage: `${SITE_URL}/reliability/sample-incident/`,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: 'Reliability', item: `${SITE_URL}/reliability/` },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: 'Sample incident report',
+        item: `${SITE_URL}/reliability/sample-incident/`,
+      },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Sample incident report (redacted) | Phronimos"
+  description="A redacted example of a real Phronimos incident report — detection, symptom, blast radius, root cause, remediation, prevention. This is the format every retainer client receives after every Critical or High incident."
+  jsonLd={jsonLd}
+>
+  <main class="page">
+    <span class="eyebrow">Reliability &middot; Sample</span>
+
+    <h1 class="display">Sample incident report — INC-2026-0173</h1>
+
+    <p class="lede">
+      Every Critical or High incident on a managed workflow ships a report in this format within 24 hours of resolution. Customer name, workflow specifics, and vendor names have been anonymized. Numbers are plausible for the workflow class.
+    </p>
+
+    <hr />
+
+    <h2>Metadata</h2>
+
+    <table class="commitment-table">
+      <tbody>
+        <tr><td><strong>Incident ID</strong></td><td>INC-2026-0173</td></tr>
+        <tr><td><strong>Customer</strong></td><td>[REDACTED] &middot; ~35-person professional services firm</td></tr>
+        <tr><td><strong>Workflow</strong></td><td>Weekly client status digest generator</td></tr>
+        <tr><td><strong>Severity</strong></td><td>High</td></tr>
+        <tr><td><strong>Silent-failure mode</strong></td><td>SFM-1 (executes "successfully" but produces empty output)</td></tr>
+        <tr><td><strong>Detection at</strong></td><td>2026-06-14 09:47 PT (18 minutes after failure onset)</td></tr>
+        <tr><td><strong>Response at</strong></td><td>2026-06-14 09:52 PT (5 minutes after detection)</td></tr>
+        <tr><td><strong>Contained at</strong></td><td>2026-06-14 10:41 PT (49 minutes after detection)</td></tr>
+        <tr><td><strong>Resolved at</strong></td><td>2026-06-14 15:12 PT (5h 25min after detection)</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Symptom</h2>
+    <p>
+      Weekly client digest emails delivered on schedule, addressed correctly, subject lines correctly personalized — but the "highlights of the week" section rendered as an empty bullet list. Three digests went to three clients before the output-shape validator caught the empty section and paged on-call.
+    </p>
+
+    <h2>Blast radius</h2>
+    <p>
+      Three client-facing emails delivered with degraded content. Fifteen additional digests queued for the same day were held before send. Zero client-visible actions (no missed replies, no confused replies received). Two of the three clients acknowledged the digest in follow-up threads without noting the empty section; one flagged it, was replied to within an hour with the corrected version + brief explanation, and continued the engagement without escalation.
+    </p>
+
+    <h2>Root cause</h2>
+    <p>
+      A third-party CRM API deprecated the field name the workflow used to pull "activities logged this week" and started returning that field as null. The workflow's data-fetch step succeeded (200 OK, valid JSON structure) but the downstream template-fill step rendered an empty list rather than raising on the null. The workflow's own output-shape validation ran only on the delivery envelope, not on the section-body content, so the empty section shipped.
+    </p>
+
+    <h2>Remediation</h2>
+    <ol>
+      <li><strong>Immediate (09:52–10:41 PT):</strong> queued digests were held; the three sent digests were flagged for follow-up; a manually assembled corrected digest was sent to the client who flagged.</li>
+      <li><strong>Same-day (12:00–15:12 PT):</strong> the workflow's data-fetch step was updated to use the new API field name; a section-content validator was added upstream of the template-fill step that raises if any required section is empty; the workflow was tested against three historical data windows and re-enabled.</li>
+      <li><strong>Follow-up (next 48 hours):</strong> section-content validators were retrofitted onto the four other digest-generation workflows for the same customer that used the same API pattern. None had failed yet — pre-emptive.</li>
+    </ol>
+
+    <h2>Prevention</h2>
+    <p>
+      The pre-existing output-shape validator only checked the delivery envelope (email address present, subject non-empty, HTML body parses). It did not check that each promised section had content. That gap is now closed for this workflow and its four peers.
+    </p>
+    <p>
+      Structural fix: the workflow-authoring template in Phronimos's internal library now requires a section-content validator any time a workflow's output has named sections. This closes the same-shape gap for future workflows before it opens.
+    </p>
+
+    <h2>SLA impact</h2>
+    <p>
+      Detection at 18 minutes exceeded the High-severity target of 2 hours: no breach. Response at 5 minutes was inside the 4-business-hour target: no breach. No SLA credit applied.
+    </p>
+
+    <h2>What the client saw</h2>
+    <p>
+      A 6-line notification email within 30 minutes of detection ("Digest for [client] shipped with an empty highlights section — we've held the rest of today's digests and are pulling the corrected version now — will confirm within 2 hours"). A 30-minute follow-up call to walk through this same report the next morning. This incident report itself, delivered as PDF within 24 hours of resolution.
+    </p>
+
+    <hr />
+
+    <p><a href="/reliability/">← Back to reliability standard</a></p>
+    <p class="footer-note">Last reviewed: 2026-08-01.</p>
+  </main>
+</BaseLayout>

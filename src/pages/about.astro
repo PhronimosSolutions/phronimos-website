@@ -1,12 +1,40 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Brandmark from '../components/Brandmark.astro';
-import { BOOKING_URL, CONTACT_EMAIL } from '../config';
+import {
+  AUDIT_NAME,
+  BOOKING_URL,
+  CONTACT_EMAIL,
+  FOUNDER_JOB_TITLE,
+  FOUNDER_KNOWS_ABOUT,
+  FOUNDER_LINKEDIN,
+  FOUNDER_NAME,
+  SITE_URL,
+} from '../config';
+
+// Founder Person block. Uses the same @id the site-wide Organization already
+// declares (BaseLayout emits Organization.founder with this @id), so this
+// page's block resolves as the canonical Person record rather than a
+// duplicate. The Person and Organization thereby cross-reference each other
+// without either being restated.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': `${SITE_URL}/about/#founder`,
+  name: FOUNDER_NAME,
+  jobTitle: FOUNDER_JOB_TITLE,
+  worksFor: { '@id': `${SITE_URL}/#organization` },
+  knowsAbout: FOUNDER_KNOWS_ABOUT,
+  url: `${SITE_URL}/about/`,
+  // TODO: fill FOUNDER_LINKEDIN in config.ts once the personal LinkedIn URL is confirmed.
+  ...(FOUNDER_LINKEDIN ? { sameAs: [FOUNDER_LINKEDIN] } : {}),
+};
 ---
 
 <BaseLayout
   title="About Phronimos | Custom Managed AI Agents"
   description="Phronimos designs, builds, and runs custom AI agents for owner-led businesses. The name is Ancient Greek for practical wisdom, and it sets the standard the work is judged by."
+  jsonLd={jsonLd}
 >
   <section class="section-tight page-head">
     <div class="container">
@@ -107,7 +135,7 @@ import { BOOKING_URL, CONTACT_EMAIL } from '../config';
       <h2 data-reveal>How engagements are staffed</h2>
       <div class="prose" data-reveal style="--reveal-i: 1">
         <p>
-          Every Phronimos engagement runs end to end with the same practitioner: the audit call, the
+          Every Phronimos engagement runs end to end with the same practitioner: the review call, the
           build, and the monitoring afterward. There is no handoff between the person who scopes the
           work and the person who does it.
         </p>
@@ -144,7 +172,7 @@ import { BOOKING_URL, CONTACT_EMAIL } from '../config';
         <li data-reveal style="--reveal-i: 1">
           <p>
             Teams whose core records live in systems nobody can export from. Agents need reliable
-            inputs, and the audit will say so plainly if yours are not there yet.
+            inputs, and the review will say so plainly if yours are not there yet.
           </p>
         </li>
         <li data-reveal style="--reveal-i: 2">
@@ -155,7 +183,7 @@ import { BOOKING_URL, CONTACT_EMAIL } from '../config';
         </li>
       </ul>
       <p class="muted honest-note" data-reveal>
-        The audit ends in a verdict, and sometimes the verdict is that the timing is wrong. That
+        The review ends in a verdict, and sometimes the verdict is that the timing is wrong. That
         answer is worth the fee too.
       </p>
     </div>
@@ -165,7 +193,7 @@ import { BOOKING_URL, CONTACT_EMAIL } from '../config';
     <div class="container">
       <h2 class="display" data-reveal>See it applied to your operations.</h2>
       <div class="cta-actions" data-reveal style="--reveal-i: 1">
-        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the AI Workflow Audit</a>
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the {AUDIT_NAME}</a>
         <span class="muted">or write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
       </div>
     </div>

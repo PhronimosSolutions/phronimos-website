@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { BOOKING_URL, SITE_URL } from '../config';
+import { AUDIT_NAME, BOOKING_URL, SITE_URL } from '../config';
 
 // Answers are written to survive being read alone: no pronouns pointing at other
 // entries, no "as mentioned above", and the subject restated in the first clause.
@@ -8,7 +8,7 @@ import { BOOKING_URL, SITE_URL } from '../config';
 const faqs = [
   {
     q: 'How much does it cost to have AI agents built and maintained for a small business?',
-    a: 'Phronimos charges $999 for an AI Workflow Audit, from $3,500 for an Agent Implementation Sprint that puts the first agent into production, and $5,000 per month for the Managed AI Operator Retainer. The audit fee is credited in full toward a sprint or the first month of a retainer. A first year covering the audit, one sprint, and twelve months of retainer starts around $63,500. Scope changes are re-priced in writing before work continues.',
+    a: 'Phronimos charges $999 for an Agent Reliability Review — a diagnostic that answers "is what you already built actually working?" — from $3,500 for an Agent Implementation Sprint that puts the first agent into production, and $5,000 per month for the Fractional AI Officer retainer (roughly one junior FTE, without the hire). The review fee is credited in full toward a sprint or the first month of a retainer. A first year covering the review, one sprint, and twelve months of retainer starts around $63,500. Scope changes are re-priced in writing before work continues.',
   },
   {
     q: 'What is a managed AI operator?',
@@ -23,8 +23,8 @@ const faqs = [
     a: 'Building in-house makes sense when a business has an engineer who can own the system for the next two years. Most companies with 5 to 50 people do not, and the failure point is rarely the build. It is month four, when an upstream tool changes and nobody notices the automation stopped working.',
   },
   {
-    q: 'Is the AI Workflow Audit the whole engagement?',
-    a: 'The AI Workflow Audit is the paid diagnosis and the scoping document for what follows. A full Phronimos engagement runs audit, then implementation sprint, then managed retainer. The audit exists so the first build aims at the right workflow.',
+    q: `Is the ${AUDIT_NAME} the whole engagement?`,
+    a: `The ${AUDIT_NAME} is the paid diagnosis and the scoping document for what follows. A full Phronimos engagement runs review, then implementation sprint, then managed retainer. The review exists so the first build aims at the right workflow.`,
   },
   {
     q: 'Do I need to understand AI models or tooling to work with Phronimos?',

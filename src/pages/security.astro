@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import FigScope from '../components/figures/FigScope.astro';
 import FigDetection from '../components/figures/FigDetection.astro';
-import { BOOKING_URL, CONTACT_EMAIL, SITE_URL } from '../config';
+import { AUDIT_NAME, BOOKING_URL, CONTACT_EMAIL, SITE_URL } from '../config';
 
 // Derived from security-policy.md. Changes to this page are trust-defining and
 // need sign-off before deploy, because everything on it is a commitment.
@@ -162,12 +162,12 @@ const jsonLd = {
       <hr class="rule" data-reveal />
       <h2 class="display" data-reveal style="--reveal-i: 1">Questions before you grant anything?</h2>
       <p class="lede" data-reveal style="--reveal-i: 2">
-        Ask them before the audit rather than after. Nothing on this page changes once an engagement
+        Ask them before the review rather than after. Nothing on this page changes once an engagement
         starts, and the full policy and data processing agreement are available on request.
       </p>
       <div class="cta-actions" data-reveal style="--reveal-i: 3">
         <a href={`mailto:${CONTACT_EMAIL}`} class="btn btn-secondary">Email a question</a>
-        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the AI Workflow Audit</a>
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the {AUDIT_NAME}</a>
       </div>
     </div>
   </section>

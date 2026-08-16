@@ -1,0 +1,379 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  BOOKING_URL,
+  CONTACT_EMAIL,
+  PRICE_RETAINER,
+  PRICE_RETAINER_VALUE,
+  RETAINER_FRAMING,
+  RETAINER_HEADLINE_ONE_LINER,
+  RETAINER_NAME,
+  SITE_URL,
+} from '../../config';
+
+// The retainer's own page. "Fractional AI Officer" is a category name with no
+// clear incumbent; the goal here is to be the definitional answer at that URL,
+// not to chase volume. Structure: answer-first opener, what the role covers,
+// what it doesn't, where the operational rigor lives (link back to /reliability/).
+
+const covers = [
+  ['Operations', 'Running the workflows already in production: monitoring, tuning, incident response, credential rotation, silent-failure detection.'],
+  ['Monitoring', 'Coverage for the four silent-failure modes on every workflow. Alerts reach Phronimos before they reach you.'],
+  ['Incident response', `Detection and response against the published targets on our reliability standard, with SLA credits when we miss them.`],
+  ['Maintenance', 'Third-party API changes, deprecated endpoints, prompt drift, model updates — kept current without you asking.'],
+  ['Rollout', 'One to two new workflows added per month at retainer pace, scoped and priced against the roadmap.'],
+  ['Reporting', 'Monthly report: volume handled, escalation rate, first-pass accuracy against sampled review, cycle time against baseline. Quarterly review.'],
+];
+
+const doesNot = [
+  ['Engineering time', 'Custom software builds, product development, backend services. If the answer is "we need to build a new product," that is a separate engagement.'],
+  ['Unbounded sprints', 'A single sprint carrying more than one workflow, or a workflow that needs weeks of net-new integration work, is priced separately as an Implementation Sprint.'],
+  ['Emergency staffing', 'The retainer is not on-call cover for a broken internal team. Escalation paths and human takeover are documented; owning the outcome is still Phronimos on the shipped surface, but not the whole business.'],
+  ['Legal or compliance advice', 'We document controls and evidence for your counsel; we do not act as counsel.'],
+];
+
+const faqs = [
+  {
+    q: 'What is a Fractional AI Officer?',
+    a: `A Fractional AI Officer is a managed AI operator layer at roughly the capacity of one junior engineering hire — without the salary, benefits, or onboarding cost. The retainer covers running the workflows already in production, monitoring for the four silent-failure modes, incident response against a published reliability standard, maintenance, and adding new workflows at retainer pace. It is what Phronimos does after a build ships.`,
+  },
+  {
+    q: 'How is a Fractional AI Officer different from a consultant or an agency?',
+    a: `Consultants advise; agencies deliver a scoped project and hand it back. A Fractional AI Officer owns the outcome on the workflows we shipped: monitoring runs on our side, incidents get an owner and a written report, the SLA carries automatic credits. We do AgentOps for firms that don't have engineers.`,
+  },
+  {
+    q: 'What is the retainer size?',
+    a: `${PRICE_RETAINER}, flat. Roughly one junior FTE, without the hire. Month-to-month with 30-day notice on either side. Priced in advance and unchanged unless scope is renegotiated in writing.`,
+  },
+  {
+    q: 'How many workflows can be on the retainer at once?',
+    a: 'One to two active requests at a time, and typically 3–8 workflows under monitored operation once the retainer settles. If the surface grows past that, a second retainer seat is scoped rather than the existing one being stretched thin.',
+  },
+  {
+    q: 'What happens on the first month?',
+    a: 'The audit fee (if you started at the review) applies as credit against month one. Month one is spent onboarding the current surface: credentials handoff, monitoring bring-up on your production workflows, escalation path agreement, and the first monthly report. New builds start in month two unless the surface is already stable.',
+  },
+  {
+    q: 'What industries do you take?',
+    a: 'Owner-led firms in insurance, law, real estate, recruiting, and agencies are the current mix. The offer is cross-vertical on purpose — the reliability problem is the same shape everywhere. Vertical-specific compliance work (NAIC governance, legal privilege review) is worked into scope where it applies.',
+  },
+];
+
+const retainerServiceId = `${SITE_URL}/services/#fractional-ai-officer`;
+const pageUrl = `${SITE_URL}/services/fractional-ai-officer/`;
+
+// Same @id as the retainer Service on /services/ and /pricing/ — one entity,
+// three surfaces. mainEntityOfPage points here because this page is the
+// definitional page for that Service.
+const retainerService = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  '@id': retainerServiceId,
+  name: RETAINER_NAME,
+  serviceType: 'Managed AI operations',
+  description: RETAINER_HEADLINE_ONE_LINER,
+  provider: { '@id': `${SITE_URL}/#organization` },
+  areaServed: { '@type': 'Country', name: 'United States' },
+  audience: {
+    '@type': 'BusinessAudience',
+    name: 'Owner-led businesses with 5 to 50 employees',
+  },
+  url: pageUrl,
+  mainEntityOfPage: pageUrl,
+  offers: {
+    '@type': 'Offer',
+    priceCurrency: 'USD',
+    priceSpecification: {
+      '@type': 'UnitPriceSpecification',
+      price: PRICE_RETAINER_VALUE,
+      priceCurrency: 'USD',
+      unitCode: 'MON',
+      billingIncrement: 1,
+      referenceQuantity: {
+        '@type': 'QuantitativeValue',
+        value: 1,
+        unitCode: 'MON',
+      },
+    },
+    url: pageUrl,
+  },
+};
+
+const faqPage = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  url: pageUrl,
+  mainEntity: faqs.map(({ q, a }) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+};
+
+const breadcrumbs = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+    { '@type': 'ListItem', position: 2, name: 'Services', item: `${SITE_URL}/services/` },
+    { '@type': 'ListItem', position: 3, name: 'Fractional AI Officer', item: pageUrl },
+  ],
+};
+
+const jsonLd = [retainerService, faqPage, breadcrumbs];
+---
+
+<BaseLayout
+  title="What Is a Fractional AI Officer? Scope, Cost, and Coverage | Phronimos"
+  description={`A Fractional AI Officer is a managed AI operator layer at roughly the capacity of one junior engineering hire, without the hire. ${PRICE_RETAINER}, month-to-month, month-end SLA credits. AgentOps for firms that don't have engineers.`}
+  jsonLd={jsonLd}
+>
+  <section class="section-tight page-head">
+    <div class="container">
+      <hr class="rule" data-reveal />
+      <p class="eyebrow" data-reveal style="--reveal-i: 1">Fractional AI Officer &middot; {PRICE_RETAINER}</p>
+      <h1 data-reveal style="--reveal-i: 2">What is a Fractional AI Officer?</h1>
+      <p class="lede answer" data-reveal style="--reveal-i: 3">
+        A Fractional AI Officer is a managed AI operator layer at roughly the capacity of one junior
+        engineering hire — without the salary, benefits, or onboarding cost. It covers the
+        workflows already in production and the ones added next, with monitoring, incident
+        response, and a monthly report against a baseline. It is what Phronimos does after a build
+        ships.
+      </p>
+      <p class="muted" data-reveal style="--reveal-i: 4">
+        {RETAINER_FRAMING}, priced flat at {PRICE_RETAINER}, month-to-month, 30-day notice. We do
+        AgentOps for firms that don't have engineers.
+      </p>
+      <div class="cta-actions" data-reveal style="--reveal-i: 5">
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book a call</a>
+        <a href="/pricing/" class="btn btn-secondary">See the full pricing ladder</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section covers-band">
+    <div class="container">
+      <h2 data-reveal>What does the role cover?</h2>
+      <p class="lede answer" data-reveal style="--reveal-i: 1">
+        Six areas. The theme across all of them is that the outcome on the shipped surface stops
+        being your problem. You keep the visibility; we carry the pager.
+      </p>
+      <ul class="detail-list" data-reveal style="--reveal-i: 2">
+        {
+          covers.map(([name, desc]) => (
+            <li>
+              <h3>{name}</h3>
+              <p class="muted">{desc}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="muted covers-note" data-reveal>
+        Detection targets, escalation paths, response ladders, and SLA credit terms are on the
+        <a href="/reliability/">reliability standard</a>. A redacted example incident is at
+        <a href="/reliability/sample-incident/">sample incident report</a>.
+      </p>
+    </div>
+  </section>
+
+  <section class="section verticals-band">
+    <div class="container">
+      <h2 data-reveal>Who hires a Fractional AI Officer?</h2>
+      <p class="lede answer" data-reveal style="--reveal-i: 1">
+        Owner-led firms in insurance, law, real estate, recruiting, and agencies. The common shape
+        is the same everywhere: 5–50 employees, a handful of AI agents or automations already in
+        production, and no one internally who owns whether they still work next Tuesday.
+      </p>
+      <ul class="vertical-list" data-reveal style="--reveal-i: 2">
+        <li><strong>Insurance agencies</strong> — quote intake, renewals, carrier portal reconciliation, audit-trail requirements from NAIC governance rules.</li>
+        <li><strong>Law firms</strong> — intake triage, conflict checks, filing reminders, matter-status digests, review workflows with privilege boundaries.</li>
+        <li><strong>Real estate brokerages</strong> — lead routing, listing intake, transaction coordination, follow-up sequences that can't drop a client.</li>
+        <li><strong>Recruiting firms</strong> — candidate parsing, scheduling, pipeline hygiene, outreach with tone controls.</li>
+        <li><strong>Agencies</strong> — client reporting, deliverable generation, retainer status updates, work-in-progress tracking across accounts.</li>
+      </ul>
+      <p class="muted verticals-note" data-reveal>
+        Vertical-specific compliance work — for example NAIC AI governance, or matter-level
+        privilege review — is worked into scope where it applies. The reliability problem is the
+        same shape across all five verticals.
+      </p>
+    </div>
+  </section>
+
+  <section class="section doesnot-band">
+    <div class="container">
+      <h2 data-reveal>What doesn't the retainer cover?</h2>
+      <p class="lede answer" data-reveal style="--reveal-i: 1">
+        A retainer that quietly expands is a retainer that quietly fails. The scope below is stated
+        so nobody has to guess.
+      </p>
+      <ul class="detail-list detail-list--tight" data-reveal style="--reveal-i: 2">
+        {
+          doesNot.map(([name, desc]) => (
+            <li>
+              <h3>{name}</h3>
+              <p class="muted">{desc}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section-tight faq-band">
+    <div class="container">
+      <h2 data-reveal>Fractional AI Officer questions</h2>
+      <div class="faq-list" data-reveal style="--reveal-i: 1">
+        {
+          faqs.map(({ q, a }) => (
+            <details class="faq-item">
+              <summary>{q}</summary>
+              <p class="faq-body">{a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section final-cta">
+    <div class="container">
+      <hr class="rule" data-reveal />
+      <h2 class="display" data-reveal style="--reveal-i: 1">Retain the operator, not just the code.</h2>
+      <p class="lede" data-reveal style="--reveal-i: 2">
+        A monthly line in the operating budget with an owner attached. Month-to-month, 30-day
+        notice, first month typically credited against a prior review.
+      </p>
+      <div class="cta-actions" data-reveal style="--reveal-i: 3">
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book a call</a>
+        <span class="muted">or write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
+      </div>
+      <p class="footer-note">Last reviewed: 2026-08-13.</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head h1 {
+    margin-top: var(--space-4);
+    max-width: 22ch;
+  }
+
+  .page-head .answer {
+    margin-top: var(--space-5);
+  }
+
+  .page-head .muted {
+    margin-top: var(--space-5);
+    max-width: 60ch;
+    font-size: 15.5px;
+  }
+
+  .answer {
+    max-width: 66ch;
+  }
+
+  .covers-band {
+    border-top: 1px solid var(--line);
+    background: var(--surface-raised);
+  }
+
+  .verticals-band {
+    border-top: 1px solid var(--line);
+  }
+
+  .doesnot-band {
+    border-top: 1px solid var(--line);
+    background: var(--surface-band);
+  }
+
+  .detail-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-7) 0 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6) var(--space-7);
+    border-top: 1px solid var(--line);
+    padding-top: var(--space-6);
+  }
+
+  .detail-list--tight {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .detail-list h3 {
+    font-size: 17px;
+  }
+
+  .detail-list .muted {
+    margin-top: var(--space-2);
+    font-size: 15px;
+    max-width: 48ch;
+  }
+
+  .covers-note {
+    margin-top: var(--space-6);
+    max-width: 62ch;
+    font-size: 15px;
+  }
+
+  .vertical-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-6) 0 0;
+    border-top: 1px solid var(--line);
+    padding-top: var(--space-4);
+  }
+
+  .vertical-list li {
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 15.5px;
+    max-width: 74ch;
+  }
+
+  .vertical-list li:last-child {
+    border-bottom: none;
+  }
+
+  .verticals-note {
+    margin-top: var(--space-5);
+    max-width: 62ch;
+    font-size: 15px;
+  }
+
+  .faq-band .faq-list {
+    margin-top: var(--space-6);
+    max-width: 76ch;
+  }
+
+  .final-cta .display {
+    max-width: 20ch;
+  }
+
+  .final-cta .lede {
+    margin-top: var(--space-5);
+    max-width: 56ch;
+  }
+
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5);
+    margin-top: var(--space-7);
+  }
+
+  .footer-note {
+    margin-top: var(--space-7);
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+
+  @media (max-width: 860px) {
+    .detail-list {
+      grid-template-columns: 1fr;
+      gap: var(--space-5);
+    }
+  }
+</style>

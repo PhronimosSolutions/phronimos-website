@@ -4,6 +4,8 @@ import FigOperator from '../components/figures/FigOperator.astro';
 import FigBottleneck from '../components/figures/FigBottleneck.astro';
 import {
   AUDIT_CREDIT_NOTE,
+  AUDIT_HEADLINE_ONE_LINER,
+  AUDIT_NAME,
   BOOKING_URL,
   CONTACT_EMAIL,
   PRICE_AUDIT,
@@ -28,9 +30,8 @@ const jsonLd = {
   itemListElement: [
     {
       '@type': 'Offer',
-      name: 'AI Workflow Audit',
-      description:
-        'A paid diagnosis of where operational time is leaking, with a findings report and a scoped first build.',
+      name: AUDIT_NAME,
+      description: AUDIT_HEADLINE_ONE_LINER,
       priceCurrency: 'USD',
       priceSpecification: {
         '@type': 'PriceSpecification',
@@ -54,7 +55,7 @@ const jsonLd = {
     },
     {
       '@type': 'Offer',
-      name: 'Managed AI Operator Retainer',
+      name: 'Fractional AI Officer retainer',
       description:
         'Monitoring, maintenance, and continued rollout of the AI agent layer under a monthly retainer.',
       priceCurrency: 'USD',
@@ -107,7 +108,7 @@ const fits = [
 
 <BaseLayout
   title="Managed AI Agents for Businesses | Phronimos"
-  description="Phronimos designs, builds, and runs custom AI agents for owner-led businesses. Start with a $999 AI Workflow Audit, credited toward the build that follows."
+  description={`Phronimos designs, builds, and runs custom AI agents for owner-led businesses. Start with a ${PRICE_AUDIT} ${AUDIT_NAME}, credited toward the build that follows.`}
   jsonLd={jsonLd}
 >
   <!-- 1. Hero: asymmetric split -->
@@ -124,7 +125,7 @@ const fits = [
           machinery.
         </p>
         <div class="hero-ctas" data-reveal style="--reveal-i: 3">
-          <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the AI Workflow Audit</a>
+          <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the {AUDIT_NAME}</a>
           <a href="/method/" class="btn btn-secondary">See how it works</a>
         </div>
       </div>
@@ -136,7 +137,7 @@ const fits = [
         </p>
         <ul class="panel-list">
           <li>
-            <span>AI Workflow Audit</span>
+            <span>{AUDIT_NAME}</span>
             <span class="muted">{PRICE_AUDIT}</span>
           </li>
           <li>
@@ -144,7 +145,7 @@ const fits = [
             <span class="muted">{PRICE_SPRINT}</span>
           </li>
           <li>
-            <span>Managed AI Operator Retainer</span>
+            <span>Fractional AI Officer retainer</span>
             <span class="muted">{PRICE_RETAINER}</span>
           </li>
         </ul>
@@ -380,8 +381,8 @@ const fits = [
     <div class="container">
       <h2 data-reveal>What does it cost?</h2>
       <p class="lede answer" data-reveal style="--reveal-i: 1">
-        An AI Workflow Audit costs {PRICE_AUDIT}. An Agent Implementation Sprint starts at $3,500,
-        depending on integration complexity. The Managed AI Operator Retainer is $5,000 per month.
+        An {AUDIT_NAME} costs {PRICE_AUDIT}. An Agent Implementation Sprint starts at {`$${PRICE_SPRINT_VALUE.toLocaleString()}`},
+        depending on integration complexity. The Fractional AI Officer retainer is {`$${PRICE_RETAINER_VALUE.toLocaleString()}`} per month.
         Scope changes are re-priced in writing before work continues.
       </p>
       <p class="muted credit-note" data-reveal style="--reveal-i: 2">
@@ -391,7 +392,7 @@ const fits = [
         <a class="offer-row" href="/ai-workflow-audit/" data-reveal>
           <span class="offer-price">{PRICE_AUDIT}</span>
           <span>
-            <span class="offer-name">AI Workflow Audit</span>
+            <span class="offer-name">{AUDIT_NAME}</span>
             <span class="muted offer-desc"
               >Recorded discovery, workflow and tool-stack review, findings report, and a scoped
               first sprint.</span
@@ -413,7 +414,7 @@ const fits = [
         <a class="offer-row" href="/services/" data-reveal style="--reveal-i: 2">
           <span class="offer-price">{PRICE_RETAINER}</span>
           <span>
-            <span class="offer-name">Managed AI Operator Retainer</span>
+            <span class="offer-name">Fractional AI Officer retainer</span>
             <span class="muted offer-desc"
               >Monitoring, maintenance, new rollout, and a queue you can see into.</span
             >
@@ -430,10 +431,10 @@ const fits = [
       <h2 data-reveal>Questions owners ask</h2>
       <div>
         <details class="faq-item" data-reveal>
-          <summary>Is the audit the whole engagement?</summary>
+          <summary>Is the review the whole engagement?</summary>
           <p class="faq-body">
-            The AI Workflow Audit is a paid diagnosis that scopes the first build. A full engagement
-            runs audit, then implementation sprint, then managed retainer.
+            The {AUDIT_NAME} is a paid diagnosis that scopes the first build. A full engagement
+            runs review, then implementation sprint, then managed retainer.
           </p>
         </details>
         <details class="faq-item" data-reveal style="--reveal-i: 1">
@@ -446,9 +447,9 @@ const fits = [
         <details class="faq-item" data-reveal style="--reveal-i: 2">
           <summary>How much does it cost to have AI agents built and maintained?</summary>
           <p class="faq-body">
-            Phronimos charges {PRICE_AUDIT} for a workflow audit, from $3,500 to build and deploy
-            the first agent, and $5,000 per month to monitor, maintain, and expand the agent layer.
-            The audit fee is credited toward whichever comes next.
+            Phronimos charges {PRICE_AUDIT} for an {AUDIT_NAME}, from {`$${PRICE_SPRINT_VALUE.toLocaleString()}`} to build and deploy
+            the first agent, and {`$${PRICE_RETAINER_VALUE.toLocaleString()}`} per month to monitor, maintain, and expand the agent layer.
+            The review fee is credited toward whichever comes next.
           </p>
         </details>
         <p class="faq-more" data-reveal><a href="/faq/">Read the full FAQ</a></p>
@@ -470,7 +471,7 @@ const fits = [
         <a href="/security/">how we handle access to your systems</a>
       </p>
       <div class="cta-actions" data-reveal style="--reveal-i: 3">
-        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the AI Workflow Audit</a>
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the {AUDIT_NAME}</a>
         <span class="muted">or write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
       </div>
     </div>
