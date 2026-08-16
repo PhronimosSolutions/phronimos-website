@@ -2,6 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import {
   AUDIT_CREDIT_NOTE,
+  AUDIT_HEADLINE_ONE_LINER,
+  AUDIT_NAME,
   BOOKING_URL,
   CONTACT_EMAIL,
   PRICE_AUDIT,
@@ -10,26 +12,29 @@ import {
   PRICE_AUDIT_VALUE,
   PRICE_RETAINER_VALUE,
   PRICE_SPRINT_VALUE,
+  RETAINER_HEADLINE_ONE_LINER,
+  RETAINER_NAME,
   SITE_URL,
+  SPRINT_HEADLINE_ONE_LINER,
+  SPRINT_NAME,
 } from '../config';
 
 const offers = [
   {
     price: PRICE_AUDIT,
-    name: 'AI Workflow Audit',
+    name: 'Agent Reliability Review',
     bestFor:
-      'Business owners who know operations feel heavier than they should, but do not know what to automate first.',
+      'Business owners who have already built or bought AI agents, workflows, or automations — and are not sure whether they still work.',
     includes: [
-      '45-minute recorded discovery call',
-      'Workflow and tool-stack review',
-      'Bottleneck analysis',
-      'Custom report with 3 to 5 recommendations',
-      'ROI baseline estimate',
+      '45-minute working call with whoever owns the workflows',
+      'Diagnostic run against the four silent-failure modes (bad output on green status, dropped webhooks, stalled triggers, downstream data loss)',
+      'Per-workflow findings with evidence and blast-radius numbers',
+      'Remediation plan with hours-of-effort per fix',
+      'Monitoring posture recommendation so the next failure is caught before your customer notices',
       '30-minute review call',
-      'First-sprint recommendation',
     ],
     outcome:
-      'Clear diagnosis of where time is leaking and which one or two workflows should move first.',
+      'A clear answer to "is what you already built actually working?" with a remediation plan and a monitoring posture.',
   },
   {
     price: PRICE_SPRINT,
@@ -50,8 +55,8 @@ const offers = [
   },
   {
     price: PRICE_RETAINER,
-    name: 'Managed AI Operator Retainer',
-    bestFor: 'Teams that want an ongoing AI operator layer without hiring internal specialists.',
+    name: 'Fractional AI Officer',
+    bestFor: 'Teams that want the capacity of one junior engineering hire on AI operations, without the hire — roughly one junior FTE without the salary, benefits, or onboarding cost. We do AgentOps for firms that don\'t have engineers.',
     includes: [
       'One to two active requests at a time',
       'Under-48-hour turnaround target',
@@ -67,40 +72,155 @@ const offers = [
   },
 ];
 
-const jsonLd = {
+// Three explicit Service records — one per offer — with an OfferCatalog binding
+// them for the /services/ page. Each Service carries a stable @id keyed to the
+// canonical URL fragment for that offer, so cross-page references (from
+// /ai-workflow-audit/, /method/, index, and future pricing / fractional-AI-officer
+// pages) can point at the same entity by @id instead of restating it.
+const auditServiceId = `${SITE_URL}/services/#agent-reliability-review`;
+const sprintServiceId = `${SITE_URL}/services/#agent-implementation-sprint`;
+const retainerServiceId = `${SITE_URL}/services/#fractional-ai-officer`;
+
+const auditService = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  '@id': auditServiceId,
+  name: AUDIT_NAME,
+  serviceType: 'AI workflow audit',
+  description: AUDIT_HEADLINE_ONE_LINER,
+  provider: { '@id': `${SITE_URL}/#organization` },
+  areaServed: { '@type': 'Country', name: 'United States' },
+  audience: {
+    '@type': 'BusinessAudience',
+    name: 'Owner-led businesses with 5 to 50 employees',
+  },
+  url: `${SITE_URL}/services/`,
+  offers: {
+    '@type': 'Offer',
+    priceCurrency: 'USD',
+    priceSpecification: {
+      '@type': 'PriceSpecification',
+      price: PRICE_AUDIT_VALUE,
+      priceCurrency: 'USD',
+      valueAddedTaxIncluded: false,
+    },
+    url: `${SITE_URL}/ai-workflow-audit/`,
+  },
+};
+
+const sprintService = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  '@id': sprintServiceId,
+  name: SPRINT_NAME,
+  serviceType: 'AI agent implementation',
+  description: SPRINT_HEADLINE_ONE_LINER,
+  provider: { '@id': `${SITE_URL}/#organization` },
+  areaServed: { '@type': 'Country', name: 'United States' },
+  audience: {
+    '@type': 'BusinessAudience',
+    name: 'Owner-led businesses with 5 to 50 employees',
+  },
+  url: `${SITE_URL}/services/`,
+  offers: {
+    '@type': 'Offer',
+    priceCurrency: 'USD',
+    priceSpecification: {
+      '@type': 'PriceSpecification',
+      minPrice: PRICE_SPRINT_VALUE,
+      priceCurrency: 'USD',
+      valueAddedTaxIncluded: false,
+    },
+    url: `${SITE_URL}/services/`,
+  },
+};
+
+const retainerService = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  '@id': retainerServiceId,
+  name: RETAINER_NAME,
+  serviceType: 'Managed AI operations',
+  description: RETAINER_HEADLINE_ONE_LINER,
+  provider: { '@id': `${SITE_URL}/#organization` },
+  areaServed: { '@type': 'Country', name: 'United States' },
+  audience: {
+    '@type': 'BusinessAudience',
+    name: 'Owner-led businesses with 5 to 50 employees',
+  },
+  url: `${SITE_URL}/services/`,
+  offers: {
+    '@type': 'Offer',
+    priceCurrency: 'USD',
+    priceSpecification: {
+      '@type': 'UnitPriceSpecification',
+      price: PRICE_RETAINER_VALUE,
+      priceCurrency: 'USD',
+      unitCode: 'MON',
+      billingIncrement: 1,
+      referenceQuantity: {
+        '@type': 'QuantitativeValue',
+        value: 1,
+        unitCode: 'MON',
+      },
+    },
+    url: `${SITE_URL}/services/`,
+  },
+};
+
+const offerCatalog = {
   '@context': 'https://schema.org',
   '@type': 'OfferCatalog',
   name: 'Phronimos services and pricing',
   url: `${SITE_URL}/services/`,
   provider: { '@id': `${SITE_URL}/#organization` },
-  itemListElement: offers.map((offer, i) => ({
-    '@type': 'Offer',
-    name: offer.name,
-    description: offer.outcome,
-    priceCurrency: 'USD',
-    category: 'AI agent implementation and managed service',
-    priceSpecification: [
-      { '@type': 'PriceSpecification', price: PRICE_AUDIT_VALUE, priceCurrency: 'USD' },
-      { '@type': 'PriceSpecification', minPrice: PRICE_SPRINT_VALUE, priceCurrency: 'USD' },
-      {
+  itemListElement: [
+    {
+      '@type': 'Offer',
+      name: AUDIT_NAME,
+      priceCurrency: 'USD',
+      category: 'AI workflow audit',
+      priceSpecification: {
+        '@type': 'PriceSpecification',
+        price: PRICE_AUDIT_VALUE,
+        priceCurrency: 'USD',
+      },
+      itemOffered: { '@id': auditServiceId },
+    },
+    {
+      '@type': 'Offer',
+      name: SPRINT_NAME,
+      priceCurrency: 'USD',
+      category: 'AI agent implementation',
+      priceSpecification: {
+        '@type': 'PriceSpecification',
+        minPrice: PRICE_SPRINT_VALUE,
+        priceCurrency: 'USD',
+      },
+      itemOffered: { '@id': sprintServiceId },
+    },
+    {
+      '@type': 'Offer',
+      name: RETAINER_NAME,
+      priceCurrency: 'USD',
+      category: 'Managed AI operations',
+      priceSpecification: {
         '@type': 'UnitPriceSpecification',
         price: PRICE_RETAINER_VALUE,
         priceCurrency: 'USD',
         unitCode: 'MON',
       },
-    ][i],
-    itemOffered: {
-      '@type': 'Service',
-      name: offer.name,
-      provider: { '@id': `${SITE_URL}/#organization` },
+      itemOffered: { '@id': retainerServiceId },
     },
-  })),
+  ],
 };
+
+const jsonLd = [auditService, sprintService, retainerService, offerCatalog];
 ---
 
 <BaseLayout
   title="AI Agent Services and Pricing: Audit, Build, Managed Retainer | Phronimos"
-  description="What Phronimos charges: a $999 AI Workflow Audit credited toward what follows, an Agent Implementation Sprint from $3,500, and a managed retainer at $5,000 a month."
+  description="What Phronimos charges: a $999 Agent Reliability Review credited toward what follows, an Agent Implementation Sprint from $3,500, and a Fractional AI Officer retainer at $5,000 a month — roughly one junior FTE, without the hire."
   jsonLd={jsonLd}
 >
   <section class="section-tight page-head">
@@ -108,9 +228,9 @@ const jsonLd = {
       <hr class="rule" data-reveal />
       <h1 data-reveal style="--reveal-i: 1">AI agent services and pricing</h1>
       <p class="lede answer" data-reveal style="--reveal-i: 2">
-        <strong>Three engagements. One controlled path.</strong> An AI Workflow Audit at {PRICE_AUDIT}
-        finds the bottleneck and scopes the build. An Agent Implementation Sprint from $3,500 puts
-        the first agent into production. The Managed AI Operator Retainer at $5,000 per month keeps
+        <strong>Three engagements. One controlled path.</strong> An {AUDIT_NAME} at {PRICE_AUDIT}
+        finds the bottleneck and scopes the build. An Agent Implementation Sprint from {`$${PRICE_SPRINT_VALUE.toLocaleString()}`} puts
+        the first agent into production. The Fractional AI Officer retainer at {PRICE_RETAINER} keeps
         it running and adds the next one.
       </p>
       <p class="credit-note" data-reveal style="--reveal-i: 3">
@@ -180,7 +300,7 @@ const jsonLd = {
         that follows.
       </p>
       <div class="cta-actions" data-reveal style="--reveal-i: 2">
-        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the AI Workflow Audit</a>
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the {AUDIT_NAME}</a>
         <span class="muted">or write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
       </div>
     </div>

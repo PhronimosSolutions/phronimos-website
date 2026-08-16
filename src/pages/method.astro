@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import FigStages from '../components/figures/FigStages.astro';
 import FigDetection from '../components/figures/FigDetection.astro';
 import {
+  AUDIT_NAME,
   BOOKING_URL,
   CONTACT_EMAIL,
   PUBLISH_SERVICE_STANDARD,
@@ -26,7 +27,7 @@ const jsonLd = {
 
 const steps = [
   {
-    name: 'AI Workflow Audit',
+    name: AUDIT_NAME,
     head: 'Find the operational leak.',
     intro:
       'A focused, paid diagnosis of where work is leaking and which workflows should be handled first. Bounded, useful, and concrete.',
@@ -60,7 +61,7 @@ const steps = [
       'One workflow becomes measurably faster and less owner-dependent. The deliverable is a running system with a documented maintenance path, and a baseline to measure it against.',
   },
   {
-    name: 'Managed AI Operator Retainer',
+    name: 'Fractional AI Officer retainer',
     head: 'Keep the system running.',
     intro:
       'The retainer makes AI adoption a line in your operating budget with an owner attached. This is the ongoing partnership.',
@@ -81,8 +82,8 @@ const steps = [
 ---
 
 <BaseLayout
-  title="How AI Agent Implementation Works: Audit, Sprint, Retainer | Phronimos"
-  description="How Phronimos builds and runs AI agents: a paid audit finds the operational leak, a sprint puts the first agent into production, and a retainer keeps it running."
+  title="How AI Agent Implementation Works: Review, Sprint, Retainer | Phronimos"
+  description="How Phronimos builds and runs AI agents: a paid review finds the operational leak, a sprint puts the first agent into production, and a retainer keeps it running."
   jsonLd={jsonLd}
 >
   <section class="section-tight page-head">
@@ -90,7 +91,7 @@ const steps = [
       <hr class="rule" data-reveal />
       <h1 data-reveal style="--reveal-i: 1">How Phronimos builds and runs your AI agents</h1>
       <p class="lede" data-reveal style="--reveal-i: 2">
-        <strong>Audit first. Build second. Manage ongoing.</strong> A paid diagnosis finds where work
+        <strong>Review first. Build second. Manage ongoing.</strong> A paid diagnosis finds where work
         leaks and scopes the build. A sprint puts the first operator into production. A monthly
         retainer keeps it running and adds the next one. Each step ends in something you can hold,
         and each one is a decision point.
@@ -169,11 +170,11 @@ const steps = [
     <div class="container">
       <h2 class="display" data-reveal>Start where the risk is lowest.</h2>
       <p class="lede" data-reveal style="--reveal-i: 1">
-        The audit is a bounded first step with a concrete deliverable, and it is the only
+        The review is a bounded first step with a concrete deliverable, and it is the only
         commitment you make up front. Everything after it is a separate decision.
       </p>
       <div class="cta-actions" data-reveal style="--reveal-i: 2">
-        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the AI Workflow Audit</a>
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the {AUDIT_NAME}</a>
         <span class="muted">or write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
       </div>
     </div>

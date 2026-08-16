@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { BOOKING_URL } from '../config';
+import { AUDIT_NAME, BOOKING_URL } from '../config';
 ---
 
 <BaseLayout
@@ -11,14 +11,14 @@ import { BOOKING_URL } from '../config';
     <div class="container">
       <hr class="rule" />
       <h1 class="display">This page does not exist.</h1>
-      <p class="lede">The audit, however, does. And the homepage is right where you left it.</p>
+      <p class="lede">The review, however, does. And the homepage is right where you left it.</p>
       <p class="muted notfound-links">
         Try <a href="/services/">services and pricing</a>, <a href="/method/">the method</a>, or
         <a href="/faq/">the FAQ</a>.
       </p>
       <div class="cta-actions">
         <a href="/" class="btn btn-secondary">Back to the homepage</a>
-        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the AI Workflow Audit</a>
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the {AUDIT_NAME}</a>
       </div>
     </div>
   </section>

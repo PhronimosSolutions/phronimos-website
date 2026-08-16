@@ -4,8 +4,17 @@ import '../styles/components.css';
 import Seo from '../components/Seo.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { CONTACT_EMAIL, LEGAL_NAME, ORG_SAME_AS, SITE_NAME, SITE_URL } from '../config';
-import Analytics from '@vercel/analytics/astro';
+import {
+  CONTACT_EMAIL,
+  FOUNDER_KNOWS_ABOUT,
+  FOUNDER_LINKEDIN,
+  FOUNDER_NAME,
+  LEGAL_NAME,
+  ORG_ADDRESS,
+  ORG_SAME_AS,
+  SITE_NAME,
+  SITE_URL,
+} from '../config';
 
 interface Props {
   title: string;
@@ -17,13 +26,16 @@ interface Props {
 const { title, description, jsonLd, ogType } = Astro.props;
 
 // Site-wide entity graph. Emitted on every page with stable @ids so page-level
-// blocks (FAQPage, Service, Article) can reference the organization by @id
-// instead of restating it. For a brand with no search history this is the
+// blocks (FAQPage, Service, Article, Person) can reference the organization by
+// @id instead of restating it. For a brand with no search history this is the
 // machine-readable answer to "what is Phronimos, and what does it sell."
 //
-// No Person entity and no postal address: the practice is deliberately not
-// publishing individual identity. Entity resolution therefore rests entirely on
-// ORG_SAME_AS, which makes filling that array more important, not less.
+// Address is city/region/country only — this is a service-area business without
+// a public storefront, and Google Business Profile guidance for SABs is to
+// hide the street. Entity resolution rests on ORG_SAME_AS + the founder
+// Person link, which makes filling those arrays more important, not less.
+const founderId = `${SITE_URL}/about/#founder`;
+
 const organization = {
   '@type': 'ProfessionalService',
   '@id': `${SITE_URL}/#organization`,
@@ -36,13 +48,32 @@ const organization = {
   description:
     'Phronimos designs, builds, and manages custom AI agents for owner-led businesses, starting with a paid AI workflow audit.',
   priceRange: '$$$',
-  areaServed: { '@type': 'Country', name: 'United States' },
+  address: {
+    '@type': 'PostalAddress',
+    ...ORG_ADDRESS,
+  },
+  areaServed: [
+    { '@type': 'Country', name: 'United States' },
+    { '@type': 'City', name: 'San Diego' },
+    { '@type': 'AdministrativeArea', name: 'California' },
+  ],
   knowsAbout: [
     'AI workflow audit',
     'AI agent implementation',
     'managed AI agents',
     'business process automation',
   ],
+  ...(FOUNDER_NAME
+    ? {
+        founder: {
+          '@type': 'Person',
+          '@id': founderId,
+          name: FOUNDER_NAME,
+          ...(FOUNDER_LINKEDIN ? { sameAs: [FOUNDER_LINKEDIN] } : {}),
+          knowsAbout: FOUNDER_KNOWS_ABOUT,
+        },
+      }
+    : {}),
   ...(ORG_SAME_AS.length ? { sameAs: ORG_SAME_AS } : {}),
 };
 

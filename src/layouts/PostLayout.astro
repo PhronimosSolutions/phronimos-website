@@ -6,21 +6,40 @@ interface Props {
   title: string;
   description: string;
   pubDate: Date;
+  updatedDate?: Date;
   slug: string;
 }
 
-const { title, description, pubDate, slug } = Astro.props;
+const { title, description, pubDate, updatedDate, slug } = Astro.props;
+const dateModified = (updatedDate ?? pubDate).toISOString();
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: title,
-  description,
-  datePublished: pubDate.toISOString(),
-  author: { '@id': `${SITE_URL}/#organization` },
-  publisher: { '@id': `${SITE_URL}/#organization` },
-  mainEntityOfPage: `${SITE_URL}/notes/${slug}/`,
-};
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description,
+    datePublished: pubDate.toISOString(),
+    dateModified,
+    author: { '@id': `${SITE_URL}/#organization` },
+    publisher: { '@id': `${SITE_URL}/#organization` },
+    mainEntityOfPage: `${SITE_URL}/notes/${slug}/`,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: 'Notes', item: `${SITE_URL}/notes/` },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: title,
+        item: `${SITE_URL}/notes/${slug}/`,
+      },
+    ],
+  },
+];
 
 const dateLabel = pubDate.toLocaleDateString('en-US', {
   year: 'numeric',

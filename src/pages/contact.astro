@@ -1,17 +1,17 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
+import { AUDIT_NAME, CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
 ---
 
 <BaseLayout
-  title="Book an AI Workflow Audit | Phronimos"
-  description="Start an AI Workflow Audit with Phronimos. Tell us what keeps piling up, and we reply within one business day."
+  title={`Book an ${AUDIT_NAME} | Phronimos`}
+  description={`Start an ${AUDIT_NAME} with Phronimos — a diagnostic of the AI agents and workflows you already have. Tell us what keeps piling up, and we reply within one business day.`}
 >
   <section class="section contact">
     <div class="container contact-grid">
       <div class="contact-lead">
         <hr class="rule" data-reveal />
-        <h1 data-reveal style="--reveal-i: 1">Book an AI Workflow Audit</h1>
+        <h1 data-reveal style="--reveal-i: 1">Book an {AUDIT_NAME}</h1>
         <p class="lede" data-reveal style="--reveal-i: 2">
           Tell us what keeps piling up. We reply within one business day.
         </p>

@@ -37,9 +37,22 @@
         },
         {
           "key": "Strict-Transport-Security",
-          "value": "max-age=63072000; includeSubDomains"
+          "value": "max-age=63072000; includeSubDomains; preload"
         }
       ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "phronimos.io"
+        }
+      ],
+      "destination": "https://www.phronimos.io/$1",
+      "permanent": true
     }
   ]
 }

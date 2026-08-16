@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE_URL, CONTACT_EMAIL } from '../config';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Trust center',
+  url: `${SITE_URL}/trust/`,
+  isPartOf: { '@id': `${SITE_URL}/#organization` },
+  about: 'Phronimos trust and security posture — uptime commitments, security, data handling.',
+};
+---
+
+<BaseLayout
+  title="Trust center | Phronimos"
+  description="Phronimos trust center: uptime commitments, security posture, data handling, incident response. The pillars we hold ourselves to."
+  jsonLd={jsonLd}
+>
+  <main class="page">
+    <span class="eyebrow">Trust</span>
+
+    <h1 class="display">How Phronimos handles reliability, security, and your data.</h1>
+
+    <p class="lede">
+      The pillars we hold ourselves to. Each links to the page or document that explains the details.
+    </p>
+
+    <div class="pillar">
+      <h2>Reliability</h2>
+      <p class="answer">
+        Detection targets, escalation, response times, and automatic SLA credits for managed workflows. Published as real commitments with real numbers, not as adjectives.
+      </p>
+      <p><a href="/reliability/">Reliability standard →</a></p>
+      <p><a href="/reliability/sample-incident/">Sample incident report (redacted) →</a></p>
+    </div>
+
+    <div class="pillar">
+      <h2>Security posture</h2>
+      <p class="answer">
+        Per-customer isolation, credential handling through a broker (never in committed files or LLM prompts), agent runtime in dedicated cloud computers per customer where required, and a documented incident-response process.
+      </p>
+      <p><a href="/security/">Security page →</a></p>
+      <p><em>Detailed security summary (SOC 2 posture, penetration test cadence, third-party audits): available under NDA.</em></p>
+    </div>
+
+    <div class="pillar">
+      <h2>Data handling</h2>
+      <p class="answer">
+        Customer data stays in customer-owned tools by default. Data pulled into Phronimos's runtime is scoped to the workflow, retained only as long as needed for that workflow, and never used to train models. Data-processing addenda available on request.
+      </p>
+      <p><a href="/privacy/">Privacy policy →</a></p>
+      <p><em>Data Processing Addendum (DPA): available on request.</em></p>
+    </div>
+
+    <div class="pillar">
+      <h2>Governance</h2>
+      <p class="answer">
+        Written AI program, validation testing per workflow, record retention on runs and decisions, third-party vendor diligence with audit rights where the customer requires it. Modeled on ISO 42001 shape without the certification cost — appropriate for SMB scale.
+      </p>
+      <p><em>Detailed governance framework: <a href="/insights/iso-42001-alternative-for-smbs/">ISO-42001-shaped governance at SMB scale</a> (in flight).</em></p>
+    </div>
+
+    <div class="pillar">
+      <h2>Incident response</h2>
+      <p class="answer">
+        Every Critical or High incident on a managed workflow ships a written report within 24 hours of resolution, in the same format as the redacted sample. Clients receive plain-English notifications during the incident, not after.
+      </p>
+      <p><a href="/reliability/sample-incident/">Sample incident report →</a></p>
+    </div>
+
+    <hr />
+
+    <p>
+      Missing something? Email <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. We'd rather add it than have you guess.
+    </p>
+
+    <p class="footer-note">Last reviewed: 2026-08-01.</p>
+  </main>
+</BaseLayout>

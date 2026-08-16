@@ -2,6 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import {
   AUDIT_CREDIT_NOTE,
+  AUDIT_HEADLINE_ONE_LINER,
+  AUDIT_NAME,
   BOOKING_URL,
   CONTACT_EMAIL,
   PRICE_AUDIT,
@@ -10,53 +12,88 @@ import {
   SITE_URL,
 } from '../config';
 
-// Category-ownership page. "AI workflow audit" names the entry offer and has a
-// thin SERP with no incumbent, so this page is written to be the definitional
-// answer an assistant quotes, not to chase volume. Structure follows the pattern
-// that gets extracted: question-shaped headings, a self-contained answer under
-// each, a comparison table, and prices stated in prose.
+// Category-anchor page. URL and H1 preserved for SERP continuity — "AI workflow
+// audit" is the search phrase, "Agent Reliability Review" is the offer we
+// actually deliver. The body has been rewritten around the four silent-failure
+// modes and the credit-forward mechanic. Structure follows the same
+// extraction-friendly pattern: question-shaped H2s, answer under each, a
+// comparison table, and prices stated in prose.
 
-const includes = [
-  ['45-minute recorded discovery call', 'How work moves through the business today, in your words.'],
-  ['Workflow and tool-stack review', 'What you run, what it costs, and where the systems stop talking.'],
-  ['Bottleneck analysis', 'Where hours leak, and whether the cause is a tool, a handoff, or an owner.'],
-  ['Findings report', 'Three to five concrete recommendations in priority order.'],
-  ['ROI baseline estimate', 'What the leaking hours cost you per week, so later claims have a number to beat.'],
-  ['30-minute review call', 'The report walked through live, with questions answered.'],
-  ['Scoped first sprint', 'A specific workflow, a specific build, and a specific price.'],
+// The four silent-failure modes — the diagnostic scaffold the review runs
+// against. Text mirrors delivery-operating-kit/05-report-build-checklist.md,
+// abbreviated for a web page and paired with the monitoring shape that
+// catches each one going forward.
+const failureModes = [
+  {
+    id: 'SFM-1',
+    name: 'Bad or empty output on a green status code.',
+    what: 'The workflow executes successfully — the API returned 200, the log line says complete — and the output is wrong, blank, malformed, or nonsense. Downstream systems accept it because the status was fine. Nobody catches it until a human notices the consequence days later.',
+    monitor: 'Per-workflow output-shape validation on every run — required sections non-empty, field types correct, size within band.',
+  },
+  {
+    id: 'SFM-2',
+    name: 'Webhook silently stops receiving events.',
+    what: 'The listener is up. The sender changed. Auth token expired, endpoint URL rotated, source API deprecated the event, rate limit tripped and the sender gave up. The workflow keeps polling a queue that stays empty and reports "nothing to do" indefinitely.',
+    monitor: 'Per-source webhook delivery-rate alert against a rolling baseline.',
+  },
+  {
+    id: 'SFM-3',
+    name: 'Workflow hasn\'t executed in an unusually long time.',
+    what: 'The trigger stopped firing. A cron was disabled during a deploy and never re-enabled. Zapier task limit hit and the client didn\'t get the email. Scheduled job\'s parent workflow was deleted. Absence-of-runs looks the same as no-work-to-do, so nobody notices.',
+    monitor: 'Per-workflow "last successful run" freshness alert with an SLA window per workflow class.',
+  },
+  {
+    id: 'SFM-4',
+    name: 'Downstream system stops receiving expected data.',
+    what: 'The workflow runs. The output looks fine on our side. The downstream system doesn\'t see it. API contract changed, destination account was suspended, integration credential rotated on the receiving side, spam filter ate the email, folder permission removed write access.',
+    monitor: 'Per-destination downstream-received confirmation loop closing the round trip.',
+  },
 ];
 
-const verdicts = [
-  ['What should stay human', 'Work where the judgment is the value, and automating it would remove the point.'],
-  ['What should become a workflow', 'Work that needs documentation and routing more than it needs AI.'],
-  ['What should become an operator', 'Work with enough volume, enough structure, and enough pain to justify a build.'],
-  ['What should wait', 'Work sitting on data or systems that are not ready, and what would make them ready.'],
+const includes = [
+  ['45-minute working call', 'Whoever owns the workflows walks through what is running, what it is supposed to do, and where it has hurt recently.'],
+  ['Diagnostic against the four modes', 'Every workflow in scope is run against the four silent-failure modes above, with evidence pulled from logs, run history, and downstream systems.'],
+  ['Per-workflow findings', `Each finding cites its failure mode, its blast radius in dollars or hours, and its evidence. 3–7 findings per report; no filler.`],
+  ['Remediation plan', 'Every finding gets a fix with an hours-of-effort estimate. Some fixes are free (config change). Some are sprint-shaped (rebuild).'],
+  ['Monitoring posture', 'A one-page recommendation for what to instrument on each workflow so the next failure trips an alert on your side, or ours, before your customer sees it.'],
+  ['30-minute review call', 'The report walked through live, with questions answered and the next decision named.'],
+];
+
+const remediationPaths = [
+  ['Configuration only', 'A wrong field, a missing validator, a stale credential. Fixed inside the review window at no extra cost, or handed to your team as a change ticket.'],
+  ['Instrumentation', 'The workflow is fine; the monitoring is not. Ships as part of the monitoring posture recommendation. Implementable by your team or scoped as a small sprint.'],
+  ['Sprint-shaped rebuild', 'The workflow has a design problem the monitoring cannot mask. Scoped as an Agent Implementation Sprint from $3,500, with the review fee credited toward it.'],
+  ['Retire', 'The workflow is not worth fixing. Named plainly in the report, with the alternative — a manual SOP, a different tool, no automation at all — set out for you.'],
 ];
 
 const faqs = [
   {
     q: 'What is an AI workflow audit?',
-    a: 'An AI workflow audit is a paid diagnostic engagement that maps how work moves through a business, measures where operational time is lost, and decides which specific workflows should be automated first. It ends in a written report: prioritized recommendations, a cost baseline for the hours being lost, and a first build scoped with a price.',
+    a: 'An AI workflow audit is a paid diagnostic engagement that examines the AI agents, workflows, and automations a business has already deployed and determines whether they are still doing what they were built to do. The Phronimos version — sold as the Agent Reliability Review — maps every finding to one of four silent-failure modes and ends in a written report: findings with evidence, remediation with hours-of-effort per fix, and a monitoring posture so the next failure gets caught before your customer sees it.',
   },
   {
     q: 'How much does an AI workflow audit cost?',
-    a: 'The Phronimos AI Workflow Audit costs $999 as a flat fee, agreed before the work starts and not dependent on how many systems are in scope. The fee is credited in full toward an Agent Implementation Sprint or the first month of a Managed AI Operator Retainer, so for anyone who goes on to build, the diagnosis is effectively free.',
+    a: `The Phronimos AI Workflow Audit — sold as the ${AUDIT_NAME} — costs ${PRICE_AUDIT} as a flat fee, agreed before the work starts and not dependent on how many systems are in scope. The fee is credited in full toward an Agent Implementation Sprint or the first month of a Fractional AI Officer retainer, so for anyone who goes on to build, the diagnosis is effectively free.`,
   },
   {
     q: 'How long does an AI workflow audit take?',
-    a: 'The audit runs on a 45-minute recorded discovery call, followed by the review work, and closes with a 30-minute call walking through the report. Most businesses spend about 90 minutes of their own time in total.',
+    a: 'About two weeks from kickoff to the review call. Your time in: a 45-minute working call at the start, credential access handoff, and a 30-minute review call at the end — roughly 90 minutes total. The review itself happens on our side.',
   },
   {
     q: 'What do I get at the end of an AI workflow audit?',
-    a: 'A written findings report with three to five recommendations in priority order, an estimate of hours lost per week and what they cost, a plain statement of what should stay human, and a scoped first build with a price attached.',
+    a: 'A written findings report with 3–7 findings mapped to the four silent-failure modes, evidence per finding, blast-radius numbers, a remediation plan with hours-of-effort per fix, and a monitoring posture recommendation. Plus a redacted sample so you know the shape before you commit — see the sample incident report on the reliability page.',
   },
   {
-    q: 'Why pay for an audit instead of taking a free consultation?',
-    a: 'A free consultation ends in a conversation. A paid audit ends in a reviewed diagnosis with a cost baseline and a scoped build, and it keeps the engagement bounded on both sides. The $999 fee is credited toward whatever gets built next, so it functions as a deposit on the work rather than a separate cost. Should the findings point nowhere, the report is still yours to use.',
+    q: 'What happens after the review?',
+    a: `Findings sort into four buckets: configuration-only fixes, instrumentation (added monitoring), sprint-shaped rebuilds, and retirements. Configuration fixes usually land inside the review window at no extra cost. Sprint-shaped work is scoped as an Agent Implementation Sprint from ${PRICE_SPRINT}, with the ${PRICE_AUDIT} review fee credited toward it. Some findings are best fixed by your team with the monitoring posture in hand — the report is yours to use either way.`,
   },
   {
-    q: 'Do I have to buy anything after the audit?',
-    a: 'No. The audit is a standalone engagement with its own deliverable. It is designed to make the next decision obvious, including the decision to stop.',
+    q: 'Why pay for a review instead of taking a free consultation?',
+    a: `A free consultation ends in a conversation. A paid review ends in a diagnosis with evidence, a remediation plan with hours, and a monitoring posture. The ${PRICE_AUDIT} fee is credited forward, so it functions as a deposit on the work rather than a separate cost. Should the findings point nowhere, the report is still yours to use.`,
+  },
+  {
+    q: 'Do I have to buy anything after the review?',
+    a: 'No. The review is a standalone engagement with its own deliverable. It is designed to make the next decision obvious, including the decision to stop.',
   },
 ];
 
@@ -66,15 +103,17 @@ const jsonLd = [
     '@type': 'Service',
     '@id': `${SITE_URL}/ai-workflow-audit/#service`,
     name: 'AI Workflow Audit',
+    alternateName: AUDIT_NAME,
     serviceType: 'AI workflow audit',
-    description:
-      'A paid diagnostic engagement that identifies where operational time leaks in a business and which workflows should become AI agents first.',
+    description: AUDIT_HEADLINE_ONE_LINER,
     provider: { '@id': `${SITE_URL}/#organization` },
     areaServed: { '@type': 'Country', name: 'United States' },
     audience: {
       '@type': 'BusinessAudience',
       name: 'Owner-led businesses with 5 to 50 employees',
     },
+    url: `${SITE_URL}/ai-workflow-audit/`,
+    mainEntityOfPage: `${SITE_URL}/ai-workflow-audit/`,
     offers: {
       '@type': 'Offer',
       priceCurrency: 'USD',
@@ -114,7 +153,7 @@ const jsonLd = [
 
 <BaseLayout
   title="What Is an AI Workflow Audit? Scope, Cost, and Deliverables | Phronimos"
-  description="An AI workflow audit is a paid diagnosis of where operational time leaks and which workflows to automate first. The Phronimos audit is $999, credited toward the build."
+  description={`An AI workflow audit is a paid diagnosis. The Phronimos version — sold as the ${AUDIT_NAME} — answers "is what you already built actually working?" against the four silent-failure modes. ${PRICE_AUDIT} flat, credited forward.`}
   jsonLd={jsonLd}
 >
   <section class="section-tight page-head">
@@ -123,32 +162,64 @@ const jsonLd = [
       <p class="eyebrow" data-reveal style="--reveal-i: 1">AI Workflow Audit &middot; {PRICE_AUDIT}, credited forward</p>
       <h1 data-reveal style="--reveal-i: 2">What is an AI workflow audit?</h1>
       <p class="lede answer" data-reveal style="--reveal-i: 3">
-        An AI workflow audit is a paid diagnostic engagement that reviews how work actually moves
-        through a business, identifies where operational time leaks, and determines which specific
-        workflows should be automated first. The deliverable is a findings report with prioritized
-        recommendations, an ROI baseline, and a scoped first build.
+        An AI workflow audit is a paid diagnostic engagement that examines the AI agents,
+        workflows, and automations a business has already deployed and determines whether they are
+        still doing what they were built to do. The Phronimos version — sold as the {AUDIT_NAME} —
+        answers one question in writing: <em>is what you already built actually working?</em>
       </p>
       <p class="muted" data-reveal style="--reveal-i: 4">
-        The Phronimos audit is a flat {PRICE_AUDIT}, takes about 90 minutes of your time, and ends
-        in a written verdict you keep whether or not you build anything.
+        {PRICE_AUDIT} flat. Two weeks from kickoff. About 90 minutes of your time. A written report
+        you keep whether or not you build anything.
       </p>
       <p class="muted credit-note" data-reveal style="--reveal-i: 5">
         {AUDIT_CREDIT_NOTE}
       </p>
       <div class="cta-actions" data-reveal style="--reveal-i: 6">
-        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the AI Workflow Audit</a>
-        <a href="/method/" class="btn btn-secondary">See the full method</a>
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the {AUDIT_NAME}</a>
+        <a href="/tools/reliability-readiness-scorecard/" class="btn btn-secondary">Take the readiness scorecard first</a>
       </div>
+    </div>
+  </section>
+
+  <section class="section modes-band">
+    <div class="container">
+      <h2 data-reveal>What does the review check?</h2>
+      <p class="lede answer" data-reveal style="--reveal-i: 1">
+        Every finding is mapped to one of four silent-failure modes. These are the ways an AI
+        workflow fails without setting off any alarm — the failures nobody catches until a customer
+        does. If a finding does not map to one of these four modes, it is not in this report; it is
+        filed for a different engagement.
+      </p>
+      <ol class="mode-list" data-reveal style="--reveal-i: 2">
+        {
+          failureModes.map((mode) => (
+            <li>
+              <div class="mode-head">
+                <span class="mode-id">{mode.id}</span>
+                <h3>{mode.name}</h3>
+              </div>
+              <p class="mode-what">{mode.what}</p>
+              <p class="mode-monitor">
+                <span class="mode-monitor-label">Caught by</span> {mode.monitor}
+              </p>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="muted modes-note" data-reveal>
+        A redacted example of a real incident report — the same shape every retainer client gets —
+        is at <a href="/reliability/sample-incident/">sample incident report</a>.
+      </p>
     </div>
   </section>
 
   <section class="section includes-band">
     <div class="container">
-      <h2 data-reveal>What does an AI workflow audit include?</h2>
+      <h2 data-reveal>What does the review include?</h2>
       <p class="lede answer" data-reveal style="--reveal-i: 1">
-        The audit covers a recorded discovery call, a review of your workflows and tool stack, a
-        bottleneck analysis, a written findings report with three to five recommendations, an ROI
-        baseline, a review call, and a scoped first sprint.
+        A working call, a diagnostic run against the four modes, per-workflow findings with
+        evidence, a remediation plan with hours-of-effort per fix, a monitoring posture
+        recommendation, and a live review call. Two weeks from kickoff.
       </p>
       <ul class="detail-list" data-reveal style="--reveal-i: 2">
         {
@@ -163,17 +234,16 @@ const jsonLd = [
     </div>
   </section>
 
-  <section class="section verdict-band">
+  <section class="section after-band">
     <div class="container">
-      <h2 data-reveal>What does the audit actually decide?</h2>
+      <h2 data-reveal>What happens after the review?</h2>
       <p class="lede answer" data-reveal style="--reveal-i: 1">
-        The audit sorts your recurring work into four buckets and says which is which. Most of the
-        value is in the first and last buckets, because those are the ones that stop you wasting
-        money.
+        Findings sort into four remediation paths. The report says which is which per finding, with
+        the hours-of-effort called out so the decision is a business decision, not a technical one.
       </p>
-      <ul class="verdict-list" data-reveal style="--reveal-i: 2">
+      <ul class="detail-list" data-reveal style="--reveal-i: 2">
         {
-          verdicts.map(([name, desc]) => (
+          remediationPaths.map(([name, desc]) => (
             <li>
               <h3>{name}</h3>
               <p class="muted">{desc}</p>
@@ -181,20 +251,22 @@ const jsonLd = [
           ))
         }
       </ul>
-      <p class="muted verdict-note" data-reveal>
-        A recurring finding: a large share of what feels like judgment work is repetition wearing a
-        judgment costume. Separating the two is most of the exercise.
+      <p class="muted after-note" data-reveal>
+        The {PRICE_AUDIT} review fee is credited in full toward an Agent Implementation Sprint or
+        the first month of a Fractional AI Officer retainer. If the findings point nowhere, the
+        report is still yours to use — the review has already paid for itself by preventing a build
+        that would have failed.
       </p>
     </div>
   </section>
 
   <section class="section compare-band">
     <div class="container">
-      <h2 data-reveal>Audit, free consultation, or straight to a build?</h2>
+      <h2 data-reveal>Review, free consultation, or straight to a build?</h2>
       <p class="lede answer" data-reveal style="--reveal-i: 1">
-        There are three ways to start automating work, and each is right in different
-        circumstances. The audit is the right first step when you know operations feel heavy but
-        cannot yet name which workflow is costing you most.
+        Three ways to start. The review is the right first step when you have agents running and
+        cannot yet answer whether they still work — or when you are about to sink money into
+        rebuilding something that only needs monitoring.
       </p>
       <div class="table-wrap" data-reveal style="--reveal-i: 2">
         <table class="compare">
@@ -214,14 +286,15 @@ const jsonLd = [
               <td>You already know the workflow and want to test whether a vendor is credible.</td>
             </tr>
             <tr class="highlight">
-              <th scope="row">AI Workflow Audit</th>
+              <th scope="row">{AUDIT_NAME}</th>
               <td>{PRICE_AUDIT}<span class="credit-flag">credited forward</span></td>
               <td>
-                A reviewed diagnosis, an ROI baseline, a prioritized report, and a scoped first
-                build.
+                A written diagnosis mapped to the four failure modes, a remediation plan with
+                hours, and a monitoring posture.
               </td>
               <td>
-                Operations feel heavier than they should and you cannot yet name the biggest leak.
+                You have AI running and cannot yet say whether it works, or a rebuild is on the
+                table and you want to know if it is warranted.
               </td>
             </tr>
             <tr>
@@ -229,17 +302,31 @@ const jsonLd = [
               <td>{PRICE_SPRINT}</td>
               <td>One workflow built into a production agent.</td>
               <td>
-                You have already diagnosed the bottleneck and can name the workflow and its inputs.
+                Workflow is scoped, inputs identified, escalation path agreed. No diagnosis needed.
               </td>
             </tr>
           </tbody>
         </table>
       </div>
       <p class="muted compare-note" data-reveal>
-        Because the audit fee is credited forward, starting with the diagnosis costs nothing extra
-        for anyone who goes on to build. It only stays a cost if the findings tell you to stop,
-        which is the case where it has already paid for itself.
+        Because the review fee is credited forward, starting with the diagnosis costs nothing extra
+        for anyone who goes on to build. It only stays a cost if the findings tell you to stop or
+        retire, which is the case where it has already paid for itself.
       </p>
+    </div>
+  </section>
+
+  <section class="section scorecard-band">
+    <div class="container">
+      <h2 data-reveal>Not sure if you're ready?</h2>
+      <p class="lede answer" data-reveal style="--reveal-i: 1">
+        A one-page readiness scorecard runs the same four-mode logic against your current setup in
+        about five minutes. Free, no email gate, results on-screen. If the score suggests a review
+        is not yet the right step, it tells you what to do instead.
+      </p>
+      <div class="cta-actions" data-reveal style="--reveal-i: 2">
+        <a href="/tools/reliability-readiness-scorecard/" class="btn btn-primary">Take the readiness scorecard</a>
+      </div>
     </div>
   </section>
 
@@ -268,9 +355,10 @@ const jsonLd = [
         whichever way the decision goes.
       </p>
       <div class="cta-actions" data-reveal style="--reveal-i: 3">
-        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the AI Workflow Audit</a>
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the {AUDIT_NAME}</a>
         <span class="muted">or write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
       </div>
+      <p class="footer-note">Last reviewed: 2026-08-13.</p>
     </div>
   </section>
 </BaseLayout>
@@ -287,12 +375,12 @@ const jsonLd = [
 
   .page-head .muted {
     margin-top: var(--space-5);
-    max-width: 56ch;
+    max-width: 60ch;
     font-size: 15.5px;
   }
 
   .answer {
-    max-width: 64ch;
+    max-width: 66ch;
   }
 
   section > .container > .answer,
@@ -300,13 +388,83 @@ const jsonLd = [
     margin-top: var(--space-4);
   }
 
-  .includes-band {
+  .modes-band {
     border-top: 1px solid var(--line);
     background: var(--surface-raised);
   }
 
-  .detail-list,
-  .verdict-list {
+  .mode-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-7) 0 0;
+    counter-reset: mode;
+    border-top: 1px solid var(--line);
+  }
+
+  .mode-list li {
+    padding: var(--space-6) 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mode-head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  .mode-id {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--accent-strong);
+    font-weight: 500;
+  }
+
+  .mode-list h3 {
+    font-size: 18px;
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  .mode-what {
+    margin-top: var(--space-3);
+    max-width: 68ch;
+    color: var(--text-secondary);
+    font-size: 15.5px;
+  }
+
+  .mode-monitor {
+    margin-top: var(--space-3);
+    max-width: 68ch;
+    font-size: 14.5px;
+  }
+
+  .mode-monitor-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-strong);
+    margin-right: var(--space-2);
+  }
+
+  .modes-note {
+    margin-top: var(--space-6);
+    max-width: 64ch;
+    font-size: 15px;
+  }
+
+  .includes-band {
+    border-top: 1px solid var(--line);
+  }
+
+  .after-band {
+    border-top: 1px solid var(--line);
+    background: var(--surface-raised);
+  }
+
+  .detail-list {
     list-style: none;
     padding: 0;
     margin: var(--space-7) 0 0;
@@ -317,26 +475,20 @@ const jsonLd = [
     padding-top: var(--space-6);
   }
 
-  .detail-list h3,
-  .verdict-list h3 {
+  .detail-list h3 {
     font-size: 17px;
   }
 
-  .detail-list .muted,
-  .verdict-list .muted {
+  .detail-list .muted {
     margin-top: var(--space-2);
     font-size: 15px;
-    max-width: 46ch;
+    max-width: 48ch;
   }
 
-  .verdict-band {
-    border-top: 1px solid var(--line);
-  }
-
-  .verdict-note {
+  .after-note {
     margin-top: var(--space-6);
-    max-width: 60ch;
-    font-size: 15.5px;
+    max-width: 66ch;
+    font-size: 15px;
   }
 
   .compare-band {
@@ -379,13 +531,12 @@ const jsonLd = [
     font-weight: 500;
     font-size: 16.5px;
     letter-spacing: -0.01em;
-    white-space: nowrap;
     padding-right: var(--space-6);
   }
 
   table.compare td {
     color: var(--text-secondary);
-    max-width: 34ch;
+    max-width: 36ch;
   }
 
   table.compare tr.highlight th,
@@ -399,7 +550,7 @@ const jsonLd = [
 
   .compare-note {
     margin-top: var(--space-5);
-    max-width: 64ch;
+    max-width: 66ch;
     font-size: 15px;
   }
 
@@ -419,6 +570,10 @@ const jsonLd = [
     font-size: 15.5px;
     padding-left: var(--space-4);
     border-left: 2px solid var(--accent-solid);
+  }
+
+  .scorecard-band {
+    border-top: 1px solid var(--line);
   }
 
   .audit-faq .faq-list {
@@ -443,9 +598,14 @@ const jsonLd = [
     margin-top: var(--space-7);
   }
 
+  .footer-note {
+    margin-top: var(--space-7);
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+
   @media (max-width: 860px) {
-    .detail-list,
-    .verdict-list {
+    .detail-list {
       grid-template-columns: 1fr;
       gap: var(--space-5);
     }
