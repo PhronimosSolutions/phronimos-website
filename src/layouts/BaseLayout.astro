@@ -118,6 +118,7 @@ const allJsonLd = [siteGraph, ...pageBlocks];
     <link rel="alternate" type="application/rss+xml" title="Phronimos Notes" href="/rss.xml" />
     <meta name="generator" content={Astro.generator} />
     <Seo title={title} description={description} jsonLd={allJsonLd} ogType={ogType} />
+    <Analytics />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
