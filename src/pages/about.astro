@@ -9,7 +9,12 @@ import {
   FOUNDER_KNOWS_ABOUT,
   FOUNDER_LINKEDIN,
   FOUNDER_NAME,
+  PRICE_AUDIT,
+  PRICE_RETAINER,
+  PRICE_SPRINT,
+  RETAINER_NAME,
   SITE_URL,
+  SPRINT_NAME,
 } from '../config';
 
 // Founder Person block. Uses the same @id the site-wide Organization already
@@ -33,7 +38,7 @@ const jsonLd = {
 
 <BaseLayout
   title="About Phronimos | Custom Managed AI Agents"
-  description="Phronimos designs, builds, and runs custom AI agents for owner-led businesses. The name is Ancient Greek for practical wisdom, and it sets the standard the work is judged by."
+  description="Phronimos designs, builds, and runs custom AI agents for owner-led businesses. The name is Ancient Greek for practical wisdom, and it sets the standard."
   jsonLd={jsonLd}
 >
   <section class="section-tight page-head">
@@ -67,6 +72,48 @@ const jsonLd = {
         </p>
         <p class="muted pronounce">Pronounced FRAH-nih-mos.</p>
       </div>
+    </div>
+  </section>
+
+  <section class="section services-summary" aria-labelledby="what-we-do">
+    <div class="container">
+      <div class="section-intro" data-reveal>
+        <p class="eyebrow">What Phronimos does</p>
+        <h2 id="what-we-do">Diagnose, build, and run dependable AI operations.</h2>
+      </div>
+      <div class="service-list">
+        <article data-reveal>
+          <p class="service-index" aria-hidden="true">01</p>
+          <div>
+            <h3>{AUDIT_NAME}</h3>
+            <p>
+              A fixed-fee diagnostic for agents and automations already in use. It finds silent
+              failures, documents evidence, and produces a prioritized remediation plan.
+            </p>
+          </div>
+        </article>
+        <article data-reveal style="--reveal-i: 1">
+          <p class="service-index" aria-hidden="true">02</p>
+          <div>
+            <h3>{SPRINT_NAME}</h3>
+            <p>
+              One painful workflow is designed, integrated, tested, and put into production with
+              guardrails, monitoring, and a documented handover.
+            </p>
+          </div>
+        </article>
+        <article data-reveal style="--reveal-i: 2">
+          <p class="service-index" aria-hidden="true">03</p>
+          <div>
+            <h3>{RETAINER_NAME}</h3>
+            <p>
+              Ongoing ownership for the systems that stay live: monitoring, incident response,
+              maintenance, measured improvement, and the next workflow in the queue.
+            </p>
+          </div>
+        </article>
+      </div>
+      <p class="section-link" data-reveal><a href="/services/">Compare services and deliverables</a></p>
     </div>
   </section>
 
@@ -157,6 +204,90 @@ const jsonLd = {
     </div>
   </section>
 
+  <section class="section founder" aria-labelledby="team-heading">
+    <div class="container founder-grid">
+      <div data-reveal>
+        <p class="eyebrow">The team behind Phronimos</p>
+        <h2 id="team-heading">Founder-led by design.</h2>
+      </div>
+      <div class="prose" data-reveal style="--reveal-i: 1">
+        <p>
+          <strong>{FOUNDER_NAME}</strong> founded Phronimos after leading support and AI automation
+          work inside SaaS organizations. His operating background spans customer operations,
+          workflow design, and the practical work of putting AI systems into production.
+        </p>
+        <p>
+          Phronimos is a small specialist practice, not an agency layer. Matthew scopes the work,
+          builds the system, and remains accountable after launch.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section audience" aria-labelledby="audience-heading">
+    <div class="container split-section">
+      <div data-reveal>
+        <p class="eyebrow">Who uses Phronimos</p>
+        <h2 id="audience-heading">Built for owner-led teams with real operational drag.</h2>
+      </div>
+      <ul class="audience-list" data-reveal style="--reveal-i: 1">
+        <li>Owner-led businesses with roughly 5–50 employees.</li>
+        <li>Teams with agents or automations in production but no clear operational owner.</li>
+        <li>Firms with a specific, repeated workflow that consumes skilled staff time.</li>
+        <li>Leaders who need evidence, guardrails, and accountability—not another AI demo.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section facts" aria-labelledby="facts-heading">
+    <div class="container facts-grid">
+      <div data-reveal>
+        <p class="eyebrow">Key facts</p>
+        <h2 id="facts-heading">Phronimos at a glance.</h2>
+      </div>
+      <dl class="fact-list" data-reveal style="--reveal-i: 1">
+        <div><dt>Company</dt><dd>Phronimos</dd></div>
+        <div><dt>Type</dt><dd>Founder-led AI operations consultancy</dd></div>
+        <div><dt>Founder</dt><dd>{FOUNDER_NAME}</dd></div>
+        <div><dt>Headquarters</dt><dd>San Diego, California</dd></div>
+        <div><dt>Website</dt><dd><a href={SITE_URL}>phronimos.io</a></dd></div>
+        <div><dt>Core offering</dt><dd>Managed AI agents and reliability operations</dd></div>
+        <div><dt>Pricing</dt><dd>{PRICE_AUDIT}; {PRICE_SPRINT}; {PRICE_RETAINER}</dd></div>
+        <div><dt>Contract terms</dt><dd>Fixed-fee projects; managed service is month to month with 30 days' notice</dd></div>
+        <div><dt>Communication</dt><dd>Direct access to the practitioner doing the work</dd></div>
+        <div><dt>Service area</dt><dd>United States</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="section faq" aria-labelledby="faq-heading">
+    <div class="container">
+      <div class="section-intro" data-reveal>
+        <p class="eyebrow">Frequently asked questions</p>
+        <h2 id="faq-heading">The useful questions, answered plainly.</h2>
+      </div>
+      <div class="faq-list">
+        <article data-reveal>
+          <h3>Does Phronimos sell an AI software platform?</h3>
+          <p>No. Phronimos is a managed service. The work starts with the operating problem, uses the tools that fit it, and leaves the client with a documented system rather than another platform to administer.</p>
+        </article>
+        <article data-reveal>
+          <h3>Who will I work with?</h3>
+          <p>You work directly with founder Matthew Kirby from diagnosis through implementation and ongoing operations. There is no sales-to-delivery handoff.</p>
+        </article>
+        <article data-reveal>
+          <h3>How does an engagement start?</h3>
+          <p>Most work starts with the {AUDIT_NAME}. It establishes the current state, identifies the highest-value failure or bottleneck, and defines the smallest responsible next step.</p>
+        </article>
+        <article data-reveal>
+          <h3>Will Phronimos replace our team?</h3>
+          <p>No. The aim is to remove repetitive coordination and fragile manual work so the existing team can spend more time on judgment, relationships, and exceptions.</p>
+        </article>
+      </div>
+      <p class="section-link" data-reveal><a href="/faq/">Read all frequently asked questions</a></p>
+    </div>
+  </section>
+
   <section class="section-tight honest">
     <div class="container">
       <h2 data-reveal>Who Phronimos is a poor fit for</h2>
@@ -231,6 +362,65 @@ const jsonLd = {
     background: var(--surface-raised);
   }
 
+  .services-summary,
+  .audience,
+  .faq {
+    border-top: 1px solid var(--line);
+  }
+
+  .section-intro,
+  .split-section,
+  .founder-grid,
+  .facts-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: clamp(32px, 7vw, 112px);
+    align-items: start;
+  }
+
+  .eyebrow {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .service-list {
+    margin-top: var(--space-8);
+    border-top: 1px solid var(--line);
+  }
+
+  .service-list article {
+    display: grid;
+    grid-template-columns: minmax(44px, 1fr) minmax(0, 11fr);
+    gap: var(--space-5);
+    padding-block: var(--space-6);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .service-list h3,
+  .faq-list h3 {
+    font-size: 1.2rem;
+  }
+
+  .service-list article p:last-child,
+  .faq-list p {
+    max-width: 64ch;
+    margin-top: var(--space-2);
+    color: var(--text-muted);
+  }
+
+  .service-index {
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+  }
+
+  .section-link {
+    margin-top: var(--space-6);
+  }
+
   .why-inner .prose {
     margin-top: var(--space-5);
   }
@@ -256,6 +446,60 @@ const jsonLd = {
 
   .staffing {
     border-top: 1px solid var(--line);
+  }
+
+  .founder,
+  .facts {
+    border-top: 1px solid var(--line);
+    background: var(--surface-raised);
+  }
+
+  .audience-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--line);
+  }
+
+  .audience-list li {
+    padding: var(--space-4) 0 var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+
+  .audience-list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  .fact-list {
+    margin: 0;
+  }
+
+  .fact-list > div {
+    display: grid;
+    grid-template-columns: minmax(120px, 1fr) minmax(0, 2fr);
+    gap: var(--space-5);
+    padding-block: var(--space-4);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .fact-list dt {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+  }
+
+  .fact-list dd {
+    margin: 0;
+  }
+
+  .faq-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-7) var(--space-8);
+    margin-top: var(--space-8);
   }
 
   .staffing-inner .prose {
@@ -311,7 +555,12 @@ const jsonLd = {
 
   @media (max-width: 860px) {
     .name-grid,
-    .principles-grid {
+    .principles-grid,
+    .section-intro,
+    .split-section,
+    .founder-grid,
+    .facts-grid,
+    .faq-list {
       grid-template-columns: 1fr;
     }
 

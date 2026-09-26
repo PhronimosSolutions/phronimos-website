@@ -1,11 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { AUDIT_NAME, CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
+import { AUDIT_CREDIT_NOTE, AUDIT_NAME, CONTACT_EMAIL, PRICE_AUDIT, WEB3FORMS_KEY } from '../config';
 ---
 
 <BaseLayout
   title={`Book an ${AUDIT_NAME} | Phronimos`}
-  description={`Start an ${AUDIT_NAME} with Phronimos — a diagnostic of the AI agents and workflows you already have. Tell us what keeps piling up, and we reply within one business day.`}
+  description={`Start an ${AUDIT_NAME}: a diagnostic of the AI agents you already run. Tell us what keeps piling up, and we reply within one business day.`}
 >
   <section class="section contact">
     <div class="container contact-grid">
@@ -44,14 +44,14 @@ import { AUDIT_NAME, CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
 
         <div class="field">
           <label for="name">Name</label>
-          <input id="name" name="name" type="text" autocomplete="name" required />
-          <p class="error" data-error-for="name" hidden>Please add your name.</p>
+          <input id="name" name="name" type="text" autocomplete="name" required aria-describedby="name-error" />
+          <p class="error" id="name-error" role="alert" data-error-for="name" hidden>Please add your name.</p>
         </div>
 
         <div class="field">
           <label for="email">Work email</label>
-          <input id="email" name="email" type="email" autocomplete="email" required />
-          <p class="error" data-error-for="email" hidden>Please add a valid email.</p>
+          <input id="email" name="email" type="email" autocomplete="email" required aria-describedby="email-error" />
+          <p class="error" id="email-error" role="alert" data-error-for="email" hidden>Please add a valid email.</p>
         </div>
 
         <div class="field">
@@ -62,14 +62,18 @@ import { AUDIT_NAME, CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
 
         <div class="field">
           <label for="message">What keeps piling up?</label>
-          <textarea id="message" name="message" rows="5" required></textarea>
-          <p class="hint">A few sentences is plenty. Inboxes, follow-ups, intake, reporting, anything.</p>
-          <p class="error" data-error-for="message" hidden>Tell us a little about the work.</p>
+          <textarea id="message" name="message" rows="4" required aria-describedby="message-hint message-error"></textarea>
+          <p class="hint" id="message-hint">A few sentences is plenty. Inboxes, follow-ups, intake, reporting, anything.</p>
+          <p class="error" id="message-error" role="alert" data-error-for="message" hidden>Tell us a little about the work.</p>
         </div>
+
+        <p class="price-note">
+          <strong>{PRICE_AUDIT} {AUDIT_NAME}.</strong> {AUDIT_CREDIT_NOTE}
+        </p>
 
         <button type="submit" class="btn btn-primary form-submit">Send the inquiry</button>
 
-        <p class="form-status" data-status hidden></p>
+        <p class="form-status" data-status role="status" aria-live="polite" hidden></p>
       </form>
     </div>
   </section>
@@ -80,21 +84,51 @@ import { AUDIT_NAME, CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
   const statusEl = form.querySelector('[data-status]');
   const submitBtn = form.querySelector('.form-submit');
 
+  const FIELDS = ['name', 'email', 'message'];
+
+  const isFieldValid = (name) => {
+    const field = form.elements[name];
+    return name === 'email' ? field.checkValidity() : field.value.trim().length > 0;
+  };
+
   const showError = (name, show) => {
     const el = form.querySelector(`[data-error-for="${name}"]`);
     if (el) el.hidden = !show;
+    const field = form.elements[name];
+    // aria-invalid is what a screen reader reads off the field itself; without it
+    // the visual red state has no non-visual equivalent.
+    if (field) field.setAttribute('aria-invalid', show ? 'true' : 'false');
   };
+
+  // Errors used to be recalculated only on submit, so a corrected field kept its
+  // red message until the user pressed Send again — it read as "still wrong"
+  // while they typed. Clear on input, but only for a field already flagged.
+  for (const name of FIELDS) {
+    const field = form.elements[name];
+    if (!field) continue;
+    field.addEventListener('input', () => {
+      if (field.getAttribute('aria-invalid') === 'true' && isFieldValid(name)) {
+        showError(name, false);
+      }
+    });
+  }
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     let valid = true;
-    for (const name of ['name', 'email', 'message']) {
-      const field = form.elements[name];
-      const ok = name === 'email' ? field.checkValidity() : field.value.trim().length > 0;
+    let firstInvalid = null;
+    for (const name of FIELDS) {
+      const ok = isFieldValid(name);
       showError(name, !ok);
-      if (!ok) valid = false;
+      if (!ok) {
+        valid = false;
+        if (!firstInvalid) firstInvalid = form.elements[name];
+      }
     }
+    // Send the user to the problem rather than leaving focus on the button they
+    // just pressed, which is where a keyboard or screen-reader user gets stranded.
+    if (firstInvalid) firstInvalid.focus();
     if (!valid) return;
 
     const key = form.elements['access_key'].value;
@@ -140,8 +174,14 @@ import { AUDIT_NAME, CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
   .contact-grid {
     display: grid;
     grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
-    gap: clamp(40px, 6vw, 96px);
+    gap: clamp(40px, 5vw, 72px);
     align-items: start;
+  }
+
+  @media (min-width: 861px) {
+    .contact {
+      padding-block-start: var(--space-6);
+    }
   }
 
   .contact-lead h1 {
@@ -207,7 +247,7 @@ import { AUDIT_NAME, CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
     padding: var(--space-6);
     display: flex;
     flex-direction: column;
-    gap: var(--space-5);
+    gap: var(--space-4);
   }
 
   .hidden-field {
@@ -216,6 +256,22 @@ import { AUDIT_NAME, CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
 
   .form-submit {
     align-self: flex-start;
+  }
+
+  /* The price and the credited-forward note are the last thing a buyer should
+     read before committing; they were previously absent from this page entirely. */
+  .price-note {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    border-left: 2px solid var(--accent);
+    padding-left: var(--space-4);
+    margin: 0;
+  }
+
+  .price-note strong {
+    color: var(--text-primary);
+    font-weight: 600;
   }
 
   .form-status {

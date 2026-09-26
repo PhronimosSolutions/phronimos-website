@@ -1,5 +1,5 @@
 ---
-title: AI consultant vs in-house hire vs platform — how to choose
+title: AI consultant vs in-house hire vs platform
 description: A side-by-side of the three ways to buy AI capability, plus the fourth option most 5–50 person firms don't know they have.
 pubDate: 2026-08-13
 updatedDate: 2026-08-13

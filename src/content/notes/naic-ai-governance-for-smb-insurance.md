@@ -1,6 +1,6 @@
 ---
 title: NAIC AI governance for a small insurance agency
-description: The NAIC Model Bulletin has been adopted in 24 states and sets five requirements for any insurer or producer using AI. This is what a 5–50 person agency actually has to document.
+description: The NAIC Model Bulletin is adopted in 24 states and sets five requirements for any insurer or producer using AI. What a small agency has to document.
 pubDate: 2026-08-13
 updatedDate: 2026-08-13
 ---

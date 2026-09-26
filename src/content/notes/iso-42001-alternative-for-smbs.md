@@ -1,6 +1,6 @@
 ---
 title: The ISO 42001 alternative for small businesses
-description: ISO 42001 certification costs a small firm $37,500–$85,000 in year one and roughly $115,000 over three years. The underlying discipline is the right idea. The certification process, for a 25-person firm, is not.
+description: ISO 42001 certification costs a small firm $37,500–$85,000 in year one. The discipline is the right idea; the certification process, at 25 people, is not.
 pubDate: 2026-08-13
 updatedDate: 2026-08-13
 ---

@@ -1,6 +1,6 @@
 ---
-title: "AI agent implementation for 5–50 person firms: build vs buy vs managed"
-description: An honest map of the five categories competing for the SMB AI-agent budget — DIY, dev shops, managed operators, platforms, fractional CTOs — with pricing bands and where each is the wrong choice.
+title: "AI agents: build vs buy vs managed"
+description: An honest map of the five categories competing for the SMB AI-agent budget, with pricing bands and where each one is the wrong choice.
 pubDate: 2026-08-13
 updatedDate: 2026-08-13
 ---

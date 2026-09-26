@@ -20,7 +20,7 @@ const jsonLd = {
 
 <BaseLayout
   title="Workflow ROI Calculator | Phronimos"
-  description={`Free calculator. Given hours per week and a fully-loaded hourly cost, estimates annual dollars saved if a workflow is automated and months to break even against the ${PRICE_SPRINT} Agent Implementation Sprint.`}
+  description={`Free calculator. From hours per week and hourly cost, estimates annual dollars saved by automating a workflow, and months to break even on a sprint.`}
   jsonLd={jsonLd}
 >
   <main class="page tool-page">
@@ -141,8 +141,10 @@ breakeven_mos  = {PRICE_SPRINT_VALUE} ÷ monthly_saved</code></pre>
   });
 
   function compute() {
-    const hours = parseFloat(hoursEl.value) || 0;
-    const rate = parseFloat(rateEl.value) || 0;
+    // min="0" on the inputs is never enforced, because nothing submits a form.
+    // Left unclamped, two negatives multiply into a confident positive saving.
+    const hours = Math.max(0, parseFloat(hoursEl.value) || 0);
+    const rate = Math.max(0, parseFloat(rateEl.value) || 0);
     const successPct = Math.min(100, Math.max(0, parseFloat(successEl.value) || 0));
     const success = successPct / 100;
 

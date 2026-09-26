@@ -1,6 +1,6 @@
 ---
 import Wordmark from './Wordmark.astro';
-import { BOOKING_URL } from '../config';
+import { BOOKING_URL, CTA_BOOK } from '../config';
 
 // Security sits in the primary nav on purpose. Law firms and insurance agencies
 // are two of the five target verticals, and for those buyers "can I see how you
@@ -9,6 +9,7 @@ import { BOOKING_URL } from '../config';
 const links = [
   { href: '/method/', label: 'Method' },
   { href: '/services/', label: 'Services' },
+  { href: '/pricing/', label: 'Pricing' },
   { href: '/security/', label: 'Security' },
   { href: '/assessment/', label: 'Assessment' },
   { href: '/notes/', label: 'Notes' },
@@ -33,20 +34,48 @@ const current = Astro.url.pathname;
       }
     </nav>
 
-    <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary header-cta">Book the Audit</a>
+    <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary header-cta">{CTA_BOOK}</a>
 
     <details class="mobile-nav">
-      <summary aria-label="Menu">
+      <summary aria-label="Menu" aria-expanded="false">
         <span class="menu-bar"></span>
         <span class="menu-bar"></span>
       </summary>
       <nav aria-label="Primary mobile">
         {links.map(({ href, label }) => <a href={href}>{label}</a>)}
-        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the Audit</a>
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">{CTA_BOOK}</a>
       </nav>
     </details>
   </div>
 </header>
+
+<script>
+  // <details> handles its own open/close on the summary and on Escape, but a tap
+  // anywhere else leaves the panel sitting over the content the user was reaching
+  // for. Close it on any click outside, and keep aria-expanded in step with the
+  // open state so the control is not silently mislabelled for screen readers.
+  const nav = document.querySelector<HTMLDetailsElement>('.mobile-nav');
+  const summary = nav?.querySelector('summary');
+
+  if (nav && summary) {
+    nav.addEventListener('toggle', () => {
+      summary.setAttribute('aria-expanded', String(nav.open));
+    });
+
+    document.addEventListener('click', (event) => {
+      if (nav.open && !nav.contains(event.target as Node)) nav.open = false;
+    });
+
+    // <details> does not close on Escape on its own. Return focus to the summary
+    // so a keyboard user is not dropped at the top of the document.
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && nav.open) {
+        nav.open = false;
+        summary.focus();
+      }
+    });
+  }
+</script>
 
 <style>
   .site-header {

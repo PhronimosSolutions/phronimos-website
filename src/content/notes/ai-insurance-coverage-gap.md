@@ -1,6 +1,6 @@
 ---
 title: The AI insurance coverage gap
-description: Your insurer just stopped covering AI failures. ISO added a generative-AI exclusion to commercial general liability in January 2026, and D&O and EPLI carriers are adding absolute AI exclusions. Documented controls are the only remaining mitigation.
+description: ISO added a generative-AI exclusion to commercial general liability in January 2026, and D&O carriers are following. Documented controls are the mitigation.
 pubDate: 2026-08-13
 updatedDate: 2026-08-13
 ---

@@ -5,6 +5,15 @@ export const SITE_URL = 'https://phronimos.io';
 export const CONTACT_EMAIL = 'hello@phronimos.io';
 export const BOOKING_URL = 'https://calendly.com/phronimos';
 
+// --- CTA labels -------------------------------------------------------------
+// Two conversion paths exist on every page: the booking link (Calendly, opens a
+// scheduler) and the contact form (/contact/, writes an email). They used to
+// carry the same label — "Book the Audit" — in the header and the footer, which
+// meant one string sent users to two unrelated places, under the retired offer
+// name. Label by destination, and name the offer the way config does.
+export const CTA_BOOK = 'Book the Review';
+export const CTA_CONTACT = 'Send a note';
+
 // --- Pricing ----------------------------------------------------------------
 // Every price on the site reads from here. Change a number once and it updates
 // the offer rows, the price tags, the comparison table, the prose, and the
@@ -19,6 +28,13 @@ export const PRICE_SPRINT = 'From $3,500';
 export const PRICE_SPRINT_VALUE = 3500;
 export const PRICE_RETAINER = '$5,000 / month';
 export const PRICE_RETAINER_VALUE = 5000;
+
+// PRICE_SPRINT carries its own "From ", which reads correctly on a price tag
+// ("Agent Implementation Sprint — From $3,500") and ungrammatically inside a
+// sentence ("A From $3,500 sprint"). Use the bare figures below in running prose
+// and keep the prefixed strings for standalone tags.
+export const PRICE_SPRINT_BARE = '$3,500';
+export const PRICE_RETAINER_BARE = '$5,000';
 
 // The credit is what keeps a $999 front door from reading as the ceiling on the
 // whole practice. State it wherever the audit price appears.

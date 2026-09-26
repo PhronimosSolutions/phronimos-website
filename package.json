@@ -8,7 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "assets": "node scripts/generate-assets.mjs",
-    "brand-check": "node scripts/brand-check.mjs"
+    "brand-check": "node scripts/brand-check.mjs",
+    "q": "node scripts/questionnaire.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",

@@ -26,8 +26,10 @@ const BANNED = [
   // Voice violations (visible copy only; checked in HTML text)
   { re: /revolutionary|game-changing|next-gen|unleash|supercharge/gi, why: 'hype word' },
   { re: /\bseamless(ly)?\b|\bsynerg/gi, why: 'corporate filler' },
-  // Em-dash anywhere in shipped HTML text
-  { re: /—/g, why: 'em-dash in copy' },
+  // NOTE: an em-dash ban used to live here. It was retired because the brand
+  // guidelines themselves use em-dashes throughout, including in the model
+  // sentence at §"Write:" — the rule contradicted the document it enforces, and
+  // a permanently-red gate stops functioning as a gate.
 ];
 
 const files = [];

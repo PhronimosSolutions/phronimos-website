@@ -21,7 +21,7 @@ const jsonLd = {
 
 <BaseLayout
   title="Cost of a Manual Process Calculator | Phronimos"
-  description="Free calculator. Given monthly volume, minutes per instance, and a fully-loaded hourly cost, estimates hours per month and annual dollars tied up in a repeated manual process. No email gate."
+  description="Free calculator. From monthly volume, minutes per instance, and hourly cost, estimates the hours and annual dollars tied up in a manual process."
   jsonLd={jsonLd}
 >
   <main class="page tool-page">
@@ -141,9 +141,11 @@ annual_cost      = cost_per_month × 12</code></pre>
   const hours = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 });
 
   function compute() {
-    const volume = parseFloat(volumeEl.value) || 0;
-    const minutes = parseFloat(minutesEl.value) || 0;
-    const rate = parseFloat(rateEl.value) || 0;
+    // Same as the ROI calculator: min="0" is declared but never enforced, and
+    // mixed signs produced self-contradicting output (negative hours, positive cost).
+    const volume = Math.max(0, parseFloat(volumeEl.value) || 0);
+    const minutes = Math.max(0, parseFloat(minutesEl.value) || 0);
+    const rate = Math.max(0, parseFloat(rateEl.value) || 0);
 
     const monthlyHours = (volume * minutes) / 60;
     const monthlyCost = monthlyHours * rate;

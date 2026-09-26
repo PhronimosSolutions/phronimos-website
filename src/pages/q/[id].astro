@@ -1,0 +1,68 @@
+---
+// Private discovery questionnaires: /q/<token>/
+// One page per YAML file in src/content/questionnaires/. Pages are unlisted:
+// excluded from the sitemap (astro.config.mjs), served with X-Robots-Tag:
+// noindex (vercel.json), and addressed by a random token in the filename.
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import QuestionnaireForm from '../../components/questionnaire/QuestionnaireForm.astro';
+import { WEB3FORMS_KEY } from '../../config';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('questionnaires');
+  return entries.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+
+// Give every question a stable id and catch duplicates at build time, so two
+// answers can never silently overwrite each other in the browser.
+let n = 0;
+const seen = new Set<string>();
+const sections = d.sections.map((s) => ({
+  ...s,
+  label: (s.label ?? s.title).toUpperCase(),
+  questions: s.questions.map((q) => {
+    n += 1;
+    const id = q.id ?? `q${n}`;
+    if (seen.has(id)) {
+      throw new Error(`Questionnaire "${entry.id}": duplicate question id "${id}"`);
+    }
+    seen.add(id);
+    return { ...q, id, num: n };
+  }),
+}));
+
+// Discovery answers go to Matthew, not the shared hello@ inbox. Web3Forms binds
+// each access key to one recipient, so this uses its own key and falls back to
+// the site key (hello@) until PUBLIC_WEB3FORMS_DISCOVERY_KEY is set.
+const DISCOVERY_KEY = import.meta.env.PUBLIC_WEB3FORMS_DISCOVERY_KEY || WEB3FORMS_KEY;
+const DISCOVERY_EMAIL = 'matthew@phronimos.io';
+
+const config = {
+  id: entry.id,
+  title: d.title,
+  client: d.client,
+  status: d.status,
+  expires: d.expires ? d.expires.toISOString().slice(0, 10) : null,
+  collectContact: d.collectContact,
+  prefill: d.prefill,
+  sections,
+  url: new URL(`/q/${entry.id}/`, Astro.site).href,
+};
+---
+
+<BaseLayout
+  title={`${d.title} | ${d.client} × Phronimos`}
+  description={`A short discovery questionnaire from Phronimos for ${d.client}.`}
+>
+  <QuestionnaireForm
+    config={config}
+    intro={d.intro}
+    minutes={d.minutes}
+    thanks={d.thanks}
+    web3formsKey={DISCOVERY_KEY}
+    fallbackEmail={DISCOVERY_EMAIL}
+  />
+</BaseLayout>

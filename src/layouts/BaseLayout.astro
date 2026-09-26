@@ -122,7 +122,7 @@ const allJsonLd = [siteGraph, ...pageBlocks];
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <Header />
-    <main id="main">
+    <main id="main" tabindex="-1">
       <slot />
     </main>
     <Footer />
@@ -172,6 +172,12 @@ const allJsonLd = [siteGraph, ...pageBlocks];
 
       .skip-link:focus {
         left: 0;
+      }
+
+      /* <main> is focusable only so the skip link can actually land focus there.
+         It is never tabbed to directly, so it should not paint a focus ring. */
+      main:focus {
+        outline: none;
       }
     </style>
   </body>

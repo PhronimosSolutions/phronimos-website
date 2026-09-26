@@ -1,0 +1,113 @@
+{
+  "title": "Invoice approval discovery",
+  "client": "Sample Co",
+  "status": "open",
+  "minutes": 8,
+  "intro": "A few questions about how invoices move through your team today. There are no wrong answers. Rough numbers are fine, and you can skip anything marked optional.",
+  "collectContact": true,
+  "prefill": {
+    "company": "Sample Co"
+  },
+  "thanks": "Thank you. I'll read through these before our next call and come back with a short summary of what I heard and where I think the biggest win is.",
+  "sections": [
+    {
+      "title": "How it works today",
+      "intro": "The current process, start to finish.",
+      "questions": [
+        {
+          "id": "volume",
+          "type": "number",
+          "label": "Roughly how many invoices do you process in a typical month?",
+          "placeholder": "e.g. 300"
+        },
+        {
+          "id": "steps",
+          "type": "long",
+          "label": "Walk me through what happens from the moment an invoice arrives to the moment it's paid.",
+          "hint": "Who touches it, in what order, and in which tools."
+        },
+        {
+          "id": "intake",
+          "type": "multi",
+          "label": "Where do invoices arrive?",
+          "options": [
+            "Shared inbox",
+            "Individual inboxes",
+            "Vendor portal",
+            "Paper / mail",
+            "AP software"
+          ],
+          "other": true
+        },
+        {
+          "id": "system",
+          "type": "single",
+          "label": "Which accounting system is the source of truth?",
+          "options": [
+            "QuickBooks Online",
+            "Xero",
+            "NetSuite",
+            "Sage"
+          ],
+          "other": true
+        }
+      ]
+    },
+    {
+      "title": "Where it hurts",
+      "questions": [
+        {
+          "id": "pain",
+          "type": "scale",
+          "label": "How painful is the current process for your team?",
+          "minLabel": "Barely notice it",
+          "maxLabel": "Constant firefighting"
+        },
+        {
+          "id": "agree_late",
+          "type": "scale",
+          "label": "We regularly pay invoices late because approvals get stuck."
+        },
+        {
+          "id": "exceptions",
+          "type": "long",
+          "label": "What are the most common exceptions or edge cases?",
+          "required": false
+        },
+        {
+          "id": "tried",
+          "type": "yesno",
+          "label": "Have you tried to automate any part of this before?"
+        }
+      ]
+    },
+    {
+      "title": "Logistics",
+      "questions": [
+        {
+          "id": "owner",
+          "type": "text",
+          "label": "Who should own this project on your side?"
+        },
+        {
+          "id": "owner_email",
+          "type": "email",
+          "label": "Their email",
+          "required": false
+        },
+        {
+          "id": "docs",
+          "type": "url",
+          "label": "Link to any process docs or SOPs",
+          "required": false
+        },
+        {
+          "id": "target",
+          "type": "date",
+          "label": "Is there a date you'd like this working by?",
+          "required": false
+        }
+      ]
+    }
+  ]
+}

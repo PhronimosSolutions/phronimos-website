@@ -88,7 +88,7 @@ const jsonLd = {
 
 <BaseLayout
   title="Agent Reliability Readiness Scorecard | Phronimos"
-  description="A ten-question, five-minute readiness scorecard. Free, no email gate, results on-screen. Tells you whether an Agent Reliability Review is the right next step — or whether something else is."
+  description="A ten-question, five-minute readiness scorecard. Free, no email gate, results on-screen. Tells you whether an Agent Reliability Review is the right next step."
   jsonLd={jsonLd}
 >
   <main class="page tool-page">
@@ -214,6 +214,11 @@ const jsonLd = {
       const card = el.closest('.q-card');
       if (card) card.classList.add('answered');
       updateProgress();
+      // The panel used to keep showing the previous verdict after the answers
+      // behind it changed — flipping every answer still read "ready for a
+      // Fractional AI Officer retainer" until the button was pressed again. A
+      // result that contradicts the visible inputs is worse than no result.
+      result.hidden = true;
     }
   });
 
@@ -273,7 +278,7 @@ const jsonLd = {
         body: `You have agents in production and enough signal that something is worth diagnosing. The review will map every finding to one of four silent-failure modes, quantify blast radius per finding, and hand back a monitoring posture recommendation. The fee is credited forward against whatever gets built or retained after.${!wantsDiagnosis ? ' Consider a free discovery call first — the signal question flagged that a conversation might be a better opener.' : ''}`,
         signals,
         cta: {
-          primary: { href: BOOKING_URL, label: 'Book the review' },
+          primary: { href: BOOKING_URL, label: 'Book the Review' },
           secondary: { href: '/ai-workflow-audit/', label: 'What the review includes' },
         },
       };
@@ -287,7 +292,7 @@ const jsonLd = {
         body: `You are clearly running production AI with real cost when it fails. Two paths: start with the review to be sure the sprint targets the right workflow, or — if the workflow is already scoped, inputs identified, escalation agreed — skip to an Agent Implementation Sprint. The review fee is credited forward, so starting with it costs nothing extra if you go on to build.`,
         signals,
         cta: {
-          primary: { href: BOOKING_URL, label: 'Book the review' },
+          primary: { href: BOOKING_URL, label: 'Book the Review' },
           secondary: { href: '/services/', label: 'Look at the sprint' },
         },
       };

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
+import { AUDIT_NAME, CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
 ---
 
 <BaseLayout
@@ -23,7 +23,7 @@ import { CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
         <li>A scored report naming your weakest dimension and why it gates the rest.</li>
         <li>
           Where the scorecard stops: it names the gap. The <a href="/ai-workflow-audit/"
-            >AI Workflow Audit</a
+            >{AUDIT_NAME}</a
           > is how you find out which workflow to move first, and what it is worth.
         </li>
       </ul>
@@ -44,6 +44,7 @@ import { CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
         <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="9" aria-valuenow="1">
           <div class="progress-fill" id="progress-fill"></div>
         </div>
+        <div class="step-dots" id="step-dots" aria-label="Jump to a completed step"></div>
       </header>
 
       <div id="step-container"></div>
@@ -56,7 +57,7 @@ import { CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
           <button type="submit" class="btn btn-primary" id="submit-btn" hidden>Email my report request</button>
         </div>
       </nav>
-      <p class="form-status" id="submit-status" hidden></p>
+      <p class="form-status" id="submit-status" role="status" aria-live="polite" hidden></p>
     </form>
   </section>
 
@@ -75,7 +76,7 @@ import { CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
         <li>It names where you scored, and which dimension is gating the others.</li>
         <li>
           Read it and decide what you want next. If you want the workflow-level answer, the <a
-            href="/ai-workflow-audit/">AI Workflow Audit</a
+            href="/ai-workflow-audit/">{AUDIT_NAME}</a
           > picks up where the scorecard stops.
         </li>
       </ul>
@@ -193,6 +194,59 @@ const LEVEL_LABELS = ["Aware", "Adopting", "Integrated", "Optimizing", "Transfor
 // ===== STATE =====
 let currentStep = 0;
 const state = {};
+
+// ===== PERSISTENCE =====
+// Thirty Likert answers, six contact fields and two written answers used to live
+// only in this object. A refresh, a back-swipe, or a closed tab dropped the user
+// back on the hero with nothing kept — seven minutes of work staked on the
+// browser not blinking. Mirror into sessionStorage so a reload resumes in place,
+// and clear it once the submission has actually landed.
+const STORAGE_KEY = "phronimos:assessment:v1";
+let submitted = false;
+
+function saveProgress() {
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ step: currentStep, state }));
+  } catch (_) { /* private mode or quota — persistence is best-effort */ }
+}
+
+function clearProgress() {
+  try { sessionStorage.removeItem(STORAGE_KEY); } catch (_) { /* no-op */ }
+}
+
+function restoreProgress() {
+  let saved;
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    saved = JSON.parse(raw);
+  } catch (_) { return false; }
+  if (!saved || typeof saved.state !== "object" || saved.state === null) return false;
+  if (Object.keys(saved.state).length === 0) return false;
+
+  Object.assign(state, saved.state);
+  // Never resume past the last step the answers actually satisfy, so a restored
+  // session cannot land on a step the user could not have reached.
+  let target = Math.min(Number(saved.step) || 0, TOTAL_STEPS - 1);
+  while (target > 0 && !isStepValid(target - 1)) target--;
+  currentStep = target;
+
+  document.getElementById("hero").hidden = true;
+  document.getElementById("form-stage").hidden = false;
+  renderStep(currentStep);
+  updateStepper();
+  updateButtons();
+  return true;
+}
+
+// A refresh is recoverable now, but leaving the page entirely is not, so still
+// warn once there is something worth losing.
+window.addEventListener("beforeunload", (e) => {
+  if (submitted) return;
+  if (Object.keys(state).length === 0) return;
+  e.preventDefault();
+  e.returnValue = "";
+});
 
 // ===== RENDER STEPS =====
 function renderStep(idx) {
@@ -355,6 +409,7 @@ function onInputChange(e) {
     card.classList.toggle("answered", !!hasValue);
   }
   updateButtons();
+  saveProgress();
 }
 
 // ===== SCORING =====
@@ -428,6 +483,7 @@ function nextStep() {
     updateStepper();
     updateButtons();
     focusFirstInput();
+    saveProgress();
   }
 }
 
@@ -438,6 +494,7 @@ function prevStep() {
     updateStepper();
     updateButtons();
     focusFirstInput();
+    saveProgress();
   } else {
     document.getElementById("form-stage").hidden = true;
     document.getElementById("hero").hidden = false;
@@ -475,10 +532,24 @@ function focusFirstInput() {
   }
 }
 
+function goToStep(idx) {
+  // Only backwards, or forwards into ground the answers already cover — never
+  // past a step the user has not satisfied.
+  if (idx === currentStep || idx < 0 || idx > TOTAL_STEPS - 1) return;
+  for (let i = 0; i < idx; i++) if (!isStepValid(i)) return;
+  currentStep = idx;
+  renderStep(currentStep);
+  updateStepper();
+  updateButtons();
+  focusFirstInput();
+  saveProgress();
+}
+
 function updateStepper() {
   document.getElementById("cur-step").textContent = currentStep + 1;
   document.getElementById("tot-step").textContent = TOTAL_STEPS;
   document.getElementById("step-label").textContent = SECTIONS[currentStep].label;
+  renderStepDots();
   document.getElementById("progress-fill").style.width = (((currentStep + 1) / TOTAL_STEPS) * 100) + "%";
   document.querySelector(".progress-track").setAttribute("aria-valuenow", currentStep + 1);
   document.getElementById("progress-text").textContent = `Step ${currentStep + 1} of ${TOTAL_STEPS}`;
@@ -504,7 +575,18 @@ function updateButtons() {
 function isStepValid(idx) {
   const s = SECTIONS[idx];
   if (s.kind === "contact") {
-    return ["full_name","email","company","role","industry","team_size"].every(k => state[k] && String(state[k]).trim());
+    const filled = ["full_name","email","company","role","industry","team_size"]
+      .every(k => state[k] && String(state[k]).trim());
+    if (!filled) return false;
+    // Non-empty is not enough for the one field the whole deliverable depends on:
+    // "not-an-email" used to pass all nine steps and produce an undeliverable
+    // report. Defer to the browser's own parser, as the contact form does.
+    const emailEl = document.getElementById("email");
+    if (emailEl && !emailEl.checkValidity()) return false;
+    // The headcount input declares min="1" max="500" and nothing enforced it.
+    const size = Number(state.team_size);
+    if (!Number.isFinite(size) || size < 1 || size > 500) return false;
+    return true;
   }
   if (s.kind === "open") {
     return state.blocker && state.blocker.trim().length >= 5 &&
@@ -519,6 +601,27 @@ function isStepValid(idx) {
   }
   return true;
 }
+
+function renderStepDots() {
+  const rail = document.getElementById("step-dots");
+  if (!rail) return;
+  rail.innerHTML = SECTIONS.map((sec, i) => {
+    const reachable = i <= currentStep || SECTIONS.slice(0, i).every((_, j) => isStepValid(j));
+    const cls = ["step-dot"];
+    if (i === currentStep) cls.push("current");
+    else if (i < currentStep && isStepValid(i)) cls.push("done");
+    return '<button type="button" class="' + cls.join(" ") + '"' +
+      (reachable ? "" : " disabled") +
+      ' data-goto="' + i + '"' +
+      (i === currentStep ? ' aria-current="step"' : "") +
+      ' aria-label="Step ' + (i + 1) + ': ' + sec.label + '"></button>';
+  }).join("");
+}
+
+document.addEventListener("click", (e) => {
+  const dot = e.target.closest && e.target.closest("[data-goto]");
+  if (dot && !dot.disabled) goToStep(Number(dot.getAttribute("data-goto")));
+});
 
 // ===== SUBMISSION =====
 document.getElementById("assessment-form").addEventListener("submit", async (e) => {
@@ -550,9 +653,42 @@ document.getElementById("assessment-form").addEventListener("submit", async (e) 
     btn.disabled = false;
     btn.textContent = "Email my report request";
     statusEl.hidden = false;
-    statusEl.textContent = "Something went wrong. Please try again, or email " + CONTACT_EMAIL + " directly.";
+    statusEl.textContent = "Something went wrong. Please try again, or send us your answers directly — they are copied out below so nothing is lost.";
+    offerManualFallback(payload.message);
   }
 });
+
+// Telling someone to "email us directly" while their seven minutes of answers
+// exist only in memory gives them an instruction they cannot follow. Render the
+// payload somewhere they can actually copy it, plus a pre-filled mailto.
+function offerManualFallback(message) {
+  if (document.getElementById("manual-fallback")) return;
+  const wrap = document.createElement("div");
+  wrap.id = "manual-fallback";
+  wrap.className = "manual-fallback";
+  const href = "mailto:" + CONTACT_EMAIL +
+    "?subject=" + encodeURIComponent("AI Maturity Assessment from " + (state.company || "my business")) +
+    "&body=" + encodeURIComponent(message);
+  wrap.innerHTML =
+    '<p class="muted">Your answers, ready to send:</p>' +
+    '<textarea readonly rows="8" aria-label="Your assessment answers"></textarea>' +
+    '<div class="manual-actions">' +
+      '<button type="button" class="btn btn-primary" id="copy-answers">Copy answers</button>' +
+      '<a class="btn-plain" href="' + href + '">Open in your email app</a>' +
+    '</div>';
+  wrap.querySelector("textarea").value = message;
+  document.getElementById("assessment-form").appendChild(wrap);
+  document.getElementById("copy-answers").addEventListener("click", async () => {
+    const ta = wrap.querySelector("textarea");
+    ta.select();
+    try {
+      await navigator.clipboard.writeText(ta.value);
+      document.getElementById("copy-answers").textContent = "Copied";
+    } catch (_) {
+      document.getElementById("copy-answers").textContent = "Press Cmd/Ctrl+C to copy";
+    }
+  });
+}
 
 function buildPayload() {
   const scores = computeScores();
@@ -645,20 +781,84 @@ function buildHumanSummary(payload, scores) {
 }
 
 function showThanks() {
+  submitted = true;
+  clearProgress();
   document.getElementById("form-stage").hidden = true;
   document.getElementById("thanks").classList.add("active");
   window.scrollTo({top: 0, behavior: "smooth"});
 }
+
+// Resume an interrupted run, if there is one to resume.
+restoreProgress();
 
 // define:vars wraps this script in an IIFE, so expose the handlers the
 // onclick attributes need (plus test hooks) on window.
 window.startAssessment = startAssessment;
 window.nextStep = nextStep;
 window.prevStep = prevStep;
+window.goToStep = goToStep;
 window.__assess = { state, computeScores, renderStep, isStepValid };
 </script>
 
 <style>
+  .step-dots {
+    display: flex;
+    gap: 8px;
+    margin-top: var(--space-3);
+  }
+
+  /* The rail is built with innerHTML at runtime, so these elements never receive
+     Astro's scoping attribute. They must be addressed globally, as every other
+     dynamically rendered part of this form already is. */
+  :global(.step-dot) {
+    width: 22px;
+    height: 6px;
+    padding: 0;
+    border: none;
+    border-radius: 3px;
+    background: var(--line-strong);
+    cursor: pointer;
+    transition: background var(--dur-transition) var(--ease-precise);
+  }
+
+  :global(.step-dot.done) {
+    background: color-mix(in srgb, var(--accent-solid) 55%, transparent);
+  }
+
+  :global(.step-dot.current) {
+    background: var(--accent-solid);
+  }
+
+  :global(.step-dot:disabled) {
+    cursor: default;
+    opacity: 0.45;
+  }
+
+  :global(.step-dot:not(:disabled):hover) {
+    background: var(--accent-strong);
+  }
+
+  .manual-fallback {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+  }
+
+  .manual-fallback textarea {
+    width: 100%;
+    font-family: var(--font-mono, monospace);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .manual-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+
   .assess-hero h1 {
     margin-top: var(--space-6);
     max-width: 20ch;

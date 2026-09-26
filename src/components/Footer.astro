@@ -1,6 +1,6 @@
 ---
 import Wordmark from './Wordmark.astro';
-import { CONTACT_EMAIL, LEGAL_NAME } from '../config';
+import { BOOKING_URL, CONTACT_EMAIL, CTA_BOOK, CTA_CONTACT, LEGAL_NAME } from '../config';
 
 const year = new Date().getFullYear();
 ---
@@ -18,17 +18,28 @@ const year = new Date().getFullYear();
         <h2 class="footer-head">Site</h2>
         <a href="/method/">Method</a>
         <a href="/services/">Services</a>
+        <a href="/pricing/">Pricing</a>
         <a href="/ai-workflow-audit/">AI Workflow Audit</a>
-        <a href="/security/">Security</a>
         <a href="/assessment/">Assessment</a>
         <a href="/notes/">Notes</a>
         <a href="/about/">About</a>
         <a href="/faq/">FAQ</a>
       </nav>
 
+      <nav class="footer-col" aria-label="Trust and tools">
+        <h2 class="footer-head">Trust &amp; tools</h2>
+        <a href="/trust/">Trust</a>
+        <a href="/security/">Security</a>
+        <a href="/reliability/">Reliability standard</a>
+        <a href="/tools/workflow-roi/">Workflow ROI calculator</a>
+        <a href="/tools/cost-of-manual-process/">Cost of a manual process</a>
+        <a href="/tools/reliability-readiness-scorecard/">Readiness scorecard</a>
+      </nav>
+
       <div class="footer-col">
         <h2 class="footer-head">Contact</h2>
-        <a href="/contact/">Book the Audit</a>
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer">{CTA_BOOK}</a>
+        <a href="/contact/">{CTA_CONTACT}</a>
         <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
       </div>
     </div>
@@ -52,7 +63,7 @@ const year = new Date().getFullYear();
 
   .footer-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 1.6fr 1fr 1.3fr 1fr;
     gap: var(--space-7);
   }
 
@@ -120,6 +131,14 @@ const year = new Date().getFullYear();
 
   .legal-links a:hover {
     color: var(--text-primary);
+  }
+
+  /* Four columns need more room than three did; fold to two before stacking. */
+  @media (max-width: 1024px) and (min-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-6) var(--space-7);
+    }
   }
 
   @media (max-width: 767px) {

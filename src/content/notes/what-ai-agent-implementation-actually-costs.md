@@ -1,5 +1,5 @@
 ---
-title: What AI agent implementation actually costs for a 5–50 person firm
+title: What AI agent implementation actually costs
 description: A concrete cost range for a 5–50 person firm, with the drivers behind the number and where "it depends" is a cop-out.
 pubDate: 2026-08-13
 updatedDate: 2026-08-13

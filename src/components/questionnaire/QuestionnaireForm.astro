@@ -1,0 +1,1306 @@
+---
+// Generic multi-step questionnaire. Same visual language as the AI Maturity
+// Assessment (/assessment/): stepper, progress bar, step dots, question cards,
+// likert and multi-select pills, review step, thank-you stage. Driven entirely by
+// the config built in src/pages/q/[id].astro from a YAML file.
+interface Props {
+  config: Record<string, any>;
+  intro: string;
+  minutes?: number;
+  thanks?: string;
+  web3formsKey: string;
+  fallbackEmail: string;
+}
+const { config, intro, minutes, thanks, web3formsKey, fallbackEmail } = Astro.props;
+const questionCount = config.sections.reduce((a: number, s: any) => a + s.questions.length, 0);
+---
+
+<!-- INTRO -->
+<section id="hero" class="section assess-hero" data-stage="hero">
+  <div class="container">
+    <hr class="rule" data-reveal />
+    <p class="eyebrow" data-reveal style="--reveal-i: 1">Prepared for {config.client}</p>
+    <h1 data-reveal style="--reveal-i: 1">{config.title}</h1>
+    <p class="lede" data-reveal style="--reveal-i: 2">{intro}</p>
+    <ul class="assess-points" data-reveal style="--reveal-i: 3">
+      <li>
+        {questionCount} questions{minutes ? `, about ${minutes} minutes` : ''}. Works on your phone or
+        computer.
+      </li>
+      <li>Your answers save as you go on this device, so you can stop and come back.</li>
+      <li>Answers go straight to Matthew at Phronimos and are only used for this engagement.</li>
+    </ul>
+    <button class="btn btn-primary" id="start-btn" data-reveal style="--reveal-i: 4">Start</button>
+    <p class="muted resume-note" id="resume-note" hidden>
+      You have answers saved from earlier. <button type="button" class="btn-link" id="resume-btn">Pick up where you left off</button>
+    </p>
+  </div>
+</section>
+
+<!-- CLOSED -->
+<section id="closed" class="section" data-stage="closed" hidden>
+  <div class="container">
+    <hr class="rule" />
+    <p class="eyebrow">Questionnaire closed</p>
+    <h2 class="thanks-head">This questionnaire is no longer taking answers.</h2>
+    <p class="lede">
+      If you still want to share something, email <a href={`mailto:${fallbackEmail}`}>{fallbackEmail}</a>.
+    </p>
+  </div>
+</section>
+
+<!-- FORM -->
+<section id="form-stage" class="section-tight form-stage" data-stage="form" hidden>
+  <form id="q-form" class="container assess-wrap" novalidate>
+    <input type="checkbox" name="botcheck" id="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+    <header class="stepper">
+      <div class="stepper-top">
+        <span class="step-num"><span id="cur-step">1</span> / <span id="tot-step">1</span></span>
+        <span class="step-label" id="step-label"></span>
+      </div>
+      <div class="progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="1" aria-valuenow="1">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="step-dots" id="step-dots" aria-label="Jump to a completed step"></div>
+    </header>
+
+    <div id="step-container"></div>
+    <p class="step-error" id="step-error" role="alert" hidden></p>
+
+    <nav class="step-nav">
+      <button type="button" class="btn-plain" id="back-btn" aria-label="Previous step">&larr; Back</button>
+      <div class="step-nav-right">
+        <span class="progress-text" id="progress-text"></span>
+        <button type="button" class="btn btn-primary" id="next-btn">Continue</button>
+        <button type="submit" class="btn btn-primary" id="submit-btn" hidden>Submit answers</button>
+      </div>
+    </nav>
+    <p class="form-status" id="submit-status" role="status" aria-live="polite" hidden></p>
+  </form>
+</section>
+
+<!-- THANK YOU -->
+<section id="thanks" class="section thanks" data-stage="thanks">
+  <div class="container">
+    <hr class="rule" />
+    <p class="eyebrow">Answers received</p>
+    <h2 class="thanks-head">Thank you. Your answers are in.</h2>
+    <p class="lede">
+      {thanks ?? "I'll review everything before we next speak and follow up if anything needs a closer look."}
+    </p>
+    <p class="muted signoff">Matthew &middot; Phronimos &middot; <a href={`mailto:${fallbackEmail}`}>{fallbackEmail}</a></p>
+  </div>
+</section>
+
+<script is:inline define:vars={{ CONFIG: config, WEB3FORMS_KEY: web3formsKey, FALLBACK_EMAIL: fallbackEmail }}>
+// ===== STEPS =====
+const LIKERT_LABELS = ["Strongly\ndisagree", "Disagree", "Neutral", "Agree", "Strongly\nagree"];
+const STEPS = [];
+if (CONFIG.collectContact) {
+  STEPS.push({ kind: "contact", label: "ABOUT YOU", title: "First, who's answering?", intro: "So I know who to follow up with." });
+}
+CONFIG.sections.forEach((s, i) => STEPS.push({ kind: "questions", label: s.label, eyebrow: "Section " + (i + 1) + " of " + CONFIG.sections.length, title: s.title, intro: s.intro || "", questions: s.questions }));
+STEPS.push({ kind: "review", label: "REVIEW & SUBMIT", title: "Check your answers.", intro: "Tap Edit on any section to change it, then submit." });
+const TOTAL = STEPS.length;
+const ALL_QUESTIONS = CONFIG.sections.flatMap((s) => s.questions);
+const CONTACT_FIELDS = [
+  ["full_name", "Your name", "text", "name", true],
+  ["email", "Email", "email", "email", true],
+  ["company", "Company", "text", "organization", true],
+  ["role", "Your role", "text", "organization-title", false],
+];
+
+// ===== STATE + PERSISTENCE =====
+// localStorage (not session) so a customer can close the tab on their phone and
+// finish later. Cleared once the submission lands.
+const STORAGE_KEY = "phronimos:q:" + CONFIG.id + ":v1";
+let currentStep = 0;
+let submitted = false;
+const state = {};
+if (CONFIG.prefill) {
+  if (CONFIG.prefill.name) state.full_name = CONFIG.prefill.name;
+  if (CONFIG.prefill.email) state.email = CONFIG.prefill.email;
+  if (CONFIG.prefill.company) state.company = CONFIG.prefill.company;
+  if (CONFIG.prefill.role) state.role = CONFIG.prefill.role;
+}
+const prefilledKeys = Object.keys(state).join(",");
+
+function saveProgress() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ step: currentStep, state, at: Date.now() })); } catch (_) {}
+}
+function clearProgress() { try { localStorage.removeItem(STORAGE_KEY); } catch (_) {} }
+function loadSaved() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const saved = JSON.parse(raw);
+    if (!saved || typeof saved.state !== "object" || !saved.state) return null;
+    return saved;
+  } catch (_) { return null; }
+}
+function hasUserInput() {
+  return Object.keys(state).some((k) => !prefilledKeys.split(",").includes(k));
+}
+
+window.addEventListener("beforeunload", (e) => {
+  if (submitted || !hasUserInput()) return;
+  saveProgress();
+});
+
+// ===== HELPERS =====
+function esc(s) { return String(s == null ? "" : s).replace(/[<>&"']/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&#39;" }[c])); }
+function pad(n) { return String(n).padStart(2, "0"); }
+function isAnswered(q) {
+  const v = state[q.id];
+  if (q.type === "multi") {
+    if (!Array.isArray(v) || v.length === 0) return false;
+    if (v.includes("__other") && !String(state[q.id + "__other"] || "").trim()) return false;
+    return true;
+  }
+  if (v == null || String(v).trim() === "") return false;
+  if (v === "__other" && !String(state[q.id + "__other"] || "").trim()) return false;
+  return true;
+}
+
+// ===== RENDER =====
+function renderStep(idx) {
+  const step = STEPS[idx];
+  const c = document.getElementById("step-container");
+  let html = '<section class="step active" data-step="' + idx + '">' +
+    '<span class="eyebrow step-eyebrow">' + esc(step.eyebrow || step.label) + "</span>" +
+    "<h2>" + esc(step.title) + "</h2>" +
+    (step.intro ? '<p class="step-intro">' + esc(step.intro) + "</p>" : "");
+  if (step.kind === "contact") {
+    html += '<div class="field-row">';
+    CONTACT_FIELDS.forEach(([id, label, type, ac, req]) => {
+      html += '<div class="field"><label for="' + id + '">' + label + (req ? "" : ' <span class="opt">(optional)</span>') + "</label>" +
+        '<input type="' + type + '" id="' + id + '" name="' + id + '"' + (req ? " required" : "") +
+        ' autocomplete="' + ac + '" value="' + esc(state[id]) + '"></div>';
+    });
+    html += "</div>";
+  } else if (step.kind === "questions") {
+    step.questions.forEach((q) => { html += renderQuestion(q); });
+  } else {
+    html += renderReview();
+  }
+  html += "</section>";
+  c.innerHTML = html;
+  bindInputs();
+  hideError();
+}
+
+function renderQuestion(q) {
+  const answered = isAnswered(q);
+  const labelId = "lbl-" + q.id;
+  let h = '<div class="q-card' + (answered ? " answered" : "") + '" data-q="' + q.id + '">' +
+    '<div class="q-num">Question ' + pad(q.num) + (q.required ? "" : ' <span class="opt">Optional</span>') + "</div>" +
+    '<div class="q-text" id="' + labelId + '">' + esc(q.label) + "</div>" +
+    (q.hint ? '<p class="muted q-hint">' + esc(q.hint) + "</p>" : "");
+  const val = state[q.id];
+  const ph = q.placeholder ? ' placeholder="' + esc(q.placeholder) + '"' : "";
+  const aria = ' aria-labelledby="' + labelId + '"';
+  switch (q.type) {
+    case "long":
+      h += '<div class="field"><textarea name="' + q.id + '" rows="4"' + ph + aria + ">" + esc(val) + "</textarea></div>";
+      break;
+    case "text": case "email": case "url": case "number": case "date": {
+      const extra = q.type === "number" ? ' inputmode="decimal" step="any"' + ph : q.type === "url" ? ' inputmode="url" placeholder="' + esc(q.placeholder || "https://") + '"' : ph;
+      h += '<div class="field"><input type="' + q.type + '" name="' + q.id + '" value="' + esc(val) + '"' + extra + aria + "></div>";
+      break;
+    }
+    case "single": case "yesno": case "multi": {
+      const multi = q.type === "multi";
+      const opts = q.type === "yesno" ? ["Yes", "No"] : q.options.slice();
+      const sel = multi ? (Array.isArray(val) ? val : []) : val;
+      h += '<div class="multi' + (q.type === "yesno" ? " yesno" : "") + '" role="' + (multi ? "group" : "radiogroup") + '"' + aria + ">";
+      opts.forEach((opt) => {
+        const on = multi ? sel.includes(opt) : sel === opt;
+        h += '<label><input type="' + (multi ? "checkbox" : "radio") + '" name="' + q.id + '" value="' + esc(opt) + '"' + (on ? " checked" : "") + ">" +
+          '<span class="check' + (multi ? "" : " round") + '"></span><span>' + esc(opt) + "</span></label>";
+      });
+      if (q.other) {
+        const on = multi ? sel.includes("__other") : sel === "__other";
+        h += '<label><input type="' + (multi ? "checkbox" : "radio") + '" name="' + q.id + '" value="__other"' + (on ? " checked" : "") + ">" +
+          '<span class="check' + (multi ? "" : " round") + '"></span><span>Other</span></label>';
+      }
+      h += "</div>";
+      if (q.other) {
+        const showOther = multi ? sel.includes("__other") : sel === "__other";
+        h += '<div class="field other-field"' + (showOther ? "" : " hidden") + '><input type="text" name="' + q.id + '__other" placeholder="Please specify" value="' + esc(state[q.id + "__other"]) + '" aria-label="Other: please specify"></div>';
+      }
+      break;
+    }
+    case "scale": {
+      const max = q.max || 5;
+      const useLikert = max === 5 && !q.minLabel && !q.maxLabel;
+      h += '<div class="likert" role="radiogroup"' + aria + ' style="grid-template-columns: repeat(' + max + ', 1fr)">';
+      for (let v = 1; v <= max; v++) {
+        let lab = "";
+        if (useLikert) lab = LIKERT_LABELS[v - 1].replace("\n", "<br>");
+        else if (v === 1 && q.minLabel) lab = esc(q.minLabel);
+        else if (v === max && q.maxLabel) lab = esc(q.maxLabel);
+        h += '<label><input type="radio" name="' + q.id + '" value="' + v + '"' + (String(val) === String(v) ? " checked" : "") + ">" +
+          '<span class="dot"></span><span class="scale-num">' + v + '</span><span class="scale-label">' + lab + "</span></label>";
+      }
+      h += "</div>";
+      break;
+    }
+  }
+  h += "</div>";
+  return h;
+}
+
+function displayAnswer(q, forMarkdown) {
+  const v = state[q.id];
+  const other = String(state[q.id + "__other"] || "").trim();
+  if (!isAnswered(q)) return null;
+  if (q.type === "multi") return v.map((x) => (x === "__other" ? "Other: " + other : x));
+  if (v === "__other") return "Other: " + other;
+  if (q.type === "scale") {
+    const max = q.max || 5;
+    let lab = "";
+    if (max === 5 && !q.minLabel && !q.maxLabel) lab = LIKERT_LABELS[v - 1].replace("\n", " ");
+    else if (Number(v) === 1 && q.minLabel) lab = q.minLabel;
+    else if (Number(v) === max && q.maxLabel) lab = q.maxLabel;
+    return v + " / " + max + (lab ? " (" + lab + ")" : "");
+  }
+  return String(v).trim();
+}
+
+function renderReview() {
+  let h = "";
+  if (CONFIG.collectContact) {
+    h += '<div class="review-block"><div class="review-head"><div class="review-label">Submitting as</div>' +
+      '<button type="button" class="btn-link" data-goto="0">Edit</button></div>' +
+      '<div class="review-value"><strong>' + esc(state.full_name) + "</strong>" + (state.role ? " &middot; " + esc(state.role) : "") + " at <strong>" + esc(state.company) + "</strong></div>" +
+      '<div class="review-value muted review-meta">' + esc(state.email) + "</div></div>";
+  }
+  STEPS.forEach((step, i) => {
+    if (step.kind !== "questions") return;
+    h += '<div class="review-block"><div class="review-head"><div class="review-label">' + esc(step.title) + "</div>" +
+      '<button type="button" class="btn-link" data-goto="' + i + '">Edit</button></div><dl class="review-list">';
+    step.questions.forEach((q) => {
+      const a = displayAnswer(q);
+      const shown = a == null ? '<span class="muted">No answer</span>' : Array.isArray(a) ? a.map(esc).join(", ") : esc(a).replace(/\n/g, "<br>");
+      h += "<dt>" + esc(q.label) + "</dt><dd>" + shown + "</dd>";
+    });
+    h += "</dl></div>";
+  });
+  return h;
+}
+
+// ===== INPUT =====
+function bindInputs() {
+  document.querySelectorAll("#step-container input, #step-container textarea").forEach((el) => {
+    el.addEventListener("change", onInput);
+    el.addEventListener("input", onInput);
+  });
+}
+
+function onInput(e) {
+  const el = e.target;
+  const name = el.name || el.id;
+  if (el.type === "checkbox") {
+    const arr = Array.isArray(state[name]) ? state[name] : [];
+    state[name] = el.checked ? (arr.includes(el.value) ? arr : arr.concat(el.value)) : arr.filter((v) => v !== el.value);
+  } else if (el.type === "radio") {
+    if (el.checked) state[name] = el.value;
+  } else {
+    state[name] = el.value;
+  }
+  const card = el.closest(".q-card");
+  if (card) {
+    const qid = card.getAttribute("data-q");
+    const q = ALL_QUESTIONS.find((x) => x.id === qid);
+    const otherField = card.querySelector(".other-field");
+    if (otherField) {
+      const v = state[qid];
+      const show = Array.isArray(v) ? v.includes("__other") : v === "__other";
+      otherField.hidden = !show;
+      if (show && (el.value === "__other") && e.type === "change") otherField.querySelector("input").focus();
+    }
+    card.classList.toggle("answered", isAnswered(q));
+    card.classList.remove("invalid");
+  }
+  hideError();
+  updateButtons();
+  saveProgress();
+}
+
+// ===== VALIDATION =====
+// Returns [] when the step is complete, else the list of problems.
+function stepProblems(idx) {
+  const step = STEPS[idx];
+  const out = [];
+  if (step.kind === "contact") {
+    CONTACT_FIELDS.forEach(([id, label, , , req]) => {
+      if (req && !String(state[id] || "").trim()) out.push({ key: id, msg: label + " is required." });
+    });
+    if (state.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(state.email).trim())) out.push({ key: "email", msg: "That email doesn't look right." });
+    return out;
+  }
+  if (step.kind === "questions") {
+    step.questions.forEach((q) => {
+      const v = state[q.id];
+      const has = v != null && (Array.isArray(v) ? v.length > 0 : String(v).trim() !== "");
+      if (q.required && !isAnswered(q)) {
+        out.push({ key: q.id, msg: (has ? "Please fill in “Other” for question " : "Please answer question ") + pad(q.num) + "." });
+        return;
+      }
+      if (!has) return;
+      const s = String(v).trim();
+      if (q.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)) out.push({ key: q.id, msg: "Question " + pad(q.num) + " needs a valid email." });
+      if (q.type === "number" && isNaN(Number(s))) out.push({ key: q.id, msg: "Question " + pad(q.num) + " needs a number." });
+      if (q.type === "url" && !/^(https?:\/\/)?[^\s.]+\.[^\s]+$/i.test(s)) out.push({ key: q.id, msg: "Question " + pad(q.num) + " needs a link." });
+    });
+  }
+  return out;
+}
+function isStepValid(idx) { return stepProblems(idx).length === 0; }
+
+function showError(problems) {
+  const el = document.getElementById("step-error");
+  el.textContent = problems.length === 1 ? problems[0].msg : problems[0].msg + " (" + (problems.length - 1) + " more below.)";
+  el.hidden = false;
+  problems.forEach((p) => {
+    const card = document.querySelector('.q-card[data-q="' + p.key + '"]');
+    if (card) card.classList.add("invalid");
+    const input = document.getElementById(p.key);
+    if (input) input.setAttribute("aria-invalid", "true");
+  });
+  const first = document.querySelector('.q-card[data-q="' + problems[0].key + '"]') || document.getElementById(problems[0].key);
+  if (first) {
+    const header = document.querySelector(".site-header");
+    const top = first.getBoundingClientRect().top + window.scrollY - (header ? header.offsetHeight : 0) - 24;
+    window.scrollTo({ top, behavior: "smooth" });
+    const input = first.matches("input") ? first : first.querySelector("input, textarea");
+    if (input) requestAnimationFrame(() => { try { input.focus({ preventScroll: true }); } catch (_) {} });
+  }
+}
+function hideError() {
+  const el = document.getElementById("step-error");
+  if (el) el.hidden = true;
+  document.querySelectorAll("[aria-invalid]").forEach((x) => x.removeAttribute("aria-invalid"));
+}
+
+// ===== NAVIGATION =====
+function showForm() {
+  document.getElementById("hero").hidden = true;
+  document.getElementById("form-stage").hidden = false;
+}
+function go(idx) {
+  currentStep = idx;
+  renderStep(idx);
+  updateStepper();
+  updateButtons();
+  scrollToForm();
+  saveProgress();
+}
+function start() { showForm(); go(0); }
+function resume() {
+  const saved = loadSaved();
+  if (saved) Object.assign(state, saved.state);
+  let target = Math.min(Number(saved && saved.step) || 0, TOTAL - 1);
+  while (target > 0 && !isStepValid(target - 1)) target--;
+  showForm();
+  go(target);
+}
+function nextStep() {
+  const problems = stepProblems(currentStep);
+  if (problems.length) { showError(problems); return; }
+  if (currentStep < TOTAL - 1) go(currentStep + 1);
+}
+function prevStep() {
+  if (currentStep > 0) go(currentStep - 1);
+  else {
+    document.getElementById("form-stage").hidden = true;
+    document.getElementById("hero").hidden = false;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}
+function goToStep(idx) {
+  if (idx === currentStep || idx < 0 || idx > TOTAL - 1) return;
+  for (let i = 0; i < idx; i++) if (!isStepValid(i)) return;
+  go(idx);
+}
+function scrollToForm() {
+  const stage = document.getElementById("form-stage");
+  const header = document.querySelector(".site-header");
+  const top = Math.max(stage.getBoundingClientRect().top + window.scrollY - (header ? header.offsetHeight : 0) - 16, 0);
+  window.scrollTo({ top, behavior: "smooth" });
+  const h2 = document.querySelector("#step-container h2");
+  if (h2) { h2.setAttribute("tabindex", "-1"); requestAnimationFrame(() => { try { h2.focus({ preventScroll: true }); } catch (_) {} }); }
+}
+
+function updateStepper() {
+  document.getElementById("cur-step").textContent = currentStep + 1;
+  document.getElementById("tot-step").textContent = TOTAL;
+  document.getElementById("step-label").textContent = STEPS[currentStep].label;
+  document.getElementById("progress-fill").style.width = ((currentStep + 1) / TOTAL) * 100 + "%";
+  const track = document.querySelector(".progress-track");
+  track.setAttribute("aria-valuenow", currentStep + 1);
+  track.setAttribute("aria-valuemax", TOTAL);
+  document.getElementById("progress-text").textContent = "Step " + (currentStep + 1) + " of " + TOTAL;
+  const rail = document.getElementById("step-dots");
+  rail.innerHTML = STEPS.map((s, i) => {
+    const reachable = i <= currentStep || STEPS.slice(0, i).every((_, j) => isStepValid(j));
+    const cls = ["step-dot"];
+    if (i === currentStep) cls.push("current");
+    else if (i < currentStep && isStepValid(i)) cls.push("done");
+    return '<button type="button" class="' + cls.join(" ") + '"' + (reachable ? "" : " disabled") + ' data-goto="' + i + '"' +
+      (i === currentStep ? ' aria-current="step"' : "") + ' aria-label="Step ' + (i + 1) + ": " + esc(s.label) + '"></button>';
+  }).join("");
+}
+function updateButtons() {
+  const back = document.getElementById("back-btn");
+  const next = document.getElementById("next-btn");
+  const submit = document.getElementById("submit-btn");
+  back.innerHTML = currentStep === 0 ? "&larr; Back to start" : "&larr; Back";
+  const last = currentStep === TOTAL - 1;
+  next.hidden = last;
+  submit.hidden = !last;
+}
+
+document.addEventListener("click", (e) => {
+  const t = e.target.closest && e.target.closest("[data-goto]");
+  if (t && !t.disabled) goToStep(Number(t.getAttribute("data-goto")));
+});
+document.getElementById("start-btn").addEventListener("click", start);
+document.getElementById("resume-btn").addEventListener("click", resume);
+document.getElementById("next-btn").addEventListener("click", nextStep);
+document.getElementById("back-btn").addEventListener("click", prevStep);
+// Enter in a single-line input advances instead of submitting the whole form.
+document.getElementById("q-form").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && e.target.tagName === "INPUT" && currentStep < TOTAL - 1) { e.preventDefault(); nextStep(); }
+});
+
+// ===== MARKDOWN =====
+function buildMarkdown() {
+  const now = new Date();
+  const tz = (Intl.DateTimeFormat().resolvedOptions().timeZone) || "";
+  const stamp = now.toLocaleString("en-US", { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  const answered = ALL_QUESTIONS.filter(isAnswered).length;
+  const L = [];
+  L.push("# " + CONFIG.title);
+  L.push("");
+  L.push("- **Client:** " + CONFIG.client);
+  if (CONFIG.collectContact) {
+    L.push("- **Respondent:** " + (state.full_name || "") + (state.role ? ", " + state.role : "") + (state.company ? " (" + state.company + ")" : ""));
+    L.push("- **Email:** " + (state.email || ""));
+  }
+  L.push("- **Submitted:** " + stamp + (tz ? " (" + tz + ")" : "") + " / " + now.toISOString());
+  L.push("- **Answered:** " + answered + " of " + ALL_QUESTIONS.length);
+  L.push("- **Form:** " + CONFIG.url);
+  CONFIG.sections.forEach((s, si) => {
+    L.push("");
+    L.push("## " + (si + 1) + ". " + s.title);
+    s.questions.forEach((q) => {
+      L.push("");
+      L.push("### Q" + q.num + ". " + q.label);
+      L.push("");
+      const a = displayAnswer(q, true);
+      if (a == null) L.push("_No answer_");
+      else if (Array.isArray(a)) a.forEach((x) => L.push("- " + x));
+      else L.push(a);
+    });
+  });
+  L.push("");
+  return L.join("\n");
+}
+
+// ===== SUBMIT =====
+document.getElementById("q-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (currentStep !== TOTAL - 1) return;
+  const btn = document.getElementById("submit-btn");
+  const statusEl = document.getElementById("submit-status");
+  for (let i = 0; i < TOTAL - 1; i++) {
+    const p = stepProblems(i);
+    if (p.length) { go(i); showError(p); return; }
+  }
+  const markdown = buildMarkdown();
+  if (!WEB3FORMS_KEY || WEB3FORMS_KEY === "WEB3FORMS_ACCESS_KEY_HERE") {
+    statusEl.hidden = false;
+    statusEl.textContent = "This form isn't connected yet. Your answers are below. Please copy them into an email to " + FALLBACK_EMAIL + ".";
+    offerManualFallback(markdown);
+    return;
+  }
+  btn.disabled = true;
+  btn.classList.add("loading");
+  btn.textContent = "Sending…";
+  statusEl.hidden = true;
+  const who = (state.company || CONFIG.client) + (state.full_name ? " (" + state.full_name + ")" : "");
+  const payload = {
+    access_key: WEB3FORMS_KEY,
+    subject: "[Phronimos Discovery] " + CONFIG.title + " | " + who,
+    from_name: "Phronimos Discovery",
+    botcheck: document.getElementById("botcheck").checked,
+    questionnaire: CONFIG.id,
+    message: markdown,
+  };
+  if (state.email) payload.replyto = String(state.email).trim();
+  try {
+    const res = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || "Submission failed");
+    submitted = true;
+    clearProgress();
+    document.getElementById("form-stage").hidden = true;
+    document.getElementById("thanks").classList.add("active");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch (err) {
+    btn.disabled = false;
+    btn.classList.remove("loading");
+    btn.textContent = "Try again";
+    statusEl.hidden = false;
+    statusEl.textContent = "That didn't go through. Please try again. If it keeps failing, your answers are copied out below so nothing is lost.";
+    offerManualFallback(markdown);
+  }
+});
+
+function offerManualFallback(message) {
+  let wrap = document.getElementById("manual-fallback");
+  if (!wrap) {
+    wrap = document.createElement("div");
+    wrap.id = "manual-fallback";
+    wrap.className = "manual-fallback";
+    wrap.innerHTML = '<p class="muted">Your answers, ready to send:</p><textarea readonly rows="8" aria-label="Your answers"></textarea>' +
+      '<div class="manual-actions"><button type="button" class="btn btn-primary" id="copy-answers">Copy answers</button>' +
+      '<a class="btn-plain" id="mailto-answers">Open in your email app</a></div>';
+    document.getElementById("q-form").appendChild(wrap);
+    document.getElementById("copy-answers").addEventListener("click", async () => {
+      const ta = wrap.querySelector("textarea");
+      ta.select();
+      try { await navigator.clipboard.writeText(ta.value); document.getElementById("copy-answers").textContent = "Copied"; }
+      catch (_) { document.getElementById("copy-answers").textContent = "Press Cmd/Ctrl+C to copy"; }
+    });
+  }
+  wrap.querySelector("textarea").value = message;
+  document.getElementById("mailto-answers").href = "mailto:" + FALLBACK_EMAIL + "?subject=" + encodeURIComponent(CONFIG.title + " answers") + "&body=" + encodeURIComponent(message);
+}
+
+// ===== BOOT =====
+(function boot() {
+  const today = new Date().toISOString().slice(0, 10);
+  if (CONFIG.status === "closed" || (CONFIG.expires && today > CONFIG.expires)) {
+    document.getElementById("hero").hidden = true;
+    document.getElementById("closed").hidden = false;
+    return;
+  }
+  const saved = loadSaved();
+  if (saved && Object.keys(saved.state).some((k) => !prefilledKeys.split(",").includes(k) || saved.state[k] !== state[k])) {
+    document.getElementById("resume-note").hidden = false;
+    document.getElementById("start-btn").textContent = "Start over";
+    document.getElementById("start-btn").addEventListener("click", () => { clearProgress(); }, { capture: true });
+  }
+})();
+
+window.__q = { state, STEPS, buildMarkdown, stepProblems, go };
+</script>
+
+<style>
+  .step-dots {
+    display: flex;
+    gap: 8px;
+    margin-top: var(--space-3);
+  }
+
+  /* The rail is built with innerHTML at runtime, so these elements never receive
+     Astro's scoping attribute. They must be addressed globally, as every other
+     dynamically rendered part of this form already is. */
+  :global(.step-dot) {
+    width: 22px;
+    height: 6px;
+    padding: 0;
+    border: none;
+    border-radius: 3px;
+    background: var(--line-strong);
+    cursor: pointer;
+    transition: background var(--dur-transition) var(--ease-precise);
+  }
+
+  :global(.step-dot.done) {
+    background: color-mix(in srgb, var(--accent-solid) 55%, transparent);
+  }
+
+  :global(.step-dot.current) {
+    background: var(--accent-solid);
+  }
+
+  :global(.step-dot:disabled) {
+    cursor: default;
+    opacity: 0.45;
+  }
+
+  :global(.step-dot:not(:disabled):hover) {
+    background: var(--accent-strong);
+  }
+
+  .manual-fallback {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+  }
+
+  .manual-fallback textarea {
+    width: 100%;
+    font-family: var(--font-mono, monospace);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .manual-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  .assess-hero h1 {
+    margin-top: var(--space-6);
+    max-width: 20ch;
+  }
+
+  .assess-hero .lede {
+    margin-top: var(--space-4);
+    max-width: 40ch;
+  }
+
+  .assess-points {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-6) 0;
+    max-width: 44ch;
+  }
+
+  .assess-points li {
+    padding: var(--space-3) 0 var(--space-3) 26px;
+    position: relative;
+    border-bottom: 1px solid var(--line);
+    font-size: 15.5px;
+  }
+
+  .assess-points li:last-child {
+    border-bottom: none;
+  }
+
+  .assess-points li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 22px;
+    width: 12px;
+    height: 3px;
+    background: var(--accent-solid);
+  }
+
+  .assess-wrap {
+    max-width: 880px;
+  }
+
+  /* Stepper */
+  .stepper {
+    padding: var(--space-4) 0 var(--space-5);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: var(--space-7);
+  }
+
+  .stepper-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: var(--space-3);
+    font-size: 12px;
+  }
+
+  .stepper-top .step-num {
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.04em;
+  }
+
+  .stepper-top .step-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 10px;
+  }
+
+  .progress-track {
+    height: 3px;
+    background: var(--line);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent-solid);
+    width: 0%;
+    transition: width var(--dur-transition) var(--ease-precise);
+    border-radius: 2px;
+  }
+
+  /* Steps (rendered by JS: global selectors required) */
+  :global(.step) {
+    animation: fade 200ms ease;
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  :global(.step-eyebrow) {
+    display: block;
+    margin-bottom: var(--space-2);
+  }
+
+  :global(#step-container h2) {
+    margin-bottom: var(--space-3);
+  }
+
+  :global(.step-intro) {
+    color: var(--text-secondary);
+    max-width: 56ch;
+    margin-bottom: var(--space-6);
+  }
+
+  :global(.field-row) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+
+  :global(#step-container .field) {
+    margin-bottom: var(--space-5);
+  }
+
+  :global(.q-hint) {
+    font-size: 14.5px;
+    margin-bottom: var(--space-2);
+  }
+
+  /* Question card */
+  :global(.q-card) {
+    background: var(--surface-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: var(--space-5) var(--space-5);
+    margin-bottom: var(--space-4);
+    box-shadow: var(--shadow-card);
+    transition: border-color var(--dur-transition) var(--ease-precise);
+  }
+
+  :global(.q-card.answered) {
+    border-color: var(--accent-line);
+  }
+
+  :global(.q-card .q-num) {
+    font-family: var(--font-tight);
+    font-weight: 600;
+    font-size: 11px;
+    color: var(--accent-strong);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  :global(.q-card .q-text) {
+    font-family: var(--font-tight);
+    font-weight: 500;
+    font-size: 17px;
+    line-height: 1.45;
+    letter-spacing: -0.01em;
+    margin: 8px 0 16px;
+  }
+
+  /* Likert */
+  :global(.likert) {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+
+  :global(.likert label) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 6px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface-canvas);
+    cursor: pointer;
+    transition: border-color var(--dur-instant) var(--ease-precise), background-color var(--dur-instant) var(--ease-precise);
+    text-align: center;
+    position: relative;
+  }
+
+  :global(.likert label input) {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  :global(.likert .dot) {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 50%;
+    background: var(--surface-raised);
+    transition: all var(--dur-instant) var(--ease-precise);
+    flex-shrink: 0;
+  }
+
+  :global(.likert .scale-num) {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+  }
+
+  :global(.likert .scale-label) {
+    font-size: 10px;
+    color: var(--text-secondary);
+    line-height: 1.2;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+  }
+
+  :global(.likert label:hover) {
+    border-color: var(--text-secondary);
+    background: var(--surface-raised);
+  }
+
+  :global(.likert label:has(input:checked)) {
+    border-color: var(--accent-strong);
+    background: var(--surface-raised);
+    box-shadow: 0 0 0 2px rgba(231, 111, 81, 0.18);
+  }
+
+  :global(.likert label:has(input:checked) .dot) {
+    background: var(--accent-solid);
+    border-color: var(--accent-strong);
+    box-shadow: inset 0 0 0 2px var(--surface-raised);
+  }
+
+  :global(.likert label:has(input:checked) .scale-num) {
+    color: var(--accent-strong);
+  }
+
+  :global(.likert label:has(input:checked) .scale-label) {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* Multi-select */
+  :global(.multi) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  :global(.multi label) {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface-canvas);
+    cursor: pointer;
+    transition: border-color var(--dur-instant) var(--ease-precise);
+    font-size: 14px;
+    position: relative;
+  }
+
+  :global(.multi label input) {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  :global(.multi .check) {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 4px;
+    background: var(--surface-raised);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  :global(.multi .check::after) {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--accent-solid);
+    border-radius: 1px;
+    transform: scale(0);
+    transition: transform var(--dur-instant) var(--ease-precise);
+  }
+
+  :global(.multi label:hover) {
+    border-color: var(--text-secondary);
+  }
+
+  :global(.multi label:has(input:checked)) {
+    border-color: var(--accent-strong);
+    background: var(--surface-raised);
+  }
+
+  :global(.multi label:has(input:checked) .check) {
+    border-color: var(--accent-strong);
+  }
+
+  :global(.multi label:has(input:checked) .check::after) {
+    transform: scale(1);
+  }
+
+  /* Step nav */
+  .step-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-7);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--line);
+  }
+
+  .step-nav-right {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+  }
+
+  .progress-text {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+  }
+
+  .btn-plain {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 15px;
+    padding: 12px 14px;
+    cursor: pointer;
+    border-radius: var(--radius-pill);
+    transition: color var(--dur-transition) var(--ease-precise);
+  }
+
+  .btn-plain:hover {
+    color: var(--text-primary);
+  }
+
+  :global(#next-btn:disabled),
+  :global(#submit-btn:disabled) {
+    background: var(--line-strong);
+    color: var(--text-tertiary);
+    cursor: not-allowed;
+  }
+
+  .form-status {
+    margin-top: var(--space-4);
+    font-size: 15px;
+    color: var(--accent-strong);
+  }
+
+  /* Review step */
+  :global(.review-grid) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+    margin: var(--space-5) 0 var(--space-4);
+  }
+
+  :global(.review-stat) {
+    background: var(--surface-raised);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--accent-solid);
+    border-radius: 0 12px 12px 0;
+    padding: var(--space-4);
+  }
+
+  :global(.review-stat .label) {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+  }
+
+  :global(.review-stat .value) {
+    font-family: var(--font-tight);
+    font-weight: 600;
+    font-size: 28px;
+    color: var(--text-primary);
+    line-height: 1.05;
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  :global(.review-stat .value-small) {
+    font-size: 18px;
+    line-height: 1.15;
+  }
+
+  :global(.review-stat .sub) {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  :global(.review-block) {
+    background: var(--surface-callout);
+    border-left: 3px solid var(--accent-solid);
+    border-radius: 0 12px 12px 0;
+    padding: var(--space-5);
+    margin-bottom: var(--space-4);
+  }
+
+  :global(.review-block .review-label) {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    color: var(--accent-strong);
+    text-transform: uppercase;
+    margin-bottom: var(--space-2);
+  }
+
+  :global(.review-block .review-value) {
+    font-size: 15px;
+  }
+
+  :global(.review-meta) {
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  /* Thanks */
+  .thanks {
+    display: none;
+  }
+
+  .thanks:global(.active) {
+    display: block;
+  }
+
+  .thanks .eyebrow {
+    margin-top: var(--space-6);
+  }
+
+  /* Rendered as h2 so the page keeps a single h1 (the hero question) regardless
+     of which stage is active. Styled at h1 scale. */
+  .thanks .thanks-head {
+    font-family: var(--font-display);
+    font-weight: 460;
+    font-size: clamp(30px, 4vw, 44px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-top: var(--space-3);
+    max-width: 20ch;
+  }
+
+  .thanks .lede {
+    margin-top: var(--space-4);
+    max-width: 48ch;
+  }
+
+  .signoff {
+    font-size: 14px;
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--line);
+    max-width: 44ch;
+  }
+
+  @media (max-width: 600px) {
+    :global(.field-row),
+    :global(.multi),
+    :global(.review-grid) {
+      grid-template-columns: 1fr;
+    }
+
+    :global(.likert) {
+      gap: 4px;
+    }
+
+    :global(.likert label) {
+      padding: 8px 2px;
+    }
+
+    :global(.likert .scale-label) {
+      font-size: 9px;
+      min-height: 28px;
+    }
+
+    .step-nav {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-3);
+    }
+
+    .step-nav-right {
+      justify-content: space-between;
+    }
+  }
+
+  /* ---- Questionnaire additions (beyond the assessment's shared styles) ---- */
+  .assess-hero .eyebrow {
+    margin-top: var(--space-6);
+  }
+
+  .assess-hero .eyebrow + h1 {
+    margin-top: var(--space-3);
+  }
+
+  .resume-note {
+    margin-top: var(--space-4);
+    font-size: 15px;
+  }
+
+  :global(.btn-link) {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--accent-strong);
+    font: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  :global(.q-card .opt),
+  :global(.field .opt) {
+    font-weight: 500;
+    color: var(--text-tertiary);
+    letter-spacing: 0.04em;
+    text-transform: none;
+    font-size: 12px;
+    margin-left: 6px;
+  }
+
+  :global(.q-card .field) {
+    margin-bottom: 0 !important;
+  }
+
+  :global(.q-card .q-hint) {
+    margin-top: -8px;
+    margin-bottom: var(--space-3);
+  }
+
+  :global(.q-card textarea) {
+    min-height: 110px;
+    resize: vertical;
+  }
+
+  :global(.q-card.invalid) {
+    border-color: var(--accent-solid);
+    box-shadow: 0 0 0 2px rgba(231, 111, 81, 0.18);
+  }
+
+  :global([aria-invalid='true']) {
+    border-color: var(--accent-solid) !important;
+  }
+
+  :global(.multi .check.round) {
+    border-radius: 50%;
+  }
+
+  :global(.multi .check.round::after) {
+    border-radius: 50%;
+  }
+
+  :global(.multi.yesno) {
+    grid-template-columns: 1fr 1fr !important;
+    max-width: 360px;
+  }
+
+  :global(.other-field) {
+    margin-top: var(--space-3);
+  }
+
+  .step-error {
+    margin-top: var(--space-2);
+    font-size: 15px;
+    color: var(--accent-strong);
+    font-weight: 500;
+  }
+
+  :global(.review-head) {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-3);
+  }
+
+  :global(.review-list) {
+    margin: var(--space-3) 0 0;
+  }
+
+  :global(.review-list dt) {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: var(--space-3);
+  }
+
+  :global(.review-list dd) {
+    margin: 2px 0 0;
+    font-size: 15px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  :global(#submit-btn.loading) {
+    opacity: 0.75;
+    cursor: progress;
+  }
+
+  /* Keep Back / Continue within thumb reach on phones. */
+  @media (max-width: 600px) {
+    .step-nav {
+      position: sticky;
+      bottom: 0;
+      z-index: 5;
+      background: var(--surface-canvas);
+      margin-top: var(--space-5);
+      padding: var(--space-3) 0 calc(var(--space-3) + env(safe-area-inset-bottom));
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .step-nav .progress-text {
+      display: none;
+    }
+
+    :global(.likert .scale-label) {
+      font-size: 8.5px;
+    }
+  }
+</style>

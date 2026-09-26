@@ -11,6 +11,7 @@ import {
   PRICE_RETAINER,
   PRICE_RETAINER_VALUE,
   PRICE_SPRINT,
+  PRICE_SPRINT_BARE,
   PRICE_SPRINT_VALUE,
   RETAINER_FRAMING,
   RETAINER_HEADLINE_ONE_LINER,
@@ -37,7 +38,7 @@ const tiers = [
       'Owners who have already bought or built AI agents, workflows, or automations and are not sure whether they still work.',
     outcome:
       'A written diagnosis mapped to the four silent-failure modes, evidence per finding, and a monitoring posture so the next failure gets caught before your customer sees it.',
-    cta: { label: 'Book the review', href: BOOKING_URL },
+    cta: { label: 'Book the Review', href: BOOKING_URL },
     detail: '/ai-workflow-audit/',
   },
   {
@@ -226,7 +227,7 @@ const jsonLd = [auditService, sprintService, retainerService, breadcrumbs];
 
 <BaseLayout
   title="Pricing: Audit, Build, Managed Retainer | Phronimos"
-  description={`Phronimos pricing: ${PRICE_AUDIT} Agent Reliability Review credited forward, ${PRICE_SPRINT} Agent Implementation Sprint, ${PRICE_RETAINER} Fractional AI Officer retainer. Full ladder on one page with a comparison table.`}
+  description={`Phronimos pricing: ${PRICE_AUDIT} Agent Reliability Review credited forward, ${PRICE_SPRINT} Agent Implementation Sprint, ${PRICE_RETAINER} retainer.`}
   jsonLd={jsonLd}
 >
   <section class="section-tight page-head">
@@ -236,9 +237,9 @@ const jsonLd = [auditService, sprintService, retainerService, breadcrumbs];
       <h1 data-reveal style="--reveal-i: 2">What Phronimos charges, on one page.</h1>
       <p class="lede answer" data-reveal style="--reveal-i: 3">
         Three engagements, in one order. A {PRICE_AUDIT} <strong>{AUDIT_NAME}</strong> answers whether
-        what you already built is actually working. A {PRICE_SPRINT} <strong>{SPRINT_NAME}</strong>
-        puts one painful workflow into production, with testing, guardrails, and a documented
-        handover. A {PRICE_RETAINER} <strong>{RETAINER_NAME}</strong> retainer keeps it running and
+        what you already built is actually working. An <strong>{SPRINT_NAME}</strong>{' '}
+        from {PRICE_SPRINT_BARE} puts one painful workflow into production, with testing, guardrails,
+        and a documented handover. A {PRICE_RETAINER} <strong>{RETAINER_NAME}</strong> retainer keeps it running and
         adds the next one. Each one is fixed-scope, priced before it starts, and re-priced in writing
         if scope changes during the work. The review fee is credited forward, so anyone who goes on
         to build effectively gets the diagnosis free.
@@ -331,7 +332,7 @@ const jsonLd = [auditService, sprintService, retainerService, breadcrumbs];
         guardrails, escalation paths, an SOP, and a team training session. The scope is agreed
         before work starts and the price is fixed to that scope. If scope changes during the work,
         it gets re-priced in writing before continuing. Sprints run 4–6 weeks. Complexity moves the
-        price above the {PRICE_SPRINT} floor; the number is agreed up front.
+        price above the {PRICE_SPRINT_BARE} floor; the number is agreed up front.
       </p>
 
       <h3 data-reveal>What does the retainer include?</h3>
@@ -380,7 +381,7 @@ const jsonLd = [auditService, sprintService, retainerService, breadcrumbs];
           <p class="muted">
             Given the hours a workflow eats each week and the fully-loaded cost of the person doing
             it, computes annual dollars saved if it were automated and months to break even against
-            the {PRICE_SPRINT} sprint.
+            the {PRICE_SPRINT_BARE} sprint.
           </p>
         </li>
         <li>

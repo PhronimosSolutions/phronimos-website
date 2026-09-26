@@ -85,3 +85,33 @@ redirect, or configure the redirect at its registrar.
   (Cal.com or Calendly), change that one constant and every "Book the Audit" button
   follows.
 - `src/config.ts` also holds the contact email and legal name.
+
+## Discovery questionnaires (/q/<id>/)
+
+Private, per-customer forms that reuse the assessment UI. Answers are emailed as markdown.
+Claude and Lex create and manage them on command with `scripts/questionnaire.mjs`
+(skill: `phronimos-questionnaire`). Nobody edits them by hand.
+
+- **Customer forms live in the private repo `PhronimosSolutions/phronimos-questionnaires`**
+  (`questionnaires/<id>.json`), never in this repo, because this one is public. The only
+  form in this repo is the fake sample in `src/content/questionnaires/`.
+- At build time, `src/lib/questionnaire-source.mjs` pulls the forms from the private repo.
+  Each change to that repo runs a GitHub Action that triggers a Vercel production deploy,
+  so a new form is live about 1–2 minutes after an agent publishes it.
+- If the private repo can't be read, the build fails on purpose, so the live site (and
+  every link already sent) stays up.
+- `/q/` is left out of the sitemap and served with `X-Robots-Tag: noindex` (vercel.json).
+
+One-time setup:
+
+1. GitHub: create the private repo `PhronimosSolutions/phronimos-questionnaires`.
+2. GitHub: create two fine-grained tokens scoped to that repo only.
+   - Write: Contents read/write + Workflows read/write. Put it in this folder's `.env`
+     as `QUESTIONNAIRES_WRITE_TOKEN=...`.
+   - Read: Contents read-only. Put it in Vercel (below).
+3. Vercel > Project > Settings > Environment Variables (Production):
+   `QUESTIONNAIRES_REPO=PhronimosSolutions/phronimos-questionnaires`,
+   `QUESTIONNAIRES_READ_TOKEN=<read token>`, and
+   `PUBLIC_WEB3FORMS_DISCOVERY_KEY=<Web3Forms key created with matthew@phronimos.io>`.
+4. Vercel > Project > Settings > Git > Deploy Hooks: create a hook for `main`. An agent then
+   runs `node scripts/questionnaire.mjs setup --hook <url>` to install the rebuild workflow.
