@@ -54,7 +54,7 @@ The Agent Reliability Review is often the right first step for a low-score firm 
 
 The [Reliability Readiness Scorecard](/tools/reliability-readiness-scorecard/) is the interactive version of this checklist, expanded to ten questions that also cover whether agents are already in production, how you'd know if one silently failed, and what the blast radius of a failure would be. Results are on-screen, no email gate, formula visible below the fold.
 
-For the full offer ladder — review, sprint, retainer — and how they compose: [/pricing/](/pricing/). For what the review actually checks: [/ai-workflow-audit/](/ai-workflow-audit/). For the reliability standard the retainer runs against: [/reliability/](/reliability/).
+For the full engagement path — review, sprint, retainer — and how the parts compose: [/services/](/services/). For what the review actually checks: [/ai-workflow-audit/](/ai-workflow-audit/). For the reliability standard the retainer runs against: [/reliability/](/reliability/).
 
 ---
 

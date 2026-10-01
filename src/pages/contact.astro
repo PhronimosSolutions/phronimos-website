@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { AUDIT_CREDIT_NOTE, AUDIT_NAME, CONTACT_EMAIL, PRICE_AUDIT, WEB3FORMS_KEY } from '../config';
+import { AUDIT_NAME, CONTACT_EMAIL, WEB3FORMS_KEY } from '../config';
 ---
 
 <BaseLayout
@@ -66,10 +66,6 @@ import { AUDIT_CREDIT_NOTE, AUDIT_NAME, CONTACT_EMAIL, PRICE_AUDIT, WEB3FORMS_KE
           <p class="hint" id="message-hint">A few sentences is plenty. Inboxes, follow-ups, intake, reporting, anything.</p>
           <p class="error" id="message-error" role="alert" data-error-for="message" hidden>Tell us a little about the work.</p>
         </div>
-
-        <p class="price-note">
-          <strong>{PRICE_AUDIT} {AUDIT_NAME}.</strong> {AUDIT_CREDIT_NOTE}
-        </p>
 
         <button type="submit" class="btn btn-primary form-submit">Send the inquiry</button>
 

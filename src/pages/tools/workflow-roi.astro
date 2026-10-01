@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { CONTACT_EMAIL, PRICE_SPRINT, PRICE_SPRINT_VALUE, SITE_URL } from '../../config';
+import { CONTACT_EMAIL, SITE_URL } from '../../config';
 
 const pageUrl = `${SITE_URL}/tools/workflow-roi/`;
 
@@ -14,13 +14,13 @@ const jsonLd = {
   name: 'Workflow ROI calculator',
   url: pageUrl,
   isPartOf: { '@id': `${SITE_URL}/#organization` },
-  about: 'A free calculator that estimates annual dollars saved and months to break even when a manual workflow is automated with an AI agent.',
+  about: 'A free calculator that estimates annual dollars saved when a manual workflow is automated with an AI agent.',
 };
 ---
 
 <BaseLayout
   title="Workflow ROI Calculator | Phronimos"
-  description={`Free calculator. From hours per week and hourly cost, estimates annual dollars saved by automating a workflow, and months to break even on a sprint.`}
+  description="Free calculator. From hours per week and hourly cost, estimate annual dollars saved by automating a workflow."
   jsonLd={jsonLd}
 >
   <main class="page tool-page">
@@ -31,9 +31,8 @@ const jsonLd = {
         <h1 data-reveal style="--reveal-i: 2">Workflow ROI calculator</h1>
         <p class="lede answer" data-reveal style="--reveal-i: 3">
           Enter three numbers about a workflow you might automate. The calculator returns the annual
-          dollars saved if the automation works at the success rate you assume, and the months to
-          break even against a {PRICE_SPRINT} Agent Implementation Sprint. Formula visible below.
-          No email gate, no accounts, results on the page.
+          dollars saved if the automation works at the success rate you assume. Formula visible
+          below. No email gate, no accounts, results on the page.
         </p>
       </div>
     </section>
@@ -82,12 +81,6 @@ const jsonLd = {
             <p class="result-value" id="monthly-saved">$0</p>
           </div>
 
-          <div class="result-block">
-            <p class="result-label">Break-even against a {PRICE_SPRINT} sprint</p>
-            <p class="result-value" id="breakeven">—</p>
-            <p class="result-sub muted">Months of automation savings needed to cover the sprint fee.</p>
-          </div>
-
           <div class="cta-row">
             <a id="mailto-btn" class="btn btn-secondary" href="#">Email me these results</a>
           </div>
@@ -105,13 +98,11 @@ const jsonLd = {
         </p>
         <pre class="formula-box" aria-label="Formula"><code>weekly_saved   = hours_per_week × hourly_rate × (success_rate ÷ 100)
 annual_saved   = weekly_saved × 52
-monthly_saved  = annual_saved ÷ 12
-breakeven_mos  = {PRICE_SPRINT_VALUE} ÷ monthly_saved</code></pre>
+monthly_saved  = annual_saved ÷ 12</code></pre>
         <p class="muted formula-note" data-reveal>
-          What this does not include: the cost of the reliability layer (monitoring, incident
-          response, quarterly review) — that runs $5,000/month on a Fractional AI Officer retainer.
-          A workflow that only saves $5,000/year should probably not be the first thing you
-          automate. A workflow that saves $50,000/year at 85% success rate is a strong candidate.
+          What this does not include: implementation effort, the cost of the reliability layer,
+          or the operational value of faster response and fewer dropped handoffs. Use the result
+          as a baseline, not a promise.
         </p>
         <p class="footer-note">Last reviewed: 2026-08-13.</p>
       </div>
@@ -122,7 +113,6 @@ breakeven_mos  = {PRICE_SPRINT_VALUE} ÷ monthly_saved</code></pre>
 <script
   is:inline
   define:vars={{
-    SPRINT_FEE: PRICE_SPRINT_VALUE,
     CONTACT_EMAIL,
   }}
 >
@@ -131,7 +121,6 @@ breakeven_mos  = {PRICE_SPRINT_VALUE} ÷ monthly_saved</code></pre>
   const successEl = document.getElementById('success');
   const annualEl = document.getElementById('annual-saved');
   const monthlyEl = document.getElementById('monthly-saved');
-  const breakevenEl = document.getElementById('breakeven');
   const mailtoBtn = document.getElementById('mailto-btn');
 
   const money = new Intl.NumberFormat('en-US', {
@@ -151,19 +140,8 @@ breakeven_mos  = {PRICE_SPRINT_VALUE} ÷ monthly_saved</code></pre>
     const weeklySaved = hours * rate * success;
     const annualSaved = weeklySaved * 52;
     const monthlySaved = annualSaved / 12;
-    const breakevenMos = monthlySaved > 0 ? SPRINT_FEE / monthlySaved : null;
-
     annualEl.textContent = money.format(annualSaved);
     monthlyEl.textContent = money.format(monthlySaved);
-    if (breakevenMos === null || !isFinite(breakevenMos)) {
-      breakevenEl.textContent = '—';
-    } else if (breakevenMos < 1) {
-      breakevenEl.textContent = 'Less than 1 month';
-    } else if (breakevenMos > 60) {
-      breakevenEl.textContent = 'Over 5 years';
-    } else {
-      breakevenEl.textContent = `${breakevenMos.toFixed(1)} months`;
-    }
 
     const subject = 'Workflow ROI estimate';
     const body =
@@ -174,8 +152,7 @@ breakeven_mos  = {PRICE_SPRINT_VALUE} ÷ monthly_saved</code></pre>
       `Success rate assumption: ${successPct}%\n\n` +
       `Weekly saved:            ${money.format(weeklySaved)}\n` +
       `Monthly saved:           ${money.format(monthlySaved)}\n` +
-      `Annual saved:            ${money.format(annualSaved)}\n` +
-      `Break-even vs $${SPRINT_FEE} sprint: ${breakevenEl.textContent}\n\n` +
+      `Annual saved:            ${money.format(annualSaved)}\n\n` +
       `From: https://phronimos.io/tools/workflow-roi/\n`;
     mailtoBtn.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }

@@ -7,8 +7,8 @@ import { AUDIT_NAME, BOOKING_URL, SITE_URL } from '../config';
 // Retrieval systems chunk by question, and a chunk has to make sense by itself.
 const faqs = [
   {
-    q: 'How much does it cost to have AI agents built and maintained for a small business?',
-    a: 'Phronimos charges $999 for an Agent Reliability Review — a diagnostic that answers "is what you already built actually working?" — from $3,500 for an Agent Implementation Sprint that puts the first agent into production, and $5,000 per month for the Fractional AI Officer retainer (roughly one junior FTE, without the hire). The review fee is credited in full toward a sprint or the first month of a retainer. A first year covering the review, one sprint, and twelve months of retainer starts around $63,500. Scope changes are re-priced in writing before work continues.',
+    q: 'How are Phronimos engagements structured?',
+    a: 'The Agent Reliability Review is a bounded diagnostic that answers "is what you already built actually working?" An Agent Implementation Sprint puts one workflow into production. The Fractional AI Officer is a month-to-month managed engagement that operates and expands the agent layer. Scope is agreed in writing before work begins, and changes are agreed before work continues.',
   },
   {
     q: 'What is a managed AI operator?',
@@ -36,7 +36,7 @@ const faqs = [
   },
   {
     q: 'Why does Phronimos charge for the audit instead of offering a free call?',
-    a: 'A paid diagnosis keeps the engagement bounded and serious on both sides. Reviewing how work moves through a company, sizing what it costs, and scoping a build against it takes days of work, and pricing it that way means the findings get the attention they need. A free call tends to produce a list nobody owns.',
+    a: 'A paid diagnosis keeps the engagement bounded and serious on both sides. Reviewing how work moves through a company, sizing the operational impact, and scoping a build against it takes days of work. A free call tends to produce a list nobody owns.',
   },
   {
     q: 'What happens when an AI agent breaks?',
@@ -70,7 +70,7 @@ const jsonLd = {
 
 <BaseLayout
   title="AI Agent Services FAQ | Phronimos"
-  description="Straight answers on what Phronimos costs, what a managed AI operator is, who owns what gets built, and what happens when an AI agent breaks."
+  description="Straight answers on how Phronimos engagements work, what a managed AI operator is, who owns what gets built, and what happens when an AI agent breaks."
   jsonLd={jsonLd}
 >
   <section class="section faq-page">
@@ -79,7 +79,7 @@ const jsonLd = {
         <hr class="rule" data-reveal />
         <h1 data-reveal style="--reveal-i: 1">Questions owners ask</h1>
         <p class="lede" data-reveal style="--reveal-i: 2">
-          Cost, scope, ownership, and what happens when something breaks. Anything missing,
+          Scope, ownership, and what happens when something breaks. Anything missing,
           <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer">ask us directly</a>.
         </p>
       </div>

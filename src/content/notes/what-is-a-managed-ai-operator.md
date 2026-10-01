@@ -58,7 +58,7 @@ Second, the firm doesn't have an in-house engineer whose job it is to own AI rel
 
 Third, the firm is willing to trade "we build everything ourselves" for "someone else builds and operates the AI layer, and we hold them accountable to a written standard." That trade is what the retainer is.
 
-For the specific coverage areas, response commitments, and cross-vertical examples: [/services/fractional-ai-officer/](/services/fractional-ai-officer/). For the reliability standard the retainer runs against: [/reliability/](/reliability/). For the full price ladder: [/pricing/](/pricing/).
+For the specific coverage areas, response commitments, and cross-vertical examples: [/services/fractional-ai-officer/](/services/fractional-ai-officer/). For the reliability standard the retainer runs against: [/reliability/](/reliability/). For the full engagement path: [/services/](/services/).
 
 ---
 

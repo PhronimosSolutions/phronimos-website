@@ -7,6 +7,6 @@ export default defineConfig({
   trailingSlash: 'always',
   integrations: [
     // /q/ pages are private, per-customer questionnaires: never list them.
-    sitemap({ filter: (page) => !page.includes('/q/') }),
+    sitemap({ filter: (page) => !page.includes('/q/') && !page.endsWith('/pricing/') }),
   ],
 });

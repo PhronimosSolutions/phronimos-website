@@ -1,14 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import {
-  AUDIT_CREDIT_NOTE,
   AUDIT_HEADLINE_ONE_LINER,
   AUDIT_NAME,
   BOOKING_URL,
   CONTACT_EMAIL,
-  PRICE_AUDIT,
-  PRICE_AUDIT_VALUE,
-  PRICE_SPRINT,
   SITE_URL,
 } from '../config';
 
@@ -62,7 +58,7 @@ const includes = [
 const remediationPaths = [
   ['Configuration only', 'A wrong field, a missing validator, a stale credential. Fixed inside the review window at no extra cost, or handed to your team as a change ticket.'],
   ['Instrumentation', 'The workflow is fine; the monitoring is not. Ships as part of the monitoring posture recommendation. Implementable by your team or scoped as a small sprint.'],
-  ['Sprint-shaped rebuild', 'The workflow has a design problem the monitoring cannot mask. Scoped as an Agent Implementation Sprint from $3,500, with the review fee credited toward it.'],
+  ['Sprint-shaped rebuild', 'The workflow has a design problem the monitoring cannot mask. Scoped as a separate Agent Implementation Sprint.'],
   ['Retire', 'The workflow is not worth fixing. Named plainly in the report, with the alternative — a manual SOP, a different tool, no automation at all — set out for you.'],
 ];
 
@@ -72,8 +68,8 @@ const faqs = [
     a: 'An AI workflow audit is a paid diagnostic engagement that examines the AI agents, workflows, and automations a business has already deployed and determines whether they are still doing what they were built to do. The Phronimos version — sold as the Agent Reliability Review — maps every finding to one of four silent-failure modes and ends in a written report: findings with evidence, remediation with hours-of-effort per fix, and a monitoring posture so the next failure gets caught before your customer sees it.',
   },
   {
-    q: 'How much does an AI workflow audit cost?',
-    a: `The Phronimos AI Workflow Audit — sold as the ${AUDIT_NAME} — costs ${PRICE_AUDIT} as a flat fee, agreed before the work starts and not dependent on how many systems are in scope. The fee is credited in full toward an Agent Implementation Sprint or the first month of a Fractional AI Officer retainer, so for anyone who goes on to build, the diagnosis is effectively free.`,
+    q: 'How is an AI workflow audit scoped?',
+    a: `The Phronimos AI Workflow Audit — sold as the ${AUDIT_NAME} — is a bounded diagnostic engagement. The systems and workflows in scope are agreed in writing before the work starts.`,
   },
   {
     q: 'How long does an AI workflow audit take?',
@@ -85,11 +81,11 @@ const faqs = [
   },
   {
     q: 'What happens after the review?',
-    a: `Findings sort into four buckets: configuration-only fixes, instrumentation (added monitoring), sprint-shaped rebuilds, and retirements. Configuration fixes usually land inside the review window at no extra cost. Sprint-shaped work is scoped as an Agent Implementation Sprint from ${PRICE_SPRINT}, with the ${PRICE_AUDIT} review fee credited toward it. Some findings are best fixed by your team with the monitoring posture in hand — the report is yours to use either way.`,
+    a: 'Findings sort into four buckets: configuration-only fixes, instrumentation (added monitoring), sprint-shaped rebuilds, and retirements. Configuration fixes usually land inside the review window. Sprint-shaped work is scoped as a separate Agent Implementation Sprint. Some findings are best fixed by your team with the monitoring posture in hand — the report is yours to use either way.',
   },
   {
     q: 'Why pay for a review instead of taking a free consultation?',
-    a: `A free consultation ends in a conversation. A paid review ends in a diagnosis with evidence, a remediation plan with hours, and a monitoring posture. The ${PRICE_AUDIT} fee is credited forward, so it functions as a deposit on the work rather than a separate cost. Should the findings point nowhere, the report is still yours to use.`,
+    a: 'A free consultation ends in a conversation. A paid review ends in a diagnosis with evidence, a remediation plan with hours, and a monitoring posture. Should the findings point nowhere, the report is still yours to use.',
   },
   {
     q: 'Do I have to buy anything after the review?',
@@ -114,16 +110,6 @@ const jsonLd = [
     },
     url: `${SITE_URL}/ai-workflow-audit/`,
     mainEntityOfPage: `${SITE_URL}/ai-workflow-audit/`,
-    offers: {
-      '@type': 'Offer',
-      priceCurrency: 'USD',
-      priceSpecification: {
-        '@type': 'PriceSpecification',
-        price: PRICE_AUDIT_VALUE,
-        priceCurrency: 'USD',
-      },
-      url: `${SITE_URL}/ai-workflow-audit/`,
-    },
   },
   {
     '@context': 'https://schema.org',
@@ -153,13 +139,13 @@ const jsonLd = [
 
 <BaseLayout
   title="What Is an AI Workflow Audit? | Phronimos"
-  description={`An AI workflow audit is a paid diagnosis. Sold as the ${AUDIT_NAME}, it answers whether what you built is working. ${PRICE_AUDIT} flat, credited forward.`}
+  description={`An AI workflow audit is a paid diagnosis. Sold as the ${AUDIT_NAME}, it answers whether what you built is working.`}
   jsonLd={jsonLd}
 >
   <section class="section-tight page-head">
     <div class="container">
       <hr class="rule" data-reveal />
-      <p class="eyebrow" data-reveal style="--reveal-i: 1">AI Workflow Audit &middot; {PRICE_AUDIT}, credited forward</p>
+      <p class="eyebrow" data-reveal style="--reveal-i: 1">AI Workflow Audit</p>
       <h1 data-reveal style="--reveal-i: 2">What is an AI workflow audit?</h1>
       <p class="lede answer" data-reveal style="--reveal-i: 3">
         An AI workflow audit is a paid diagnostic engagement that examines the AI agents,
@@ -168,11 +154,8 @@ const jsonLd = [
         answers one question in writing: <em>is what you already built actually working?</em>
       </p>
       <p class="muted" data-reveal style="--reveal-i: 4">
-        {PRICE_AUDIT} flat. Two weeks from kickoff. About 90 minutes of your time. A written report
-        you keep whether or not you build anything.
-      </p>
-      <p class="muted credit-note" data-reveal style="--reveal-i: 5">
-        {AUDIT_CREDIT_NOTE}
+        Two weeks from kickoff. About 90 minutes of your time. A written report you keep whether or
+        not you build anything.
       </p>
       <div class="cta-actions" data-reveal style="--reveal-i: 6">
         <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the {AUDIT_NAME}</a>
@@ -252,10 +235,8 @@ const jsonLd = [
         }
       </ul>
       <p class="muted after-note" data-reveal>
-        The {PRICE_AUDIT} review fee is credited in full toward an Agent Implementation Sprint or
-        the first month of a Fractional AI Officer retainer. If the findings point nowhere, the
-        report is still yours to use — the review has already paid for itself by preventing a build
-        that would have failed.
+        If the findings point nowhere, the report is still yours to use. Preventing the wrong build
+        is a valid outcome.
       </p>
     </div>
   </section>
@@ -273,7 +254,6 @@ const jsonLd = [
           <thead>
             <tr>
               <th scope="col">Starting point</th>
-              <th scope="col">Cost</th>
               <th scope="col">What you get</th>
               <th scope="col">When it is right</th>
             </tr>
@@ -281,13 +261,11 @@ const jsonLd = [
           <tbody>
             <tr>
               <th scope="row">Free consultation</th>
-              <td>$0</td>
               <td>A conversation and a list of ideas.</td>
               <td>You already know the workflow and want to test whether a vendor is credible.</td>
             </tr>
             <tr class="highlight">
               <th scope="row">{AUDIT_NAME}</th>
-              <td>{PRICE_AUDIT}<span class="credit-flag">credited forward</span></td>
               <td>
                 A written diagnosis mapped to the four failure modes, a remediation plan with
                 hours, and a monitoring posture.
@@ -299,7 +277,6 @@ const jsonLd = [
             </tr>
             <tr>
               <th scope="row">Straight to a build</th>
-              <td>{PRICE_SPRINT}</td>
               <td>One workflow built into a production agent.</td>
               <td>
                 Workflow is scoped, inputs identified, escalation path agreed. No diagnosis needed.
@@ -308,11 +285,6 @@ const jsonLd = [
           </tbody>
         </table>
       </div>
-      <p class="muted compare-note" data-reveal>
-        Because the review fee is credited forward, starting with the diagnosis costs nothing extra
-        for anyone who goes on to build. It only stays a cost if the findings tell you to stop or
-        retire, which is the case where it has already paid for itself.
-      </p>
     </div>
   </section>
 

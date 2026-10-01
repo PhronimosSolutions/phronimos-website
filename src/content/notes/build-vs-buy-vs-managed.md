@@ -25,7 +25,7 @@ Dev shops are the right answer when a firm has a bounded, well-specified custom 
 
 ### 3. Managed AI operators
 
-The category Phronimos plays in. Firms that don't just build the agent — they run it. Named examples: Phronimos, Phronesis Labs, phron.ai, System Prompt AI, and a handful of newer entrants positioning around "AgentOps" as a service (again, based on public materials as of 2026-08). Pricing bands: **$999 for a diagnostic, $3,500+ for a scoped implementation, $5,000/month and up for managed operations.**
+The category Phronimos plays in. Firms that don't just build the agent — they run it. Named examples: Phronimos, Phronesis Labs, phron.ai, System Prompt AI, and a handful of newer entrants positioning around "AgentOps" as a service (again, based on public materials as of 2026-08). Engagements typically combine diagnosis, scoped implementation, and managed operations.
 
 Managed operators are the right answer for a firm that wants outcomes rather than code — that would rather pay a monthly fee to have someone accountable for the agent working next month than a one-time build fee and inherit an unmaintained system. They are the wrong answer for a firm that wants to own the code and staff the ongoing work themselves.
 
@@ -59,7 +59,7 @@ The 5–50 person owner-led firm has a specific profile that makes the managed-o
 - The firm has never hired an engineer and doesn't intend to.
 - Regulatory context is real (NAIC bulletins for insurance, ABA guidance for law, RESPA for real estate) but the firm doesn't have compliance staff.
 
-At the bottom of that range (5–10 people), the firm often can't yet justify a $5,000/month retainer and buys the Review or the Sprint first. Toward the top (30–50 people), a firm is close to the point where hiring in-house starts to make sense — and the honest advice may be to plan for that transition rather than sign a multi-year retainer.
+At the bottom of that range (5–10 people), the firm often cannot yet justify a managed retainer and buys the Review or the Sprint first. Toward the top (30–50 people), a firm is close to the point where hiring in-house starts to make sense — and the honest advice may be to plan for that transition rather than sign a multi-year retainer.
 
 ## Concrete pricing bands, side by side
 
@@ -67,23 +67,23 @@ At the bottom of that range (5–10 people), the firm often can't yet justify a 
 |---|---|---|---|
 | DIY builders | $0–$2,000 course | Tool subs + owner's time | Owner |
 | Dev shops | $10k–$50k+ project | Owner runs it, or re-hire the shop | Owner |
-| Managed operators (e.g. Phronimos) | $999 diagnostic | $5,000/month and up | Operator runs, owner licenses |
+| Managed operators (e.g. Phronimos) | Scoped diagnostic | Managed engagement | Operator runs, owner licenses |
 | Platforms | $20–$500/month | Same | Owner |
 | Fractional CTOs | $8k–$25k/month | Same | Firm |
 
-Prices for the managed-operator column are Phronimos's [/pricing/](/pricing/). Prices for the other categories are typical bands, not offers — check the specific vendor. The dev-shop and fractional-CTO bands especially vary widely by geography and specialization.
+The managed-operator column describes the engagement shape, not a published rate. Prices for the other categories are typical bands, not offers — check the specific vendor. The dev-shop and fractional-CTO bands especially vary widely by geography and specialization.
 
 ## How to choose in practice
 
 Three questions, in order:
 
-1. **Is the workflow worth automating at all?** If the annualized cost of the manual process (volume × time-per-instance × loaded hourly rate) is under $5,000/year, the answer is probably to leave it manual and revisit later. A calculator that runs this math lives at [/tools/cost-of-manual-process/](/tools/cost-of-manual-process/).
+1. **Is the workflow worth automating at all?** If the annualized cost of the manual process (volume × time-per-instance × loaded hourly rate) is low, the answer is probably to leave it manual and revisit later. A calculator that runs this math lives at [/tools/cost-of-manual-process/](/tools/cost-of-manual-process/).
 2. **Do you want to own the code, or the outcome?** If you want to own the code, you're looking at dev shops or DIY. If you want to own the outcome and pay someone else to keep it running, you're looking at managed operators or (at larger scale) fractional CTOs.
 3. **Does the failure mode matter?** If the workflow silently breaks and no one catches it for two weeks, what does that cost the firm? If the answer is "nothing much," a platform is proportionate. If the answer is "a customer, a compliance finding, or a lawsuit," the failure modes at [/notes/honest-failure-modes-of-business-ai-agents/](/notes/honest-failure-modes-of-business-ai-agents/) are the ones to plan against — and platforms don't detect three of the four.
 
 ## The Phronimos position, stated plainly
 
-Phronimos is a managed AI operator. The offer stack — Review at $999, Sprint from $3,500, Fractional AI Officer at $5,000/month — is on [/pricing/](/pricing/). The reliability standard behind the retainer, including detection targets and SLA credit terms, is at [/reliability/](/reliability/). The four failure modes the Review checks against are at [/notes/honest-failure-modes-of-business-ai-agents/](/notes/honest-failure-modes-of-business-ai-agents/).
+Phronimos is a managed AI operator. The engagement path — Review, Sprint, Fractional AI Officer — is on [/services/](/services/). The reliability standard behind the retainer, including detection targets and SLA credit terms, is at [/reliability/](/reliability/). The four failure modes the Review checks against are at [/notes/honest-failure-modes-of-business-ai-agents/](/notes/honest-failure-modes-of-business-ai-agents/).
 
 If a reader has finished this piece and concluded Phronimos is not the right choice for them, this piece has done its job. The category is real, the pricing bands are real, and the right vendor depends on the shape of the firm — not the shape of the pitch.
 

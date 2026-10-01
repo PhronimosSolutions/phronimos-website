@@ -3,69 +3,54 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import FigOperator from '../components/figures/FigOperator.astro';
 import FigBottleneck from '../components/figures/FigBottleneck.astro';
 import {
-  AUDIT_CREDIT_NOTE,
   AUDIT_HEADLINE_ONE_LINER,
   AUDIT_NAME,
   BOOKING_URL,
   CONTACT_EMAIL,
-  PRICE_AUDIT,
-  PRICE_AUDIT_VALUE,
-  PRICE_RETAINER,
-  PRICE_RETAINER_VALUE,
-  PRICE_SPRINT,
-  PRICE_SPRINT_VALUE,
   PUBLISH_SERVICE_STANDARD,
   SERVICE_STANDARD,
   SITE_URL,
 } from '../config';
 
 // The organization entity now lives site-wide in BaseLayout with a stable @id.
-// This page adds only the offer catalogue, referenced back to that entity.
+// This page adds a compact service catalogue, referenced back to that entity.
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'OfferCatalog',
+  '@type': 'ItemList',
   name: 'Phronimos engagements',
   url: SITE_URL,
-  provider: { '@id': `${SITE_URL}/#organization` },
   itemListElement: [
     {
-      '@type': 'Offer',
-      name: AUDIT_NAME,
-      description: AUDIT_HEADLINE_ONE_LINER,
-      priceCurrency: 'USD',
-      priceSpecification: {
-        '@type': 'PriceSpecification',
-        price: PRICE_AUDIT_VALUE,
-        priceCurrency: 'USD',
+      '@type': 'ListItem',
+      position: 1,
+      item: {
+        '@type': 'Service',
+        name: AUDIT_NAME,
+        description: AUDIT_HEADLINE_ONE_LINER,
+        url: `${SITE_URL}/ai-workflow-audit/`,
       },
-      url: `${SITE_URL}/ai-workflow-audit/`,
     },
     {
-      '@type': 'Offer',
-      name: 'Agent Implementation Sprint',
-      description:
-        'One workflow built into a production AI agent, tested against live examples and handed over with guardrails and an SOP.',
-      priceCurrency: 'USD',
-      priceSpecification: {
-        '@type': 'PriceSpecification',
-        minPrice: PRICE_SPRINT_VALUE,
-        priceCurrency: 'USD',
+      '@type': 'ListItem',
+      position: 2,
+      item: {
+        '@type': 'Service',
+        name: 'Agent Implementation Sprint',
+        description:
+          'One workflow built into a production AI agent, tested against live examples and handed over with guardrails and an SOP.',
+        url: `${SITE_URL}/services/`,
       },
-      url: `${SITE_URL}/services/`,
     },
     {
-      '@type': 'Offer',
-      name: 'Fractional AI Officer retainer',
-      description:
-        'Monitoring, maintenance, and continued rollout of the AI agent layer under a monthly retainer.',
-      priceCurrency: 'USD',
-      priceSpecification: {
-        '@type': 'UnitPriceSpecification',
-        price: PRICE_RETAINER_VALUE,
-        priceCurrency: 'USD',
-        unitCode: 'MON',
+      '@type': 'ListItem',
+      position: 3,
+      item: {
+        '@type': 'Service',
+        name: 'Fractional AI Officer retainer',
+        description:
+          'Monitoring, maintenance, and continued rollout of the AI agent layer under a managed engagement.',
+        url: `${SITE_URL}/services/`,
       },
-      url: `${SITE_URL}/services/`,
     },
   ],
 };
@@ -108,7 +93,7 @@ const fits = [
 
 <BaseLayout
   title="Managed AI Agents for Businesses | Phronimos"
-  description={`Phronimos designs, builds, and runs custom AI agents for owner-led businesses. Start with a ${PRICE_AUDIT} ${AUDIT_NAME}, credited toward the build.`}
+  description="Phronimos designs, builds, and runs custom AI agents for owner-led businesses, from reliability review through managed operation."
   jsonLd={jsonLd}
 >
   <!-- 1. Hero: asymmetric split -->
@@ -138,15 +123,12 @@ const fits = [
         <ul class="panel-list">
           <li>
             <span>{AUDIT_NAME}</span>
-            <span class="muted">{PRICE_AUDIT}</span>
           </li>
           <li>
             <span>Agent Implementation Sprint</span>
-            <span class="muted">{PRICE_SPRINT}</span>
           </li>
           <li>
             <span>Fractional AI Officer retainer</span>
-            <span class="muted">{PRICE_RETAINER}</span>
           </li>
         </ul>
       </aside>
@@ -379,18 +361,14 @@ const fits = [
   <!-- 8. Engagement model: divided rows -->
   <section class="section engagement">
     <div class="container">
-      <h2 data-reveal>What does it cost?</h2>
+      <h2 data-reveal>Three ways to work together</h2>
       <p class="lede answer" data-reveal style="--reveal-i: 1">
-        An {AUDIT_NAME} costs {PRICE_AUDIT}. An Agent Implementation Sprint starts at {`$${PRICE_SPRINT_VALUE.toLocaleString()}`},
-        depending on integration complexity. The Fractional AI Officer retainer is {`$${PRICE_RETAINER_VALUE.toLocaleString()}`} per month.
-        Scope changes are re-priced in writing before work continues.
-      </p>
-      <p class="muted credit-note" data-reveal style="--reveal-i: 2">
-        {AUDIT_CREDIT_NOTE}
+        Start with an {AUDIT_NAME}, move into an Agent Implementation Sprint when the workflow is
+        clear, then use the Fractional AI Officer retainer when you want the system operated for
+        you. Each step has a defined scope and deliverable.
       </p>
       <div class="offer-rows">
         <a class="offer-row" href="/ai-workflow-audit/" data-reveal>
-          <span class="offer-price">{PRICE_AUDIT}</span>
           <span>
             <span class="offer-name">{AUDIT_NAME}</span>
             <span class="muted offer-desc"
@@ -401,7 +379,6 @@ const fits = [
           <span class="offer-arrow" aria-hidden="true">&rarr;</span>
         </a>
         <a class="offer-row" href="/services/" data-reveal style="--reveal-i: 1">
-          <span class="offer-price">{PRICE_SPRINT}</span>
           <span>
             <span class="offer-name">Agent Implementation Sprint</span>
             <span class="muted offer-desc"
@@ -412,7 +389,6 @@ const fits = [
           <span class="offer-arrow" aria-hidden="true">&rarr;</span>
         </a>
         <a class="offer-row" href="/services/" data-reveal style="--reveal-i: 2">
-          <span class="offer-price">{PRICE_RETAINER}</span>
           <span>
             <span class="offer-name">Fractional AI Officer retainer</span>
             <span class="muted offer-desc"
@@ -445,11 +421,11 @@ const fits = [
           </p>
         </details>
         <details class="faq-item" data-reveal style="--reveal-i: 2">
-          <summary>How much does it cost to have AI agents built and maintained?</summary>
+          <summary>How are engagements scoped?</summary>
           <p class="faq-body">
-            Phronimos charges {PRICE_AUDIT} for an {AUDIT_NAME}, from {`$${PRICE_SPRINT_VALUE.toLocaleString()}`} to build and deploy
-            the first agent, and {`$${PRICE_RETAINER_VALUE.toLocaleString()}`} per month to monitor, maintain, and expand the agent layer.
-            The review fee is credited toward whichever comes next.
+            We start with the smallest engagement that can produce a useful answer. The review
+            diagnoses the current surface, the sprint builds one workflow, and the managed
+            engagement operates and expands what is in production.
           </p>
         </details>
         <p class="faq-more" data-reveal><a href="/faq/">Read the full FAQ</a></p>

@@ -55,7 +55,7 @@ The three counterparts, plus one that is often invisible until it fires.
 
 The Fractional AI Officer retainer is monthly with no fixed end date and no minimum term past the first month. It's structured this way because the operation of a workflow is a monthly cadence — monitoring runs continuously, incidents happen when they happen, and new workflows roll out one to two at a time. A firm that wants "just build it and I'll run it" is buying a sprint, not a retainer. A firm that wants the operation of it handled is buying the retainer.
 
-For the reliability commitments the retainer runs against: [/reliability/](/reliability/). For a redacted example of how a real incident gets handled: [/reliability/sample-incident/](/reliability/sample-incident/). For the full price ladder: [/pricing/](/pricing/).
+For the reliability commitments the retainer runs against: [/reliability/](/reliability/). For a redacted example of how a real incident gets handled: [/reliability/sample-incident/](/reliability/sample-incident/). For the engagement path: [/services/](/services/).
 
 ---
 

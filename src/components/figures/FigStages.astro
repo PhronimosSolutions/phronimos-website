@@ -10,7 +10,6 @@
 // segment sits a decision diamond, so the drawing says the thing the
 // copy says: each stage ends, and you choose again.
 import Figure from './Figure.astro';
-import { PRICE_AUDIT, PRICE_RETAINER, PRICE_SPRINT } from '../../config';
 
 interface Props {
   class?: string;
@@ -18,9 +17,9 @@ interface Props {
 const { class: className } = Astro.props;
 
 const stages = [
-  { name: 'AUDIT', note: 'FIND THE LEAK', from: 40, to: 160, price: PRICE_AUDIT },
-  { name: 'SPRINT', note: 'BUILD THE FIRST OPERATOR', from: 184, to: 340, price: PRICE_SPRINT },
-  { name: 'RETAINER', note: 'RUN IT, AND ADD THE NEXT', from: 364, to: 552, price: PRICE_RETAINER },
+  { name: 'AUDIT', note: 'FIND THE LEAK', from: 40, to: 160, phase: 'DIAGNOSE' },
+  { name: 'SPRINT', note: 'BUILD THE FIRST OPERATOR', from: 184, to: 340, phase: 'BUILD' },
+  { name: 'RETAINER', note: 'RUN IT, AND ADD THE NEXT', from: 364, to: 552, phase: 'OPERATE' },
 ];
 const decisions = [172, 352];
 const AXIS = 116;
@@ -31,13 +30,13 @@ const DIM = 148;
   <svg
     viewBox="0 0 580 196"
     role="img"
-    aria-label="Measured drawing: three stages along one axis. The audit and the sprint are closed at both ends, and the retainer runs off the drawing with an arrow because it has no defined end. A decision point sits between each stage, and each stage carries its price on a dimension line."
+    aria-label="Measured drawing: three stages along one axis. The audit and the sprint are closed at both ends, and the retainer runs off the drawing with an arrow because it has no defined end. A decision point sits between each stage."
   >
     {
       stages.map((s, i) => {
         const mid = (s.from + s.to) / 2;
         const open = i === stages.length - 1;
-        const gap = String(s.price).length * 4.6 + 12;
+        const gap = String(s.phase).length * 4.6 + 12;
         return (
           <>
             <text class="f-key f-pop" x={mid} y="44" text-anchor="middle" style={`--fig-d: ${i * 130}`}>
@@ -88,7 +87,7 @@ const DIM = 148;
               <path class="f-dim f-pop" d={`M${s.to},${DIM - 4} V${DIM + 4}`} style={`--fig-d: ${190 + i * 130}`} />
             )}
             <text class="f-label f-strong f-pop" x={mid} y={DIM + 4} text-anchor="middle" style={`--fig-d: ${210 + i * 130}`}>
-              {String(s.price).toUpperCase()}
+              {s.phase}
             </text>
           </>
         );
@@ -111,7 +110,7 @@ const DIM = 148;
     }
 
     <text class="f-micro f-pop" x="40" y="186" style="--fig-d: 640"
-      >THE AUDIT FEE IS CREDITED TOWARD WHATEVER COMES NEXT</text
+      >EACH STAGE ENDS WITH A DECISION</text
     >
   </svg>
 </Figure>

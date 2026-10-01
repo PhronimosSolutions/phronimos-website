@@ -3,8 +3,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import {
   AUDIT_NAME,
   BOOKING_URL,
-  PRICE_AUDIT,
-  PRICE_SPRINT,
   SITE_URL,
 } from '../../config';
 
@@ -60,7 +58,7 @@ const questions = [
   },
   {
     id: 'q9',
-    text: 'You have budget to spend $999–$3,500 this quarter on fixing reliability if the diagnosis warrants it.',
+    text: 'You have budget allocated this quarter for fixing reliability if the diagnosis warrants it.',
     hint: 'Not "would like to." Have.',
   },
   {
@@ -189,8 +187,6 @@ const jsonLd = {
   is:inline
   define:vars={{
     BOOKING_URL,
-    PRICE_AUDIT,
-    PRICE_SPRINT,
     QUESTION_COUNT: questions.length,
   }}
 >
@@ -239,7 +235,7 @@ const jsonLd = {
         bucket: 'not-yet',
         tag: 'Not the right time for a review',
         headline: 'Build something first, then diagnose it.',
-        body: `The Agent Reliability Review diagnoses what is already running. With nothing in production, the review has nothing to look at. Better next step: read /method/ to see how the audit → sprint → retainer sequence works, then start with an Agent Implementation Sprint (from ${PRICE_SPRINT}) once you can name the workflow you want in production.`,
+        body: 'The Agent Reliability Review diagnoses what is already running. With nothing in production, the review has nothing to look at. Better next step: read /method/ to see how the audit → sprint → retainer sequence works, then start with an Agent Implementation Sprint once you can name the workflow you want in production.',
         signals,
         cta: {
           primary: { href: '/method/', label: 'Read how the method works' },
@@ -273,9 +269,9 @@ const jsonLd = {
     if (total >= 4 && total <= 6) {
       return {
         bucket: 'review',
-        tag: `Ready for the ${PRICE_AUDIT} review`,
+        tag: 'Ready for the review',
         headline: 'The Agent Reliability Review is the right next step.',
-        body: `You have agents in production and enough signal that something is worth diagnosing. The review will map every finding to one of four silent-failure modes, quantify blast radius per finding, and hand back a monitoring posture recommendation. The fee is credited forward against whatever gets built or retained after.${!wantsDiagnosis ? ' Consider a free discovery call first — the signal question flagged that a conversation might be a better opener.' : ''}`,
+        body: `You have agents in production and enough signal that something is worth diagnosing. The review will map every finding to one of four silent-failure modes, quantify blast radius per finding, and hand back a monitoring posture recommendation.${!wantsDiagnosis ? ' Consider a free discovery call first — the signal question flagged that a conversation might be a better opener.' : ''}`,
         signals,
         cta: {
           primary: { href: BOOKING_URL, label: 'Book the Review' },
@@ -289,7 +285,7 @@ const jsonLd = {
         bucket: 'review-or-sprint',
         tag: 'Review or straight to sprint',
         headline: 'Diagnose first, or if the workflow is already scoped, skip to a sprint.',
-        body: `You are clearly running production AI with real cost when it fails. Two paths: start with the review to be sure the sprint targets the right workflow, or — if the workflow is already scoped, inputs identified, escalation agreed — skip to an Agent Implementation Sprint. The review fee is credited forward, so starting with it costs nothing extra if you go on to build.`,
+        body: 'You are clearly running production AI with real cost when it fails. Two paths: start with the review to be sure the sprint targets the right workflow, or — if the workflow is already scoped, inputs identified, escalation agreed — skip to an Agent Implementation Sprint.',
         signals,
         cta: {
           primary: { href: BOOKING_URL, label: 'Book the Review' },
@@ -303,7 +299,7 @@ const jsonLd = {
       bucket: 'retainer',
       tag: 'Retainer-shaped',
       headline: 'You are ready for a Fractional AI Officer retainer.',
-      body: `The signals point at a Fractional AI Officer: agents in production, evidence of silent failure, real blast radius, and someone internal who wants an accountable owner. The typical path is a ${PRICE_AUDIT} review first — one week — to baseline the surface, then the retainer starts in month two with the review fee credited against the first month.`,
+      body: 'The signals point at a Fractional AI Officer: agents in production, evidence of silent failure, real blast radius, and someone internal who wants an accountable owner. The typical path is a review first to baseline the surface, then the managed engagement starts after onboarding.',
       signals,
       cta: {
         primary: { href: '/services/fractional-ai-officer/', label: 'See the Fractional AI Officer page' },

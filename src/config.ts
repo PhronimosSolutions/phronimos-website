@@ -14,36 +14,9 @@ export const BOOKING_URL = 'https://calendly.com/phronimos';
 export const CTA_BOOK = 'Book the Review';
 export const CTA_CONTACT = 'Send a note';
 
-// --- Pricing ----------------------------------------------------------------
-// Every price on the site reads from here. Change a number once and it updates
-// the offer rows, the price tags, the comparison table, the prose, and the
-// JSON-LD together. Twenty scattered hard-coded prices is how a site ends up
-// quoting three different figures for the same engagement.
-//
-// Audit is a flat fee, credited forward. Sprint carries a floor because
-// integration complexity varies. Retainer is a flat monthly starting point.
-export const PRICE_AUDIT = '$999';
-export const PRICE_AUDIT_VALUE = 999;
-export const PRICE_SPRINT = 'From $3,500';
-export const PRICE_SPRINT_VALUE = 3500;
-export const PRICE_RETAINER = '$5,000 / month';
-export const PRICE_RETAINER_VALUE = 5000;
-
-// PRICE_SPRINT carries its own "From ", which reads correctly on a price tag
-// ("Agent Implementation Sprint — From $3,500") and ungrammatically inside a
-// sentence ("A From $3,500 sprint"). Use the bare figures below in running prose
-// and keep the prefixed strings for standalone tags.
-export const PRICE_SPRINT_BARE = '$3,500';
-export const PRICE_RETAINER_BARE = '$5,000';
-
-// The credit is what keeps a $999 front door from reading as the ceiling on the
-// whole practice. State it wherever the audit price appears.
-export const AUDIT_CREDIT_NOTE =
-  'The review fee is credited in full toward an Agent Implementation Sprint or the first month of a Fractional AI Officer retainer.';
-
 // --- Offer names + customer-facing framings -------------------------------
 // Single source for the canonical offer names and the customer-facing framings.
-// The $999 offering was renamed from "AI Workflow Audit" to "Agent Reliability
+// The diagnostic offering was renamed from "AI Workflow Audit" to "Agent Reliability
 // Review" — the review is the actual thing sold. "AI Workflow Audit" is kept
 // as the SEO-anchor phrase on the /ai-workflow-audit/ URL + H1 only; every
 // other surface uses AUDIT_NAME.

@@ -3,8 +3,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import {
   BOOKING_URL,
   CONTACT_EMAIL,
-  PRICE_RETAINER,
-  PRICE_RETAINER_VALUE,
   RETAINER_FRAMING,
   RETAINER_HEADLINE_ONE_LINER,
   RETAINER_NAME,
@@ -21,13 +19,13 @@ const covers = [
   ['Monitoring', 'Coverage for the four silent-failure modes on every workflow. Alerts reach Phronimos before they reach you.'],
   ['Incident response', `Detection and response against the published targets on our reliability standard, with SLA credits when we miss them.`],
   ['Maintenance', 'Third-party API changes, deprecated endpoints, prompt drift, model updates — kept current without you asking.'],
-  ['Rollout', 'One to two new workflows added per month at retainer pace, scoped and priced against the roadmap.'],
+  ['Rollout', 'One to two new workflows added per month at retainer pace, scoped against the roadmap.'],
   ['Reporting', 'Monthly report: volume handled, escalation rate, first-pass accuracy against sampled review, cycle time against baseline. Quarterly review.'],
 ];
 
 const doesNot = [
   ['Engineering time', 'Custom software builds, product development, backend services. If the answer is "we need to build a new product," that is a separate engagement.'],
-  ['Unbounded sprints', 'A single sprint carrying more than one workflow, or a workflow that needs weeks of net-new integration work, is priced separately as an Implementation Sprint.'],
+  ['Unbounded sprints', 'A single sprint carrying more than one workflow, or a workflow that needs weeks of net-new integration work, is handled as a separate Implementation Sprint.'],
   ['Emergency staffing', 'The retainer is not on-call cover for a broken internal team. Escalation paths and human takeover are documented; owning the outcome is still Phronimos on the shipped surface, but not the whole business.'],
   ['Legal or compliance advice', 'We document controls and evidence for your counsel; we do not act as counsel.'],
 ];
@@ -42,8 +40,8 @@ const faqs = [
     a: `Consultants advise; agencies deliver a scoped project and hand it back. A Fractional AI Officer owns the outcome on the workflows we shipped: monitoring runs on our side, incidents get an owner and a written report, the SLA carries automatic credits. We do AgentOps for firms that don't have engineers.`,
   },
   {
-    q: 'What is the retainer size?',
-    a: `${PRICE_RETAINER}, flat. Roughly one junior FTE, without the hire. Month-to-month with 30-day notice on either side. Priced in advance and unchanged unless scope is renegotiated in writing.`,
+    q: 'How is the retainer structured?',
+    a: 'Roughly one junior FTE of operating capacity, without the hire. Month-to-month with 30-day notice on either side. The operating surface and active-request limit are agreed in writing before work begins.',
   },
   {
     q: 'How many workflows can be on the retainer at once?',
@@ -51,7 +49,7 @@ const faqs = [
   },
   {
     q: 'What happens on the first month?',
-    a: 'The audit fee (if you started at the review) applies as credit against month one. Month one is spent onboarding the current surface: credentials handoff, monitoring bring-up on your production workflows, escalation path agreement, and the first monthly report. New builds start in month two unless the surface is already stable.',
+    a: 'Month one is spent onboarding the current surface: credentials handoff, monitoring bring-up on your production workflows, escalation path agreement, and the first monthly report. New builds start in month two unless the surface is already stable.',
   },
   {
     q: 'What industries do you take?',
@@ -62,8 +60,8 @@ const faqs = [
 const retainerServiceId = `${SITE_URL}/services/#fractional-ai-officer`;
 const pageUrl = `${SITE_URL}/services/fractional-ai-officer/`;
 
-// Same @id as the retainer Service on /services/ and /pricing/ — one entity,
-// three surfaces. mainEntityOfPage points here because this page is the
+// Same @id as the retainer Service on /services/ — one entity across pages.
+// mainEntityOfPage points here because this page is the
 // definitional page for that Service.
 const retainerService = {
   '@context': 'https://schema.org',
@@ -80,23 +78,6 @@ const retainerService = {
   },
   url: pageUrl,
   mainEntityOfPage: pageUrl,
-  offers: {
-    '@type': 'Offer',
-    priceCurrency: 'USD',
-    priceSpecification: {
-      '@type': 'UnitPriceSpecification',
-      price: PRICE_RETAINER_VALUE,
-      priceCurrency: 'USD',
-      unitCode: 'MON',
-      billingIncrement: 1,
-      referenceQuantity: {
-        '@type': 'QuantitativeValue',
-        value: 1,
-        unitCode: 'MON',
-      },
-    },
-    url: pageUrl,
-  },
 };
 
 const faqPage = {
@@ -125,13 +106,13 @@ const jsonLd = [retainerService, faqPage, breadcrumbs];
 
 <BaseLayout
   title="What Is a Fractional AI Officer? | Phronimos"
-  description={`A managed AI operator layer at roughly the capacity of one junior engineering hire, without the hire. ${PRICE_RETAINER}, month-to-month, with SLA credits.`}
+  description="A managed AI operator layer at roughly the capacity of one junior engineering hire, without the hire. Month-to-month, with SLA credits."
   jsonLd={jsonLd}
 >
   <section class="section-tight page-head">
     <div class="container">
       <hr class="rule" data-reveal />
-      <p class="eyebrow" data-reveal style="--reveal-i: 1">Fractional AI Officer &middot; {PRICE_RETAINER}</p>
+      <p class="eyebrow" data-reveal style="--reveal-i: 1">Fractional AI Officer</p>
       <h1 data-reveal style="--reveal-i: 2">What is a Fractional AI Officer?</h1>
       <p class="lede answer" data-reveal style="--reveal-i: 3">
         A Fractional AI Officer is a managed AI operator layer at roughly the capacity of one junior
@@ -141,12 +122,12 @@ const jsonLd = [retainerService, faqPage, breadcrumbs];
         ships.
       </p>
       <p class="muted" data-reveal style="--reveal-i: 4">
-        {RETAINER_FRAMING}, priced flat at {PRICE_RETAINER}, month-to-month, 30-day notice. We do
-        AgentOps for firms that don't have engineers.
+        {RETAINER_FRAMING}, month-to-month, with 30-day notice. We do AgentOps for firms that
+        don't have engineers.
       </p>
       <div class="cta-actions" data-reveal style="--reveal-i: 5">
         <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book the Review</a>
-        <a href="/pricing/" class="btn btn-secondary">See the full pricing ladder</a>
+        <a href="/services/" class="btn btn-secondary">See all services</a>
       </div>
     </div>
   </section>

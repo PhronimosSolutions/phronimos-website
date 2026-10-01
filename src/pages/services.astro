@@ -1,17 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import {
-  AUDIT_CREDIT_NOTE,
   AUDIT_HEADLINE_ONE_LINER,
   AUDIT_NAME,
   BOOKING_URL,
   CONTACT_EMAIL,
-  PRICE_AUDIT,
-  PRICE_RETAINER,
-  PRICE_SPRINT,
-  PRICE_AUDIT_VALUE,
-  PRICE_RETAINER_VALUE,
-  PRICE_SPRINT_VALUE,
   RETAINER_HEADLINE_ONE_LINER,
   RETAINER_NAME,
   SITE_URL,
@@ -21,7 +14,6 @@ import {
 
 const offers = [
   {
-    price: PRICE_AUDIT,
     name: 'Agent Reliability Review',
     bestFor:
       'Business owners who have already built or bought AI agents, workflows, or automations — and are not sure whether they still work.',
@@ -37,7 +29,6 @@ const offers = [
       'A clear answer to "is what you already built actually working?" with a remediation plan and a monitoring posture.',
   },
   {
-    price: PRICE_SPRINT,
     name: 'Agent Implementation Sprint',
     bestFor:
       'Businesses ready to put one painful workflow into production, with testing, guardrails, and a documented handover.',
@@ -54,7 +45,6 @@ const offers = [
       'One workflow becomes measurably faster and less owner-dependent, with a baseline to measure it against.',
   },
   {
-    price: PRICE_RETAINER,
     name: 'Fractional AI Officer',
     bestFor: 'Teams that want the capacity of one junior engineering hire on AI operations, without the hire — roughly one junior FTE without the salary, benefits, or onboarding cost. We do AgentOps for firms that don\'t have engineers.',
     includes: [
@@ -75,7 +65,7 @@ const offers = [
 // Three explicit Service records — one per offer — with an OfferCatalog binding
 // them for the /services/ page. Each Service carries a stable @id keyed to the
 // canonical URL fragment for that offer, so cross-page references (from
-// /ai-workflow-audit/, /method/, index, and future pricing / fractional-AI-officer
+// /ai-workflow-audit/, /method/, index, and fractional-AI-officer
 // pages) can point at the same entity by @id instead of restating it.
 const auditServiceId = `${SITE_URL}/services/#agent-reliability-review`;
 const sprintServiceId = `${SITE_URL}/services/#agent-implementation-sprint`;
@@ -95,17 +85,6 @@ const auditService = {
     name: 'Owner-led businesses with 5 to 50 employees',
   },
   url: `${SITE_URL}/services/`,
-  offers: {
-    '@type': 'Offer',
-    priceCurrency: 'USD',
-    priceSpecification: {
-      '@type': 'PriceSpecification',
-      price: PRICE_AUDIT_VALUE,
-      priceCurrency: 'USD',
-      valueAddedTaxIncluded: false,
-    },
-    url: `${SITE_URL}/ai-workflow-audit/`,
-  },
 };
 
 const sprintService = {
@@ -122,17 +101,6 @@ const sprintService = {
     name: 'Owner-led businesses with 5 to 50 employees',
   },
   url: `${SITE_URL}/services/`,
-  offers: {
-    '@type': 'Offer',
-    priceCurrency: 'USD',
-    priceSpecification: {
-      '@type': 'PriceSpecification',
-      minPrice: PRICE_SPRINT_VALUE,
-      priceCurrency: 'USD',
-      valueAddedTaxIncluded: false,
-    },
-    url: `${SITE_URL}/services/`,
-  },
 };
 
 const retainerService = {
@@ -149,101 +117,57 @@ const retainerService = {
     name: 'Owner-led businesses with 5 to 50 employees',
   },
   url: `${SITE_URL}/services/`,
-  offers: {
-    '@type': 'Offer',
-    priceCurrency: 'USD',
-    priceSpecification: {
-      '@type': 'UnitPriceSpecification',
-      price: PRICE_RETAINER_VALUE,
-      priceCurrency: 'USD',
-      unitCode: 'MON',
-      billingIncrement: 1,
-      referenceQuantity: {
-        '@type': 'QuantitativeValue',
-        value: 1,
-        unitCode: 'MON',
-      },
-    },
-    url: `${SITE_URL}/services/`,
-  },
 };
 
-const offerCatalog = {
+const serviceList = {
   '@context': 'https://schema.org',
-  '@type': 'OfferCatalog',
-  name: 'Phronimos services and pricing',
+  '@type': 'ItemList',
+  name: 'Phronimos services',
   url: `${SITE_URL}/services/`,
-  provider: { '@id': `${SITE_URL}/#organization` },
   itemListElement: [
     {
-      '@type': 'Offer',
-      name: AUDIT_NAME,
-      priceCurrency: 'USD',
-      category: 'AI workflow audit',
-      priceSpecification: {
-        '@type': 'PriceSpecification',
-        price: PRICE_AUDIT_VALUE,
-        priceCurrency: 'USD',
-      },
-      itemOffered: { '@id': auditServiceId },
+      '@type': 'ListItem',
+      position: 1,
+      item: { '@id': auditServiceId },
     },
     {
-      '@type': 'Offer',
-      name: SPRINT_NAME,
-      priceCurrency: 'USD',
-      category: 'AI agent implementation',
-      priceSpecification: {
-        '@type': 'PriceSpecification',
-        minPrice: PRICE_SPRINT_VALUE,
-        priceCurrency: 'USD',
-      },
-      itemOffered: { '@id': sprintServiceId },
+      '@type': 'ListItem',
+      position: 2,
+      item: { '@id': sprintServiceId },
     },
     {
-      '@type': 'Offer',
-      name: RETAINER_NAME,
-      priceCurrency: 'USD',
-      category: 'Managed AI operations',
-      priceSpecification: {
-        '@type': 'UnitPriceSpecification',
-        price: PRICE_RETAINER_VALUE,
-        priceCurrency: 'USD',
-        unitCode: 'MON',
-      },
-      itemOffered: { '@id': retainerServiceId },
+      '@type': 'ListItem',
+      position: 3,
+      item: { '@id': retainerServiceId },
     },
   ],
 };
 
-const jsonLd = [auditService, sprintService, retainerService, offerCatalog];
+const jsonLd = [auditService, sprintService, retainerService, serviceList];
 ---
 
 <BaseLayout
-  title="AI Agent Services and Pricing | Phronimos"
-  description="A $999 Agent Reliability Review credited toward what follows, an Agent Implementation Sprint from $3,500, and a $5,000/month Fractional AI Officer retainer."
+  title="AI Agent Services | Phronimos"
+  description="Agent Reliability Reviews, AI agent implementation sprints, and managed AI operations for owner-led businesses."
   jsonLd={jsonLd}
 >
   <section class="section-tight page-head">
     <div class="container">
       <hr class="rule" data-reveal />
-      <h1 data-reveal style="--reveal-i: 1">AI agent services and pricing</h1>
+      <h1 data-reveal style="--reveal-i: 1">AI agent services</h1>
       <p class="lede answer" data-reveal style="--reveal-i: 2">
-        <strong>Three engagements. One controlled path.</strong> An {AUDIT_NAME} at {PRICE_AUDIT}
-        finds the bottleneck and scopes the build. An Agent Implementation Sprint from {`$${PRICE_SPRINT_VALUE.toLocaleString()}`} puts
-        the first agent into production. The Fractional AI Officer retainer at {PRICE_RETAINER} keeps
-        it running and adds the next one.
+        <strong>Three engagements. One controlled path.</strong> An {AUDIT_NAME} finds the
+        bottleneck and scopes the build. An Agent Implementation Sprint puts the first agent into
+        production. The Fractional AI Officer retainer keeps it running and adds the next one.
       </p>
-      <p class="credit-note" data-reveal style="--reveal-i: 3">
-        {AUDIT_CREDIT_NOTE}
+      <p class="muted scope-rule" data-reveal style="--reveal-i: 3">
+        Each engagement is scoped in writing before it starts. If the scope changes during the
+        work, we agree on the change before continuing.
       </p>
-      <p class="muted scope-rule" data-reveal style="--reveal-i: 4">
-        Each engagement is fixed-scope and priced before it starts. If scope changes during the
-        work, it gets re-priced in writing before the work continues.
-      </p>
-      <p class="muted head-links" data-reveal style="--reveal-i: 5">
+      <p class="muted head-links" data-reveal style="--reveal-i: 4">
         More detail: <a href="/ai-workflow-audit/">what the audit includes</a> &middot;
         <a href="/security/">how we handle system access</a> &middot;
-        <a href="/faq/">cost and ownership questions</a>
+        <a href="/faq/">scope and ownership questions</a>
       </p>
     </div>
   </section>
@@ -253,7 +177,6 @@ const jsonLd = [auditService, sprintService, retainerService, offerCatalog];
       <section class={`section offer-section ${i % 2 ? 'offer-alt' : ''}`}>
         <div class="container offer-grid">
           <div class="offer-lead" data-reveal>
-            <p class="offer-price-tag">{offer.price}</p>
             <h2>{offer.name}</h2>
             <p class="best-for muted">
               <strong>Best for:</strong> {offer.bestFor}
@@ -362,19 +285,6 @@ const jsonLd = [auditService, sprintService, retainerService, offerCatalog];
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     gap: clamp(40px, 6vw, 96px);
     align-items: start;
-  }
-
-  .offer-price-tag {
-    font-family: var(--font-tight);
-    font-weight: 600;
-    font-size: 14px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--accent-strong);
-  }
-
-  .offer-lead h2 {
-    margin-top: var(--space-3);
   }
 
   .best-for {

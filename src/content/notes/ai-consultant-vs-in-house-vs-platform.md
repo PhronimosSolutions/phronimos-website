@@ -5,7 +5,7 @@ pubDate: 2026-08-13
 updatedDate: 2026-08-13
 ---
 
-For a 5–50 person firm, the honest answer is: a consultant costs $10,000–$50,000 and leaves, an in-house AI engineer runs $140,000–$220,000 a year and takes months to hire, and a platform costs $30–$150 per user per month but hits a ceiling. The option most owners don't consider — a managed operator — sits between them at about $5,000 a month.
+For a 5–50 person firm, the honest answer is: a consultant costs $10,000–$50,000 and leaves, an in-house AI engineer runs $140,000–$220,000 a year and takes months to hire, and a platform costs $30–$150 per user per month but hits a ceiling. The option most owners don't consider — a managed operator — sits between those models.
 
 ## What are the four real options?
 
@@ -16,7 +16,7 @@ There are technically dozens of shapes, but for a 5–50 person firm they collap
 | Consultant (build-and-leave) | 6–16 weeks | $0 direct (but drift compounds) | You own the artifact | No — monitoring is out of scope | High during build, zero after |
 | In-house AI engineer | 4–8 months (hiring + first build) | $140k–$220k / yr fully loaded | You own everything | Yes if they build for it | High, if you can retain the person |
 | Enterprise platform (Copilot Studio, Agentforce, etc.) | 4–12 weeks with an implementation partner | $30–$150 per user / mo + $25k–$100k partner fees | Vendor owns the runtime; you own the config | Partially — vendor tells you when their side is down, not when your workflow is wrong | Bounded by what the platform allows |
-| Managed operator (Fractional AI Officer) | ~4 weeks from kickoff to first workflow live | $5,000 / mo | You own the workflows; the operator owns the operation of them | Yes — this is what the operator is paid to do | High, one to two active requests at a time |
+| Managed operator (Fractional AI Officer) | ~4 weeks from kickoff to first workflow live | Scoped managed engagement | You own the workflows; the operator owns the operation of them | Yes — this is what the operator is paid to do | High, one to two active requests at a time |
 
 The table is the piece to sit with. The rows aren't rank-orderable in the abstract — the right answer depends on what a firm actually has and actually needs.
 
@@ -42,13 +42,13 @@ The ceiling shows up in two places. First, workflows the platform doesn't native
 
 A managed operator — sometimes called AgentOps, though the term isn't ours to own — is a fixed monthly retainer for someone who runs your AI workflows on your behalf. Not just building them: operating them. Monitoring for the four silent-failure modes, responding when they fire, maintaining the workflows as the underlying systems change, and rolling out the next workflow as capacity allows.
 
-At Phronimos this is the Fractional AI Officer retainer, at $5,000 a month, sized to roughly one junior engineering hire's worth of capacity without the salary, benefits, or onboarding cost. Details on what it covers: [/services/fractional-ai-officer/](/services/fractional-ai-officer/).
+At Phronimos this is the Fractional AI Officer retainer, sized to roughly one junior engineering hire's worth of capacity without the salary, benefits, or onboarding cost. Details on what it covers: [/services/fractional-ai-officer/](/services/fractional-ai-officer/).
 
 ## The one decision the table doesn't show
 
 None of these options are mutually exclusive. A firm can run one workflow on Copilot Studio, have a Fractional AI Officer operate a second on custom infrastructure, and pull in a consultant for a specific one-time build. The trap is picking one option because it's the option and forcing every workflow through it. The workflows have shapes; match the option to the shape.
 
-For a diagnostic on what your existing workflows actually need: [/ai-workflow-audit/](/ai-workflow-audit/). For the full price ladder side-by-side: [/pricing/](/pricing/).
+For a diagnostic on what your existing workflows actually need: [/ai-workflow-audit/](/ai-workflow-audit/). For the engagement path: [/services/](/services/).
 
 ---
 
