@@ -12,7 +12,7 @@ run by Matthew, on purpose. Estimated total time: 30 to 45 minutes.
 ## 1. Local sanity check
 
 ```bash
-cd "/Users/kirbot/.openclaw/workspace/projects/Phronimos Solutions/website/site"
+cd "/Users/kirbot/.openclaw/workspace/projects/Phronimos/Phronimos Solutions/website/site"
 npm install
 npm run build
 npm run brand-check     # must pass
@@ -33,7 +33,7 @@ dashboard so submissions from the production site are accepted.
 
 ```bash
 npm i -g vercel          # if not installed
-cd "/Users/kirbot/.openclaw/workspace/projects/Phronimos Solutions/website/site"
+cd "/Users/kirbot/.openclaw/workspace/projects/Phronimos/Phronimos Solutions/website/site"
 vercel login             # log in as yourself
 vercel link              # create the project (defaults are fine; it detects Astro)
 vercel deploy --prod
